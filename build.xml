@@ -46,8 +46,8 @@
     </ant>
   </target>  
 
-  <target name="package" depends="InstallInit">
-    <ant antfile="../${proj}/build.xml" target="${proj}${comp}-Distributable">
+  <target name="release">
+    <ant antfile="../${proj}/build.xml" target="${proj}-Release">
       <property name="project" value="${proj}"/>
     </ant>
   </target>  
@@ -119,6 +119,9 @@
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
+
+  <!-- oooooooooooooooooooo default project install ooooooooooooooooooooooo -->
+
   <target name="defaultProjectInstall">
     <concat destfile="${targetDir}/versions" append="yes">
       <fileset dir="${projectsDir}/${project}" >
@@ -126,6 +129,9 @@
       </fileset>
     </concat>
   </target>
+
+
+  <!-- ooooooooooooooooooo default component install oooooooooooooooooooooo -->
 
   <target name="defaultComponentInstall">
     <property name="componentDir" value="${projectsDir}/${project}/${component}"/>
@@ -207,43 +213,47 @@
 
   </target>  
 
-  <target name="defaultJavaCompile" if="hasJava" unless="skipJava" depends="deleteMyClasses,
-	                                                 checkIfHaveJava">
- 
+
+  <target name="defaultJavaCompile" if="hasJava" unless="skipJava" 
+                                    depends="deleteMyClasses, checkIfHaveJava">
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
-
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
             destdir="${projectsDir}/${project}/${component}/classes"
             classpath="${targetDir}/lib/java"
             fork="true"
 	    memoryMaximumSize="128m"/>
-    
-    <jar basedir="${projectsDir}/${project}/${component}/classes" destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
-
+     <jar basedir="${projectsDir}/${project}/${component}/classes" 
+          destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
   </target>   
 
-   <target name="checkIfHaveJava">
-      <available property="hasJava" 
-               file="${projectsDir}/${project}/${component}/src/java"/>
-   </target>
 
-   <target name="checkIfCleanAndHaveJava" depends="checkIfHaveJava">
+  <target name="checkIfHaveJava">
+      <available property="hasJava" 
+                 file="${projectsDir}/${project}/${component}/src/java"/>
+  </target>
+
+
+  <target name="checkIfCleanAndHaveJava" depends="checkIfHaveJava">
        <condition property="cleanAndHasJava">
           <and>
              <isset property="hasJava"/>
              <isset property="clean"/>
           </and>
        </condition>
-   </target>
+  </target>
 
-   <target name="deleteMyClasses" if="cleanAndHasJava" depends="checkIfCleanAndHaveJava">
 
+   <target name="deleteMyClasses" if="cleanAndHasJava" 
+           depends="checkIfCleanAndHaveJava">
     <delete>
         <fileset dir="${projectsDir}/${project}/${component}/classes"/>
      </delete>
     <echo message="deleted all old classes, clean is ${clean} and has java is ${hasJava}"/>
   </target>
+
+
+  <!-- oooooooooooooooooooo default web install ooooooooooooooooooooooooooo -->
 
   <target name="defaultWebComponentInstall">
     <property name="componentDir" value="${projectsDir}/${project}/${component}"/>
@@ -275,6 +285,9 @@
     </antcall>
   </target>  
 
+
+  <!-- oooooooooooooooooooo utility subroutines  ooooooooooooooooooooooo -->
+
   <target name="componentPartCopy">
     <available property="partAvailable" file="${componentDir}/${part}"/>
     <antcall target="componentPartCopySub"/>
@@ -304,27 +317,31 @@
     </fail>
   </target>  
 
-  <target name="projectCheckOut">
-    <antcall target="cvsCheckOut">
-      <param name="package" value="${project}"/>
-    </antcall>
-    <echo message="${project} ${version}" destfile="${projectsDir}/${project}/version"/>
-  </target>
+ 
+  
+  <!-- oooooooooooooooooooo default project release ooooooooooooooooooooooo -->
 
-  <target name="cvsCheckOut">
-    <condition property="haveVersion">
-       <equals arg1="latest" arg2="${version}"/>
-    </condition>
-    <antcall target="cvsHaveVersion"/>
-    <antcall target="cvsDontHaveVersion"/>
-  </target>
+  <target name="defaultProjectRelease">
 
-  <target name="cvsHaveVersion">
-    <cvs package="${package}" dest="${projectsDir}" tag="${version}" />
-  </target>
+    <delete quiet="true">
+        <fileset dir="${projectsDir}/cleanroom"/>
+    </delete>
+    <mkdir dir="${projectsDir}/cleanroom"/>
 
-  <target name="cvsDontHaveVersion">
-    <cvs package="${package}" dest="${projectsDir}" />
+    <cvs  cvsRoot="${cvsroot}" command="rtag ${tag} ${project}"/>
+
+    <cvs package="${project}" tag="${tag}" cvsRoot="${cvsroot}" 
+         dest="${projectsDir}/cleanroom" />
+    
+    <property name="tarfile" 
+              value="${projectsDir}/cleanroom/${project}_${tag}.tar"/>
+
+    <tar destfile="${tarfile}" 
+         basedir="${projectsDir}/cleanroom"
+         excludes="**/CVS/**"/>
+
+    <gzip zipfile="${tarfile}.gz" src="${tarfile}"/>
+
   </target>
 
 </project>

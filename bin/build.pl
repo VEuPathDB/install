@@ -12,7 +12,7 @@ use Cwd 'realpath';
 
 my @projects = ("AllGenes", "Annotator", "CBIL", "DJob", "DoTS", "GUS", "ParaDBs", "PlasmoDB","RAD");
 
-my @whats = ("install", "webinstall", "package");
+my @whats = ("install", "webinstall");
 
 my $projectHome = $ENV{PROJECT_HOME};
 
@@ -24,11 +24,11 @@ if (!$projectHome) {
   $projectHome = realpath("..");
 } 
 
-my ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $version) = &parseArgs(@ARGV);
+my ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $tag) = &parseArgs(@ARGV);
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $append -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $append $tag -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
 
 print "\n$cmd\n\n";
 system($cmd);
@@ -40,12 +40,20 @@ system($cmd);
 sub parseArgs {
 
     my $project = shift @ARGV;
-    my $component;
+    my $component; 
+
     if ($project =~ /(\w+)(\/\w+)/ ) {
 	$project = $1;
 	$component = $2;
     }
     my $doWhat = shift @ARGV;
+
+    if ($doWhat eq "release") {
+      &usage unless (scalar(@ARGV) == 1);
+      my $tag = "-Dtag=$ARGV[0]";
+      return ($project, '', $doWhat, '', '', '', '', $tag);
+    }
+
     my $targetDir;
     if ($ENV{GUS_HOME} && (!$ARGV[0] || $ARGV[0] =~ /^-/)) {
 	$targetDir = $ENV{GUS_HOME};
@@ -54,7 +62,7 @@ sub parseArgs {
     }
 
     &usage() unless $project && grep(/$project/, @projects);
-    &usage() unless $doWhat && grep(/$doWhat/, @whats);
+    &usage() unless $doWhat && grep(/$doWhat/, (@whats, "release"));
     &usage() unless $targetDir;
 
 
@@ -84,6 +92,7 @@ sub usage {
 "
 usage: 
   build $projects\[/componentname]  $whats  targetDir -append [-co [version]]
+  build $projects release version
 
 ";
     exit 1;
