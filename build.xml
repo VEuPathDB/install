@@ -376,6 +376,9 @@
 
     <cvs  cvsRoot="${cvsroot}" command="rtag ${tag} ${project}"/>
 
+    <cvs package="install" cvsRoot="${cvsroot}" 
+         dest="${projectsDir}/cleanroom" />
+    
     <cvs package="${project}" tag="${tag}" cvsRoot="${cvsroot}" 
          dest="${projectsDir}/cleanroom" />
     
