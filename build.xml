@@ -9,6 +9,7 @@
   <!--   projectsDir                                                        -->
   <!--   targetDir                                                          -->
   <!--   append                                                             -->
+  <!--   clean           (recompile all java)                               -->
   <!--   checkout                                                           -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -57,7 +58,8 @@
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
   <target name="InstallInit" depends="validateTargetDir, checkoutProj,
-                                      installConfigFile"/>
+                                     validateClean,  installConfigFile,
+                                     deleteOldJars"/>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
@@ -76,6 +78,27 @@
     </fail>
   </target>  
 
+
+   <target name="validateClean" if="clean" depends="checkEmptyComponent">
+     <fail if="notEmptyComponent">
+         Build Error:  Cannot use -clean when building a specific component.  Either build the entire ${proj} project or build ${proj}${comp} without using "clean"
+     </fail>
+   <echo message="inside validateClean, comp is ${comp} and clean is ${clean}"/>
+   </target>
+
+   <target name="checkEmptyComponent">
+     <condition property="notEmptyComponent">
+       <not>
+         <equals arg1="${comp}" arg2=""/>
+       </not>
+     </condition>
+   </target>
+
+   <target name="deleteOldJars" if="clean">
+     <delete>
+       <fileset dir="${targetDir}/lib/java" includes="*.jar"/>
+     </delete>
+   </target>
 
   <target name="installConfigFile">
     <ant target="configFile">
@@ -105,14 +128,14 @@
   </target>
 
   <target name="defaultComponentInstall">
-    <property name="componentDir" value="${projectsDir}/${component}"/>
+    <property name="componentDir" value="${projectsDir}/${project}/${component}"/>
 
     <echo message="."/>
-    <echo message="Installing ${component}"/>
+    <echo message="Installing ${project}/${component}"/>
 
-    <available property="componentAvail" file="${projectsDir}/${component}"/>
+    <available property="componentAvail" file="${projectsDir}/${project}/${component}"/>
     <fail unless="componentAvail">
-       Component directory ${projectsDir}/${component} not found.
+       Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
 
     <antcall target="componentPartCopy">
@@ -128,7 +151,7 @@
     <antcall target="componentPartCopy">
       <param name="part" value="lib/perl"/>
       <param name="to" value="lib/perl"/>
-      <param name="prefix" value="${component}/"/>
+      <param name="prefix" value="${project}/${component}/"/>
     </antcall>
 
     <antcall target="componentPartCopy">
@@ -146,7 +169,7 @@
     <antcall target="componentPartCopy">
       <param name="part" value="plugin/perl"/>
       <param name="to" value="lib/perl"/>
-      <param name="prefix" value="${component}/Plugin/"/>
+      <param name="prefix" value="${project}/${component}/Plugin/"/>
     </antcall>
 
     <antcall target="componentPartCopy">
@@ -165,32 +188,72 @@
     <antcall target="componentPartCopy">
       <param name="part" value="doc"/>
       <param name="to" value="doc"/>
-      <param name="prefix" value="${component}/"/>
+      <param name="prefix" value="${project}/${component}/"/>
     </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="test"/>
       <param name="to" value="test"/>
-      <param name="prefix" value="${component}/"/>
+      <param name="prefix" value="${project}/${component}/"/>
     </antcall>
-
-    <antcall target="componentPartCopy">
+       
+   <antcall target="defaultJavaCompile"/>
+   
+   <antcall target="componentPartCopy">
       <param name="part" value="data"/>
       <param name="to" value="data"/>
-      <param name="prefix" value="${component}/"/>
+      <param name="prefix" value="${project}/${component}/"/>
     </antcall>
+
   </target>  
 
+  <target name="defaultJavaCompile" if="hasJava" unless="skipJava" depends="deleteMyClasses,
+	                                                 checkIfHaveJava">
+ 
+     <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
+     <mkdir dir="${targetDir}/lib/java"/>
+
+     <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
+            destdir="${projectsDir}/${project}/${component}/classes"
+            classpath="${targetDir}/lib/java"
+            fork="true"
+	    memoryMaximumSize="128m"/>
+    
+    <jar basedir="${projectsDir}/${project}/${component}/classes" destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
+
+  </target>   
+
+   <target name="checkIfHaveJava">
+      <available property="hasJava" 
+               file="${projectsDir}/${project}/${component}/src/java"/>
+   </target>
+
+   <target name="checkIfCleanAndHaveJava" depends="checkIfHaveJava">
+       <condition property="cleanAndHasJava">
+          <and>
+             <isset property="hasJava"/>
+             <isset property="clean"/>
+          </and>
+       </condition>
+   </target>
+
+   <target name="deleteMyClasses" if="cleanAndHasJava" depends="checkIfCleanAndHaveJava">
+
+    <delete>
+        <fileset dir="${projectsDir}/${project}/${component}/classes"/>
+     </delete>
+    <echo message="deleted all old classes, clean is ${clean} and has java is ${hasJava}"/>
+  </target>
 
   <target name="defaultWebComponentInstall">
-    <property name="componentDir" value="${projectsDir}/${component}"/>
+    <property name="componentDir" value="${projectsDir}/${project}/${component}"/>
 
     <echo message="."/>
-    <echo message="Installing ${component}"/>
+    <echo message="Installing ${project}/${component}"/>
 
-    <available property="componentAvail" file="${projectsDir}/${component}"/>
+    <available property="componentAvail" file="${projectsDir}/${project}/${component}"/>
     <fail unless="componentAvail">
-       Component directory ${projectsDir}/${component} not found.
+       Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
 
    <antcall target="componentPartCopy">

@@ -24,11 +24,11 @@ if (!$projectHome) {
   $projectHome = realpath("..");
 } 
 
-my ($project, $component, $doWhat, $targetDir, $append, $doCheckout, $version) = &parseArgs(@ARGV);
+my ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $version) = &parseArgs(@ARGV);
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $append -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $append -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
 
 print "\n$cmd\n\n";
 system($cmd);
@@ -40,7 +40,7 @@ system($cmd);
 sub parseArgs {
 
     my $project = shift @ARGV;
-    my $component = "";
+    my $component;
     if ($project =~ /(\w+)(\/\w+)/ ) {
 	$project = $1;
 	$component = $2;
@@ -58,17 +58,22 @@ sub parseArgs {
     &usage() unless $targetDir;
 
 
-    my ($append, $doCheckout, $version);
+    my ($append, $clean, $doCheckout, $version);
     if ($ARGV[0] eq "-append") {
 	shift @ARGV;
         $append = "-Dappend=true";
     } 
+    if ($ARGV[0] eq "-clean") {
+        shift @ARGV;
+        $clean = "-Dclean=true";
+    }
+        
     if ($doCheckout = $ARGV[0]) {
 	&usage() if ($doCheckout ne "-co");
 	$version = $ARGV[1];
     }
 
-    return ($project, $component, $doWhat, $targetDir, $append, $doCheckout, $version);
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $version);
 }
 
 sub usage {
