@@ -7,3 +7,7 @@
 - handle -co across cvs repositories
 
 - write User Guide
+
+- add ant 1.5 note to setup doc
+
+- bug: glitch in the chmod +x of bin/
