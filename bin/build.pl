@@ -24,11 +24,11 @@ if (!$projectHome) {
   $projectHome = realpath("..");
 } 
 
-my ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $tag, $webPropFile) = &parseArgs(@ARGV);
+my ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, $doCheckout, $tag, $webPropFile) = &parseArgs(@ARGV);
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $skipJava $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
 
 print "\n$cmd\n\n";
 system($cmd);
@@ -66,7 +66,7 @@ sub parseArgs {
     &usage() unless $targetDir;
 
 
-    my ($append, $clean, $doCheckout, $version, $webPropFile);
+    my ($append, $clean, $skipJava, $doCheckout, $version, $webPropFile);
     if ($ARGV[0] eq "-append") {
 	shift @ARGV;
         $append = "-Dappend=true";
@@ -77,6 +77,11 @@ sub parseArgs {
         $clean = "-Dclean=true";
     }
    
+    if ($ARGV[0] eq "-skipJavaCompiling") {
+	shift @ARGV;
+	$skipJava = "-DskipJavaCompiling=true";
+    }
+
     if ($ARGV[0] eq "-webPropFile") {
         shift @ARGV;
 	my $wpFile = shift @ARGV;
@@ -88,7 +93,7 @@ sub parseArgs {
 	$version = $ARGV[1];
     }
 
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $version, $webPropFile);
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, $doCheckout, $version, $webPropFile);
 }
 
 sub usage {

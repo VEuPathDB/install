@@ -9,7 +9,8 @@
   <!--   projectsDir                                                        -->
   <!--   targetDir                                                          -->
   <!--   append                                                             -->
-  <!--   clean           (recompile java already compiled                   -->
+  <!--   clean           (recompile java already compiled)                  -->
+  <!--   skipJavaCompiling                                                  -->
   <!--   checkout                                                           -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -222,9 +223,8 @@
 
   </target>  
 
-  <!--we can only have one 'if' property...workaround by having 'if' and 'unless' -->
 
-  <target name="defaultJavaCompile" if="hasJava"  
+  <target name="defaultJavaCompile" if="hasJava" unless="skipJavaCompiling"  
                                     depends="deleteMyClasses, checkIfHaveJava">
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
