@@ -30,6 +30,12 @@
       <include name="**/*" />
       <replacefilter token="@perl@" property="perl"/>
     </replace> 
+
+    <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
+    <chmod perm="+x">
+      <fileset dir="${targetDir}/bin"/>
+    </chmod>
+
   </target>  
 
 
