@@ -220,9 +220,14 @@
      <mkdir dir="${targetDir}/lib/java"/>
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
             destdir="${projectsDir}/${project}/${component}/classes"
-            classpath="${targetDir}/lib/java/"
-            fork="true"
-	    memoryMaximumSize="128m"/>
+	    fork="true"
+	    memoryMaximumSize="128m">
+        <classpath>
+           <fileset dir="${targetDir}/lib/java/">
+              <include name="*.jar"/>
+           </fileset>
+        </classpath>
+     </javac>
      <jar basedir="${projectsDir}/${project}/${component}/classes" 
           destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
   </target>   
