@@ -62,7 +62,7 @@
                                      deleteOldJars"/>
 
   <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
-                                     validateClean,  "/>
+                                     validateClean"/>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
