@@ -1,7 +1,7 @@
 databaseLogin=GUSrw
-databasePassword=*******
+databasePassword=YOUR_PASSWORD
 readOnlyDatabaseLogin=GUSdevReadOnly
-readOnlyDatabasePassword=********
+readOnlyDatabasePassword=YOUR_PASSWORD
 coreSchemaName=Core
 userName=$ENV{USER}
 group=CBIL
