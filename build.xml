@@ -95,6 +95,7 @@
 
     <antcall target="componentPartCopy">
       <param name="part" value="bin"/>
+      <param name="to" value="bin"/>
       <param name="prefix" value=""/>
     </antcall>
 
@@ -104,26 +105,37 @@
 
     <antcall target="componentPartCopy">
       <param name="part" value="lib"/>
+      <param name="to" value="lib"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="plugin"/>
+      <param name="to" value="lib"/>
       <param name="prefix" value=""/>
     </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="config"/>
+      <param name="to" value="config"/>
       <param name="prefix" value=""/>
     </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="doc"/>
+      <param name="to" value="doc"/>
       <param name="prefix" value="${component}/"/>
     </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="test"/>
+      <param name="to" value="test"/>
       <param name="prefix" value="${component}/"/>
     </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="data"/>
+      <param name="to" value="data"/>
       <param name="prefix" value="${component}/"/>
     </antcall>
   </target>  
@@ -142,16 +154,19 @@
 
    <antcall target="componentPartCopy">
       <param name="part" value="htdocs"/>
+      <param name="to" value="htdocs"/>
       <param name="prefix" value=""/>
     </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="cgi-bin"/>
+      <param name="to" value="cgi-bin"/>
       <param name="prefix" value=""/>
     </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="servlets"/>
+      <param name="to" value="servlets"/>
       <param name="prefix" value=""/>
     </antcall>
   </target>  
