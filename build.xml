@@ -153,6 +153,12 @@
       <param name="prefix" value=""/>
     </antcall>
 
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/xml"/>
+      <param name="to" value="lib/xml"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
     <chmod perm="+x">
       <fileset dir="${targetDir}/bin"/>
     </chmod>
