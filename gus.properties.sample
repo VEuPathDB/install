@@ -1,0 +1,7 @@
+database=GUSdev
+login=GUSrw
+password=pskwa82
+readOnlyDatabase=GUSdev
+readOnlyLogin=GUSrw
+readOnlyPassword=pskwa82
+

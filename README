@@ -1,0 +1,78 @@
+The GUS Build System
+
+INSTALLATION
+
+1. Be sure you have Ant installed:
+
+  % ant -help
+  ant [options] [target [target2 [target3] ...]]
+  Options:
+    -help                  print this message
+    -projecthelp           print project help information
+
+
+1a. If not, see INSTALLING ANT below
+
+
+2. Be sure your $JAVA_HOME variable is set:
+
+  % echo $JAVA_HOME
+  /usr/java/j2sdk1.4.0/
+
+
+2a. If not, find out where your jdk is installed and set JAVA_HOME (you should
+    place this in your .login or .cshrc file)
+
+
+3. Set up a directory which will house your projects.  (This is where you will
+   check out from cvs, and where you will edit the files you are developing.
+   It is also the source for the build program).  Wherever you decide to place
+   this directory, set PROJECT_HOME to it:
+
+  % mkdir $HOME/projects
+  % setenv PROJECT_HOME $HOME/projects  (place this in .login or .cshrc)
+
+
+4. Set up a directory from which you will run GUS and related software.  (This
+   is the target of the build program):
+
+  % mkdir $HOME/gus_home
+  % setenv GUS_HOME $HOME/gus_home  (place this in .login or .cshrc)
+
+
+5. Add $GUS_HOME/bin to your path:
+
+  % setenv PATH $GUS_HOME/bin:$PATH  (place this in .login or .cshrc)
+
+
+6. If you don't already have one, set up a directory to hold your personal
+   executable files, and copy install/build to their.  Add that directory to
+   your path:
+
+  % mkdir $HOME/mybin
+  % mv install/build $HOME/mybin
+  % chmod +x $HOME/mybin/build
+  % setenv PATH $HOME/mybin:$PATH  (place this in .login or .cshrc)
+
+
+7. Set up the GUS config file.
+
+  % cp install/gus.properties.sample $HOME/.gus.properties
+  % setenv GUS_CONFIG_FILE $HOME/.gus.properties (place in .login or .cshrc)
+
+
+8. Edit the config file to reflect your actual values.
+
+
+9. Start a new terminal session, to be sure your environment is set.
+
+
+10. Give the build system a try:
+
+  % build
+usage:
+  build AllGenes|Annotator|CBIL|DJob|DoTS|GUS|ParaDBs|PlasmoDB[/componentname]
+install|installweb|package  targetDir -append [-co [version]]
+
+
+  % build CBIL install   

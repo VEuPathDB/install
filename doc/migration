@@ -1,0 +1,57 @@
+MIGRATION	
+
+Annotator - Dave
+
+AllGenes/ParaDBs/PlasmoDb
+
+CSP
+
+DoTS/DJob
+
+GUS/Blast
+  - repackage from Blast:: to GUS::Blast::
+
+GUS/BLAST2 
+  - repackage from BLAST2:: to GUS::BLAST2::	
+  - is this still in use?  
+
+GUS/BLAT
+ - repackage from BLAT:: to GUS::BLAT::
+
+GUS/Common
+ - bin: use new packages. convert to gus 3.0
+ - lib/Common: use new packages.
+ - lib/GA_plugins: repackage and use Model
+
+GUS/DBAdmin
+ - repackage; use new packages
+
+GUS/GenBank
+ - repackage
+
+GUS/GOsetter
+ - repackage
+
+GUS/Model
+ - repackage
+ - convert to .man
+
+GUS/ObjRelJ
+ - dave
+
+GUS/ObjRelP
+ - going to need some fixes
+
+GUS/Pipeline
+ - repackage
+
+GUS/PluginMgr
+ - some fixes
+
+GUS/SchemaBrowser
+ - needs to be installed to website...
+
+GUS/Util
+ - repackage
+
+

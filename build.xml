@@ -1,0 +1,200 @@
+<project name="MAIN" default="Installation"  basedir=".">
+ 
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- Properties expected:                                                 -->
+  <!--   proj            (project)                                          -->
+  <!--   vers            (version)                                          -->
+  <!--   comp            (component: either "" or "/componentname")         -->
+  <!--   projectsDir                                                        -->
+  <!--   targetDir                                                          -->
+  <!--   append                                                             -->
+  <!--   checkout                                                           -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+
+
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooo  Main Targets ooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+
+  <target name="install" depends="InstallInit">
+    <ant antfile="../${proj}/build.xml" target="${proj}${comp}-Installation">
+      <property name="project" value="${proj}"/>
+    </ant>
+  </target>  
+
+
+  <target name="webinstall" depends="InstallInit">
+    <ant antfile="../${proj}/build.xml" target="${proj}${comp}-WebInstallation">
+      <property name="project" value="${proj}"/>
+    </ant>
+  </target>  
+
+  <target name="package" depends="InstallInit">
+    <ant antfile="../${proj}/build.xml" target="${proj}${comp}-Distributable">
+      <property name="project" value="${proj}"/>
+    </ant>
+  </target>  
+
+
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooo  Initialization ooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+  <target name="InstallInit" depends="validateTargetDir, checkoutProj"/>
+
+  <target name="validateTargetDir">
+    <fail unless="targetDir">
+       Must provide -DtargetDir= property to specify where to build to
+    </fail>
+
+    <condition property="targetDirExists">
+       <and>
+         <available file="${targetDir}" />
+         <isfalse value="${append}" />
+       </and>
+    </condition>  
+
+    <fail if="targetDirExists">
+      Error: Target directory ${targetDir} already exists and you have not set the 'append' property to true
+    </fail>
+  </target>  
+
+  <target name="checkoutProj" if="checkout">
+    <antcall target="cvsCheckOut">
+      <param name="package" value="${proj}"/>
+    </antcall>
+    
+  </target>  
+
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+  <target name="defaultProjectInstall">
+    <concat destfile="${targetDir}/versions" append="yes">
+      <fileset dir="${projectsDir}/${project}" >
+         <include name="version"/>
+      </fileset>
+    </concat>
+  </target>
+
+  <target name="defaultComponentInstall">
+    <property name="componentDir" value="${projectsDir}/${component}"/>
+
+    <echo message="."/>
+    <echo message="Installing ${component}"/>
+
+    <available property="componentAvail" file="${projectsDir}/${component}"/>
+    <fail unless="componentAvail">
+       Component directory ${projectsDir}/${component} not found.
+    </fail>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="bin"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <chmod perm="+x">
+      <fileset dir="${targetDir}/bin"/>
+    </chmod>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="config"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="doc"/>
+      <param name="prefix" value="${component}/"/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="test"/>
+      <param name="prefix" value="${component}/"/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="data"/>
+      <param name="prefix" value="${component}/"/>
+    </antcall>
+  </target>  
+
+
+  <target name="defaultWebComponentInstall">
+    <property name="componentDir" value="${projectsDir}/${component}"/>
+
+    <echo message="."/>
+    <echo message="Installing ${component}"/>
+
+    <available property="componentAvail" file="${projectsDir}/${component}"/>
+    <fail unless="componentAvail">
+       Component directory ${projectsDir}/${component} not found.
+    </fail>
+
+   <antcall target="componentPartCopy">
+      <param name="part" value="htdocs"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="cgi-bin"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="servlets"/>
+      <param name="prefix" value=""/>
+    </antcall>
+  </target>  
+
+  <target name="componentPartCopy">
+    <available property="partAvailable" file="${componentDir}/${part}"/>
+    <antcall target="componentPartCopySub"/>
+  </target>  
+
+  <target name="componentPartCopySub" if="partAvailable">
+    <mkdir dir="${targetDir}/${part}/${prefix}"/>
+    <copy todir="${targetDir}/${part}/${prefix}">
+      <fileset dir="${componentDir}/${part}" >
+        <include name="**"/>
+        <exclude name="**/CVS/*" />
+      </fileset>
+    </copy>
+  </target>  
+
+
+  <target name="projectCheckOut">
+    <antcall target="cvsCheckOut">
+      <param name="package" value="${project}"/>
+    </antcall>
+    <echo message="${project} ${version}" destfile="${projectsDir}/${project}/version"/>
+  </target>
+
+  <target name="cvsCheckOut">
+    <condition property="haveVersion">
+       <equals arg1="latest" arg2="${version}"/>
+    </condition>
+    <antcall target="cvsHaveVersion"/>
+    <antcall target="cvsDontHaveVersion"/>
+  </target>
+
+  <target name="cvsHaveVersion">
+    <cvs package="${package}" dest="${projectsDir}" tag="${version}" />
+  </target>
+
+  <target name="cvsDontHaveVersion">
+    <cvs package="${package}" dest="${projectsDir}" />
+  </target>
+
+</project>
+
+
