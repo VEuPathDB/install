@@ -274,23 +274,21 @@
        Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
 
-   <antcall target="componentPartCopy">
+    <antcall target="webComponentPartCopy">
       <param name="part" value="htdocs"/>
-      <param name="to" value="htdocs"/>
-      <param name="prefix" value=""/>
+      <param name="to" value="${htdocsTargetDir}"/>
     </antcall>
 
-    <antcall target="componentPartCopy">
+    <antcall target="webComponentPartCopy">
       <param name="part" value="cgi-bin"/>
-      <param name="to" value="cgi-bin"/>
-      <param name="prefix" value=""/>
+      <param name="to" value="${cgibinTargetDir}"/>
     </antcall>
 
-    <antcall target="componentPartCopy">
+    <antcall target="webComponentPartCopy">
       <param name="part" value="servlets"/>
-      <param name="to" value="servlets"/>
-      <param name="prefix" value=""/>
+      <param name="to" value="${servletsTargetDir}"/>
     </antcall>
+
   </target>  
 
 
@@ -304,6 +302,22 @@
   <target name="componentPartCopySub" if="partAvailable">
     <mkdir dir="${targetDir}/${to}/${prefix}"/>
     <copy todir="${targetDir}/${to}/${prefix}">
+      <fileset dir="${componentDir}/${part}" >
+        <include name="**"/>
+        <exclude name="**/CVS/*" />
+        <exclude name="${exclude}/" />
+      </fileset>
+    </copy>
+  </target>  
+
+  <target name="webComponentPartCopy">
+    <available property="partAvailable" file="${componentDir}/${part}"/>
+    <antcall target="webComponentPartCopySub"/>
+  </target>  
+
+  <target name="webComponentPartCopySub" if="partAvailable">
+    <mkdir dir="${to}"/>
+    <copy todir="${to}">
       <fileset dir="${componentDir}/${part}" >
         <include name="**"/>
         <exclude name="**/CVS/*" />
