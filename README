@@ -46,11 +46,11 @@ INSTALLATION
 
 
 6. If you don't already have one, set up a directory to hold your personal
-   executable files, and copy install/build to their.  Add that directory to
+   executable files, and copy install/build to there.  Add that directory to
    your path:
 
   % mkdir $HOME/mybin
-  % mv install/build $HOME/mybin
+  % cp install/build $HOME/mybin
   % chmod +x $HOME/mybin/build
   % setenv PATH $HOME/mybin:$PATH  (place this in .login or .cshrc)
 

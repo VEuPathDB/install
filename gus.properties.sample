@@ -1,7 +1,7 @@
 database=GUSdev
 login=GUSrw
-password=pskwa82
+password=myvs3131
 readOnlyDatabase=GUSdev
-readOnlyLogin=GUSrw
-readOnlyPassword=pskwa82
+readOnlyLogin=GUSdevreadonly
+readOnlyPassword=s7fp4erv
 
