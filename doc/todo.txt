@@ -4,4 +4,6 @@
     - removes CVS/ dirs
     - does .tar.gz
   
+- handle -co across cvs repositories
 
+- write User Guide

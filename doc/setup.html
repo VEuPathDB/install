@@ -66,8 +66,45 @@ GUS CVS repository:<br>
  
 <blockquote><tt>% cd $PROJECT_HOME<br>
  % cvs -d :ext:cvs.sanger.ac.uk:/cvsroot/GUS co install GUS</tt><br>
-  <br>
- </blockquote>
+</blockquote>
+<br>
+8. Set up an ssh-agent to cvs.sanger.ac.uk so that you don't need to type
+a password when you use cvs to there. <br>
+<blockquote>
+  <ol>
+    <li>set up your .ssh/authorized_keys file</li>
+    <ol>
+      <li>mkdir .ssh (unless already there)</li>
+      <li>cd .ssh<br>
+      </li>
+      <li>if you have an authorized_keys file and an identity.pub file, see
+if authorized_keys contains the text from indentity.pub</li>
+      <li>if not</li>
+      <ol>
+        <li>ssh-keygen -t rsa1 &nbsp; &nbsp;(use your standard passphrase)
+&nbsp;(this produces the identity.pub file)</li>
+        <li>cat identity.pub &gt;&gt; authorized_keys &nbsp; (appends)</li>
+      </ol>
+    </ol>
+    <li>get that file into your sanger home</li>
+    <ol>
+      <li>cat authorized_keys</li>
+      <li>select and copy the contents of that file<br>
+      </li>
+      <li>ssh cvs.sanger.ac.uk</li>
+      <li>mkdir .ssh</li>
+      <li>emacs .ssh/authorized_keys</li>
+      <li>paste what you had copied&nbsp;</li>
+      <li>save the file</li>
+    </ol>
+    <li>now you are ready to start up your agent:</li>
+    <ol>
+      <li>`ssh-agent`</li>
+      <li>ssh-add<br>
+      </li>
+    </ol>
+  </ol>
+</blockquote>
 8. Get other CBIL projects. &nbsp;At a minimum you <i>need</i> the <tt>CBIL</tt>
 project because GUS depends upon it.. &nbsp;You may also get other CBIL projects
 as needed. &nbsp;<br>
