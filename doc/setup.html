@@ -1,24 +1,94 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<head>
+ <head>
+  <link rel="StyleSheet" href="style.css" type="text/css" media="screen">
   <title>GUS Build System - set up</title>
-  <meta http-equiv="content-type"
- content="text/html; charset=ISO-8859-1">
-</head>
-<body>
-<h1 align="center">The GUS Build System</h1>
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+ </head>
+
+ <body>
+
+  <table width="100%" cellpadding="4">
+   <tbody>
+    <tr>
+     <td class="one">
+      <font><br>
+       <b>The GUS Build System - set up</b><br>
+      </font>
+     </td>
+    </tr>
+
+    <tr>
+     <td class="two">
+      <font>
+       <b>Introduction</b>
+      </font>
+     </td>
+    </tr>
+
+    <tr>
+     <td class="four">
+      <table cellpadding="2" cellspacing="0" border="0" align="left" width="90%">
+       <tbody>
+        <tr><td>
+
+ 	 <p>
+          The GUS build system is an <A HREF="http://ant.apache.org">Ant</A>-based configuration and
+	  installation system that is used to install the GUS software
+	  and database schema.  The build system is capable of
+	  tracking dependencies between related projects (for example,
+	  the <tt>PlasmoDB</tt> and <tt>AllGenes</tt> projects are
+	  separate from but depend on the main <tt>GUS</tt> project)
+	  and will install projects as necessary to satisfy these dependencies.  For example, if
+	  the build system is asked to install the <tt>PlasmoDB</tt>
+	  project, it will automatically install the <tt>GUS</tt>
+	  project first (assuming that the source code for both
+	  projects has been downloaded into the user's working
+	  directory--in future the build system may be able to
+	  automate this step too.)  The remainder of this document
+	  covers the steps needed to install the GUS build system and
+	  then use it to install the main <tt>GUS</tt> project.
+	 </p>
+	 <br>
+        </td></tr>
+       </tbody>
+      </table>
+     </td>
+    </tr>
+
+    <tr>
+     <td class="two">
+      <font>
+       <b>Setting up the GUS build system</b>
+      </font>
+     </td>
+    </tr>
+
+    <tr>
+     <td class="four">
 <br>
-<h2>INSTALLATION</h2>
-1. Check that Java is installed and your <tt>$JAVA_HOME</tt> variable is set:<br>
-<blockquote><tt>% echo $JAVA_HOME</tt><br>
+<table cellpadding="2" cellspacing="0" border="0" align="left" width="90%">
+ <tbody>
+  <tr>
+   <td class="list-one">1.</td>
+   <td>Check that Java is installed and your <tt>JAVA_HOME</tt> environment variable is set:<br>
+<blockquote>
+  <tt>% echo $JAVA_HOME</tt><br>
   <tt>/usr/java/j2sdk1.4.0/</tt><br>
 </blockquote>
+<P>If not, <A HREF="http://java.sun.com">install the JDK</A> and/or set <tt>JAVA_HOME</tt> 
+accordingly.  The build system has been tested on Java Standard Edition (JSE) <tt><b>1.4.0</b></tt>
+for Linux, but should work with any version of Java supported by Ant.
+</p>
 <br>
-&nbsp; &nbsp; If not, install the JDK and/or set <tt>$JAVA_HOME</tt> accordingly.<br>
-<br>
-<br>
-2. Check that Ant is installed:<br>
-<blockquote><tt>% ant -help</tt><tt><br>
+   </td>
+  </tr>
+
+  <tr>
+   <td class="list-one">2.</td>
+   <td>Check that Ant is installed:<br>
+<blockquote>
+  <tt>% ant -help</tt><tt><br>
 &nbsp; ant [options] [target [target2 [target3] ...]]</tt><br>
   <tt>&nbsp; &nbsp;Options:</tt><br>
   <tt>&nbsp;&nbsp; &nbsp; -help&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -26,88 +96,172 @@ print this message</tt><br>
   <tt>&nbsp;&nbsp;&nbsp; &nbsp;-projecthelp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 print project help information</tt><br>
 </blockquote>
+<P>If not, <a href="http://ant.apache.org/bindownload.cgi">download
+Ant</a> and install it according to the directions on the Ant web site.  Note that the 
+build system has been tested on Ant version <tt><b>1.5.1</b></tt>.  It is not guaranteed
+to work with earlier releases of Ant, because they may not support all the features required
+by the build system.
+</P>
 <br>
-&nbsp; &nbsp;If not, <a href="http://ant.apache.org/bindownload.cgi">download
-Ant</a> and unpack it.<br>
-<br>
-<br>
-3. Set up a directory that will house your projects.&nbsp; (This is where
-you will check out from cvs, and where you will edit the files you are developing.)&nbsp;
-This directory will be your <b><tt>PROJECT_HOME</tt></b> (see below).<br>
-<blockquote><tt>% mkdir $HOME/projects<br>
-  </tt><br>
-</blockquote>
-4. Set up a directory from which you will run GUS and related software.&nbsp;
-This is the target of the build program, and will be your <b><tt>GUS_HOME</tt></b>:<br>
- 
-<blockquote><tt>% mkdir $HOME/gus_home</tt><br>
+   </td>
+  </tr>
+
+  <tr>
+   <td class="list-one">3.</td>
+   <td>Create a directory that will house your projects:<br>
+ <blockquote>
+   <tt>% mkdir $HOME/projects<br></tt>
  </blockquote>
+<p>
+You may use a different name and/or location for this directory if you
+prefer; just make sure that you adjust the instructions in step 5
+accordingly.  This directory is where you will place the source code
+for the projects managed by the build system (including the build system
+itself, which is called the "install" project).  The source code can
+either be checked out into this directory using <tt><b>cvs</b></tt>
+(as in step 7) or downloaded from the GUS project web site as a tar
+file (as in step 8.)  Any files that you are developing will also be
+placed in this directory alongside those you have downloaded.  This
+directory will be referred to as your
+<b><tt>PROJECT_HOME</tt></b>, and an environment variable of the same
+name will be used to record its location (step 5).
+</p>
 <br>
-5. Set up your environment by placing the following in your .login or .cshrc
-(using the proper syntax for your shell):<br>
+
+   </td>
+  </tr>
+
+  <tr>
+   <td class="list-one">4.</td>
+   <td>Create a directory from which you will run GUS and related software.
+This will be your <b><tt>GUS_HOME</tt></b>:<br>
+ 
+<blockquote>
+  <tt>% mkdir $HOME/gus_home</tt><br>
+</blockquote>
+<p>
+As with the <b><tt>PROJECT_HOME</tt></b>, this directory can be located wherever
+you want, but the <b><tt>GUS_HOME</tt></b> environment variable must be set to
+that location (step 5.)
+</p>
+<br>
+   </td>
+  </tr>
+
+  <tr>
+   <td class="list-one">5.</td>
+   <td>Set up your environment by placing the following in your .login or .cshrc, using
+the syntax appropriate for your shell (in this example we use <tt><b>tcsh</b></tt>-style syntax):<br>
 <blockquote><tt># GUS build system<br>
-  </tt><tt>setenv ANT_HOME /usr/local/pkg/ant/jakarta-ant-1.5 &nbsp; (ie,
+  </tt><tt>setenv ANT_HOME /usr/local/pkg/ant/jakarta-ant-1.5 &nbsp; (i.e.,
 where YOUR Ant is installed)<br>
  setenv JAVA_HOME /usr/java/j2sdk1.4.0/ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-&nbsp; &nbsp; (ie, where YOUR Java is installed)</tt><br>
-  <tt> setenv PROJECT_HOME $HOME/projects<br>
- setenv GUS_HOME $HOME/gushome<br>
+&nbsp; &nbsp; (i.e., where YOUR Java is installed)</tt><br>
+  <tt> setenv PROJECT_HOME $HOME/projects &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; (i.e., the location of YOUR <tt><b>PROJECT_HOME</b></tt>)<br>
+ setenv GUS_HOME $HOME/gushome &nbsp; &nbsp; &nbsp; &nbsp; 
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; (i.e., the location of YOUR <tt><b>GUS_HOME</b></tt>)<br>
  setenv GUS_CONFIG_FILE $HOME/.gus.properties<br>
  </tt><tt>setenv PATH $GUS_HOME/bin:$PROJECT_HOME/install/bin:$ANT_HOME/bin</tt><tt>:${PATH}</tt><br>
 <tt>setenv PERL5LIB $GUS_HOME/lib/perl</tt>
 </blockquote>
 <br>
-6. Make your new environment take effect by starting a new terminal session
-(or by using <tt>source</tt> and <tt>rehash).</tt><br>
+   </td>
+  </tr>
+
+  <tr>
+   <td class="list-one">6.</td>
+   <td>Make your new environment take effect by starting a new terminal session
+(or by using <tt>source ~/.cshrc</tt> or <tt>source ~/.login</tt>, followed by a <tt>rehash).</tt><br>
 <br>
 <br>
-7. Check out the <tt>GUS</tt> and <tt>install</tt> projects from the public
+   </td>
+  </tr>
+
+  <tr>
+   <td class="list-one">7.</td>
+   <td>Check out the <tt>GUS</tt> and <tt>install</tt> projects from the public
 GUS CVS repository.<br>
  
-<blockquote>if you are a GUS developer:<tt><br>
+<blockquote>If you are a GUS developer:<tt><br>
   </tt>
   <blockquote><tt>% cd $PROJECT_HOME</tt><tt><br>
 % cvs -d :ext:cvs.sanger.ac.uk:/cvsroot/GUS co install GUS</tt><br>
   </blockquote>
-otherwise, go to the publicly available cvs website http://cvsweb.sanger.ac.uk/<br>
+Otherwise, go to the publicly available cvs website at <A TARGET="_blank" HREF="http://cvsweb.sanger.ac.uk/">http://cvsweb.sanger.ac.uk/</A> and follow these instructions:<br>
 </blockquote>
-<blockquote>
   <ol>
     <ol>
-      <li><br>
-      </li>
+      <li>You should see a list of projects hosted by the CVS server.  
+      Click on the link for GUS under the heading "WebCVS Page"</li>
+      <li>You should be directed to a page with links for "GUS" and "install"</li>
+      <li>Follow the link named "GUS"</li>
+      <li>You should see a new page that lists all the directories in the GUS project (Common, DBAdmin, GOPredict, etc.)</li>
+      <li>At the bottom of this page you should see a link that says "Download this directory in tarball".
+      Click on the word "tarball" to download the GUS project as a gzipped tar file.  Unpack this tar file
+      into your <tt><b>$PROJECT_HOME</b></tt></li>
+      <li>Use your browser's "Back" button to return to the page with the "GUS" and "install" projects</li>
+      <li>Follow the link named "install"</li>
+      <li>This page should also have an option to "Download this directory in tarball".  Download and unpack 
+      this tarball in your <tt><b>$PROJECT_HOME</b></tt> also</li>
     </ol>
   </ol>
-</blockquote>
-8. Get other CBIL projects. &nbsp;At a minimum you <i>need</i> the <tt>CBIL</tt>
-project because GUS depends upon it.. &nbsp;You may also get other CBIL projects
-as needed. &nbsp;<br>
-<blockquote>If you are not at CBIL, get them from the CBIL download site:<br>
+<p>
+Please note: future releases of the system will simplify this process for non-developers, with tar files made 
+available in a single "download" location on the <A HREF="http://gusdb.org">gusdb.org</A> site.
+</p>
+<br>
+   </td>
+  </tr>
+
+
+  <tr>
+   <td class="list-one">8.</td>
+   <td>Get other CBIL projects. &nbsp;At a minimum you <i>need</i> the CBIL
+project (in addition to the GUS and install projects, which you should have downloaded
+in step 7.). &nbsp;You may also get other CBIL projects as needed, but at this stage
+you only need the main "CBIL" project. &nbsp;<br>
+<blockquote>If you are not at CBIL, get the CBIL project from the CBIL download site:<br>
   <blockquote>
     <ul>
       <li><a href="http://www.cbil.upenn.edu/downloads/CBIL/releases">the
 CBIL project</a> (get the latest release)</li>
-      <li><a href="http://www.cbil.upenn.edu/downloads">other projects</a></li>
     </ul>
-then install them:<br>
+then install it:<br>
     <blockquote><tt>% cd $PROJECT_HOME<br>
  % tar -xf CBIL-x.x.x.tar &nbsp;</tt><br>
  </blockquote>
   </blockquote>
-If you are at CBIL, get them from the internal CBIL CVS:<br>
+If you <B>are</B> at CBIL, get it from the internal CBIL CVS:<br>
   <blockquote><tt>% cd $PROJECT_HOME<br>
-% cvs -d /ptolemy/cbil/cvs/cvsroot co CBIL ...</tt><br>
+% cvs -d /ptolemy/cbil/cvs/cvsroot co CBIL</tt><br>
   </blockquote>
 </blockquote>
 <br>
-9. Set up the GUS config file.<br>
+   </td>
+  </tr>
+
+
+  <tr>
+   <td class="list-one">9.</td>
+   <td>Set up the GUS config file:<br>
 <blockquote><tt>% cp </tt><tt>$PROJECT_HOME</tt><tt>/install/gus.properties.sample
 $GUS_CONFIG_FILE</tt><br>
 </blockquote>
-&nbsp; &nbsp; Edit the config file to reflect your personal information.<br>
+Edit the config file to reflect your personal information; this file will be read by
+the various GUS applications and plugins to determine such things as: which Oracle
+server to connect to; which Oracle logins to use for read-only and/or read-write access
+to the GUS database; your GUS username, default group, and default project.  You may
+have multiple GUS config files, but will need to change your <tt><b>GUS_CONFIG_FILE</b></tt>
+environment variable whenever you wish to switch between them.<br>
 <br>
 <br>
-10. Give the build system a try:<br>
+   </td>
+  </tr>
+
+  <tr>
+   <td class="list-one">10.</td>
+   <td>Tell the build system to install both itself (the "install" project) and also the main "GUS" project:
 <blockquote><tt>% build<br>
 usage:<br>
 &nbsp; build AllGenes|Annotator|CBIL|DJob|DoTS|GUS|ParaDBs|PlasmoDB[/componentname]<br>
@@ -115,6 +269,74 @@ install|installweb|package&nbsp; targetDir -append [-co [version]]<br>
   <br>
 % build GUS install -append<br>
   </tt></blockquote>
+<p>
+Note: the "-append" option tells the build system to continue with the installation process 
+even if the <tt><b>$GUS_HOME</b></tt> directory already exists; this is to prevent the
+build system from accidentally overwriting an earlier installation.
+</p>
 <br>
+   </td>
+  </tr>
+
+ </tbody>
+</table>
+
+     </td>
+    </tr>
+
+    <tr>
+     <td class="two">
+      <font>
+       <b>Troubleshooting</b>
+      </font>
+     </td>
+    </tr>
+    <tr>
+     <td class="four">
+
+     </td>
+    </tr>
+    <tr>
+     <td class="four">
+     <ul>
+      <li>
+     <b>I ran the command given in step 10, but it halts almost immediately with an error like this:<br>
+     "Error: You must configure the file /home/crabtree/gus_home/config/install.prop."</b><br>
+     <blockquote>
+     This will happen whenever the build system needs configuration information from you in 
+     order to proceed.  Typically the error message will tell you what action to take; in most
+     cases you must go into a directory under your <tt><b>$GUS_HOME</b></tt> and copy a sample
+     properties file (e.g. install.prop.sample) into a new file (e.g. install.prop).  That new
+     file should then be customized for your installation.  Once that's done you can simply 
+     re-run the build command and the system should restart where it left off.  If it happens
+     again, just follow the instructions once more.
+     </blockquote>
+      </li>
+     </ul>
+
+     <br>          
+     </td>
+    </tr>
+
+
+    <tr>
+     <td class="one">
+       <br><br>
+     </td>
+    </tr>
+    <tr>
+
+     <td class="five">
+     <table border=0 cellpadding=0 cellspacing=0 width="100%">
+      <tbody>     
+      <tr><td class="five" align="left">$Revision$ $Date$ $Author$</td><td class="five" align="right">Contact: webmaster@gusdb.org</td></tr>
+      </tbody>
+     </table>
+     </td>
+    </tr>
+
+ </tbody>
+</table>
+
 </body>
 </html>

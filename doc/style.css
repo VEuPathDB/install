@@ -1,0 +1,152 @@
+
+
+BODY   {
+	background: white; margin-left: 0; margin-top: 0; margin-right: 0;
+}
+
+.one   {
+	background: #661177;
+	color: white;
+	font-family: serif;
+	font-size: x-large;
+	}
+.two   {
+	background: #991155;
+	color: white;
+	font-family: serif;
+	font-size: large;
+	}
+.three {
+	background: white;
+	margin-left: 2.5%;
+	color: #003366;
+	font-family: serif;
+	font-size: medium;
+	font-weight: bold;
+	}
+.four  {
+	background: white;
+	margin-left: 5%;
+	}
+.five  {
+ 	background: #000000;	
+	color: white;
+	margin-left: 5%;
+	font-family: sans-serif;
+	font-size: x-small;
+	font-weight: bold;
+	horizontal-alignment: center;
+	}
+
+.list-one {
+	horizontal-align: left;
+	vertical-align: top;
+	}
+
+.formSummary {
+	font-weight: bold;
+	}
+
+.formAbstract {
+	font-family: sans-serif;
+	font-style:  italic;
+	}
+
+.formPrompt {
+	font-weight: bold;
+	text-align:  right;
+	}
+
+.submitHint {
+	
+}
+
+.formGuide  {
+	text-align: left;
+	font-weight: bold;
+	color: #003366;
+}
+
+TABLE.results {
+	padding: 4px;
+	margin:  4px;
+	vertical-align: top;
+	}
+
+table.results tr.odd th.even {
+	background: #AAAAAA;
+}
+table.results tr.even th.even {
+	background: #AAAAAA;
+	font-size:  larger;
+}
+
+TABLE.results TR.odd  TH.odd {
+	background: #CCCCCC;
+}
+table.results tr.even th.odd {
+	background: #CCCCCC;
+	font-size:  larger;
+}
+
+table.results tr.odd  td.even {
+	background: white;
+}
+table.results tr.even td.even {
+	background: #DDDDDD;
+}
+
+table.results tr.odd  td.odd {
+	background: white;
+}
+
+table.results tr.even td.odd {
+	background: #EEEEEE;
+}
+
+.header {
+	background: #CCCCCC;
+}
+
+.navigation {
+	background: white;
+	color:      #336699;
+	width:      100%;
+}
+
+.outlink hover {
+	background: #AADDFF;
+}
+
+.golist {
+}
+
+.goleaf {
+	color: #336699;
+}
+
+.gopick {
+	color: #996633;
+}
+
+.fixed {
+	font-family: monospace;
+}
+
+.proportional {
+	font-family: serif;
+}
+
+td.debug {
+	font-family: monospace;
+}
+
+.hint {
+	font-family: sans-serif;
+	font-weight: lighter;
+}
+
+.error {
+	color:      CC3300;
+	font-size:   large;
+}
