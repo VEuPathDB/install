@@ -24,6 +24,11 @@
     <ant antfile="../${proj}/build.xml" target="${proj}${comp}-Installation">
       <property name="project" value="${proj}"/>
     </ant>
+
+    <replace dir="${targetDir}/bin" propertyFile="${rFile}" > 
+      <include name="**/*" />
+      <replacefilter token="@perl@" property="@perl@"/>
+    </replace> 
   </target>  
 
 
@@ -44,7 +49,8 @@
   <!-- oooooooooooooooooooooooooo  Initialization ooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-  <target name="InstallInit" depends="validateTargetDir, checkoutProj"/>
+  <target name="InstallInit" depends="validateTargetDir, checkoutProj,
+                                      checkGlobalReplFile"/>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
@@ -63,12 +69,26 @@
     </fail>
   </target>  
 
+
+  <target name="checkGlobalReplFile">
+    <property name="rFile" value="${targetDir}/config/replacements.Global.prop"/>
+    <copy file="${projectsDir}/install/config/replacements.Global.prop.sample"
+          toDir="${targetDir}/config"/>
+
+    <available file="${rFile}" property="replacementFileExists"/>
+
+    <fail unless="replacementFileExists">
+      Error: You must configure a global replacements file.  The file will be ${rFile}.  To create it, copy ${rFile}.sample to ${rFile} and edit ${rFile}, giving it the proper values for your installation. 
+    </fail>
+  </target>  
+
+
   <target name="checkoutProj" if="checkout">
     <antcall target="cvsCheckOut">
       <param name="package" value="${proj}"/>
     </antcall>
-    
   </target>  
+
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
