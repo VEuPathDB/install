@@ -1,0 +1,3 @@
+-add installing Ant details to readme
+
+-include checking out of some projects to readme
