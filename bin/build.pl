@@ -24,11 +24,15 @@ if (!$projectHome) {
   $projectHome = realpath("..");
 } 
 
-my ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $tag, $webPropFile) = &parseArgs(@ARGV);
+my ($project, $component, $doWhat, $targetDir, $append, $compileJava, $clean, $doCheckout, $tag, $webPropFile) = &parseArgs(@ARGV);
+if ($clean && !$compileJava){
+    print "Error:  --compileJava must be set if --clean is set";
+    exit 1;
+}
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $compileJava $clean $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
 
 print "\n$cmd\n\n";
 system($cmd);
@@ -71,11 +75,15 @@ sub parseArgs {
 	shift @ARGV;
         $append = "-Dappend=true";
     } 
+    if ($ARGV[0] eq "-compileJava"){
+	shift @ARGV;
+	$compileJava = "-DcompileJava=true";
+    }
     if ($ARGV[0] eq "-clean") {
         shift @ARGV;
         $clean = "-Dclean=true";
     }
-        
+   
     if ($ARGV[0] eq "-webPropFile") {
         shift @ARGV;
 	my $wpFile = shift @ARGV;
@@ -87,8 +95,7 @@ sub parseArgs {
 	$version = $ARGV[1];
     }
 
-
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $version, $webPropFile);
+    return ($project, $component, $doWhat, $targetDir, $append, $compileJava, $clean, $doCheckout, $version, $webPropFile);
 }
 
 sub usage {
