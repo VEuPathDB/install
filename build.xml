@@ -245,6 +245,12 @@
            </fileset>
         </classpath>
      </javac>
+     <copy todir="${projectsDir}/${project}/${component}/classes/META-INF">
+       <fileset dir="${componentDir}" >
+         <include name="META-INF/**"/>
+         <exclude name="**/CVS/*" />
+       </fileset>
+     </copy>
      <jar basedir="${projectsDir}/${project}/${component}/classes" 
           destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
   </target>   
@@ -295,6 +301,11 @@
     <antcall target="webComponentPartCopy">
       <param name="part" value="cgi-bin"/>
       <param name="to" value="${cgibinTargetDir}"/>
+    </antcall>
+
+    <antcall target="webComponentPartCopy">
+      <param name="part" value="webapp"/>
+      <param name="to" value="${webappTargetDir}"/>
     </antcall>
 
     <antcall target="webComponentPartCopy">
