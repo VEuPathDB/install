@@ -223,6 +223,7 @@
      <mkdir dir="${targetDir}/lib/java"/>
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
             destdir="${projectsDir}/${project}/${component}/classes"
+	    debug="on"
 	    fork="true"
 	    memoryMaximumSize="128m">
         <classpath>
