@@ -10,7 +10,7 @@
 use strict;
 use Cwd 'realpath'; 
 
-my @projects = ("AllGenes", "AnnotatorsInterface", "Annotator", "CBIL", "DJob", "DoTS", "GUS", "ParaDBs", "PlasmoDB","RAD");
+my @projects = ("AllGenes", "AnnotatorsInterface", "Annotator", "CBIL", "DJob", "DoTS", "GUS", "ParaDBs", "PlasmoDB","RAD","ApiDots");
 
 my @whats = ("install", "webinstall");
 
