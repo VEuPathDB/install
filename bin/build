@@ -4,7 +4,7 @@
 # location.
 
 if [ "$PROJECT_HOME" = "" ]; then
-  perl build.pl $*
+  perl bin/build.pl $*
 else
-  perl $PROJECT_HOME/install/build.pl $*
+  perl $PROJECT_HOME/install/bin/build.pl $*
 fi
