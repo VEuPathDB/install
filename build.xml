@@ -132,10 +132,15 @@
     </antcall>
 
     <antcall target="componentPartCopy">
-      <param name="part" value="lib"/>
-      <param name="to" value="lib"/>
+      <param name="part" value="lib/R"/>
+      <param name="to" value="lib/R"/>
+      <param name="prefix" value="${component}/"/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/java"/>
+      <param name="to" value="lib/java"/>
       <param name="prefix" value=""/>
-      <param name="exclude" value="perl"/>
     </antcall>
 
     <antcall target="componentPartCopy">
