@@ -1,0 +1,1 @@
+perl $PROJECT_HOME/install/bin/updateAllProjects.pl $*
