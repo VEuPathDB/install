@@ -9,7 +9,6 @@
   <!--   projectsDir                                                        -->
   <!--   targetDir                                                          -->
   <!--   append                                                             -->
-  <!--   compileJava     (compile java classes in this component)           -->
   <!--   clean           (recompile java already compiled                   -->
   <!--   checkout                                                           -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -225,8 +224,8 @@
 
   <!--we can only have one 'if' property...workaround by having 'if' and 'unless' -->
 
-  <target name="defaultJavaCompile" if="hasJava" unless="skipJava" 
-                                    depends="deleteMyClasses, checkIfHaveJava, userIsJavaCompiling">
+  <target name="defaultJavaCompile" if="hasJava"  
+                                    depends="deleteMyClasses, checkIfHaveJava">
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
@@ -248,14 +247,6 @@
   <target name="checkIfHaveJava">
       <available property="hasJava" 
                  file="${projectsDir}/${project}/${component}/src/java"/>
-  </target>
-
-  <target name="userIsJavaCompiling">
-      <condition property="skipJava">
-         <not>
-           <isset property="compileJava"/>
-         </not>
-      </condition>
   </target>
 
   <target name="checkIfCleanAndHaveJava" depends="checkIfHaveJava">
