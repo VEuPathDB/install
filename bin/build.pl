@@ -51,7 +51,7 @@ sub parseArgs {
     if ($doWhat eq "release") {
       &usage unless (scalar(@ARGV) == 1);
       my $tag = "-Dtag=$ARGV[0]";
-      return ($project, '', $doWhat, '', '', '', '', $tag);
+      return ($project, '', $doWhat, '', '', '', '', '', $tag);
     }
 
     my $targetDir;
