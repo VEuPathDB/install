@@ -45,15 +45,10 @@ INSTALLATION
   % setenv PATH $GUS_HOME/bin:$PATH  (place this in .login or .cshrc)
 
 
-6. If you don't already have one, set up a directory to hold your personal
-   executable files, and copy install/build to there.  Add that directory to
-   your path:
+6. add the install system's bin to your path:
 
-  % mkdir $HOME/mybin
-  % cp install/build $HOME/mybin
-  % chmod +x $HOME/mybin/build
-  % setenv PATH $HOME/mybin:$PATH  (place this in .login or .cshrc)
-
+  % setenv PATH $PROJECT_HOME/install/bin:$PATH (put this in .login or .cshrc)
+  
 
 7. Set up the GUS config file.
 
