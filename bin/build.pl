@@ -24,11 +24,11 @@ if (!$projectHome) {
   $projectHome = realpath("..");
 } 
 
-my ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $tag) = &parseArgs(@ARGV);
+my ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $tag, $webPropFile) = &parseArgs(@ARGV);
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $append $tag -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
 
 print "\n$cmd\n\n";
 system($cmd);
@@ -66,7 +66,7 @@ sub parseArgs {
     &usage() unless $targetDir;
 
 
-    my ($append, $clean, $doCheckout, $version);
+    my ($append, $clean, $doCheckout, $version, $webPropFile);
     if ($ARGV[0] eq "-append") {
 	shift @ARGV;
         $append = "-Dappend=true";
@@ -76,12 +76,19 @@ sub parseArgs {
         $clean = "-Dclean=true";
     }
         
+    if ($ARGV[0] eq "-webPropFile") {
+        shift @ARGV;
+	my $wpFile = shift @ARGV;
+	$webPropFile = "-propertyfile $wpFile -DwebPropFile=$wpFile";
+    }
+
     if ($doCheckout = $ARGV[0]) {
 	&usage() if ($doCheckout ne "-co");
 	$version = $ARGV[1];
     }
 
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $version);
+
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $doCheckout, $version, $webPropFile);
 }
 
 sub usage {
@@ -91,7 +98,7 @@ sub usage {
     print 
 "
 usage: 
-  build $projects\[/componentname]  $whats  targetDir -append [-co [version]]
+  build $projects\[/componentname]  $whats  targetDir -append [-webPropFile propfile] [-co [version]] 
   build $projects release version
 
 ";
