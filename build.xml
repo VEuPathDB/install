@@ -221,6 +221,18 @@
     </copy>
   </target>  
 
+  <target name="configFile">
+    <property name="cFile" value="${cFileSrcDir}/${cFileName}"/>
+    <property name="cFileTarget" value="${targetDir}/config/${cFileName}"/>
+
+    <copy file="${cFile}.sample" toDir="${targetDir}/config"/>
+
+    <available file="${cFileTarget}" property="cFileTargetExists"/>
+
+    <fail unless="cFileTargetExists">
+      Error: You must configure the file ${cFileTarget}.  To create it, copy ${cFileTarget}.sample to ${cFileTarget} and edit ${cFileTarget}, giving it the proper values for your installation. 
+    </fail>
+  </target>  
 
   <target name="projectCheckOut">
     <antcall target="cvsCheckOut">
