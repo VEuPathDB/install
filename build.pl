@@ -12,7 +12,7 @@ use Cwd 'realpath';
 
 my @projects = ("AllGenes", "Annotator", "CBIL", "DJob", "DoTS", "GUS", "ParaDBs", "PlasmoDB","RAD");
 
-my @whats = ("install", "installweb", "package");
+my @whats = ("install", "webinstall", "package");
 
 my $projectHome = $ENV{PROJECT_HOME};
 
