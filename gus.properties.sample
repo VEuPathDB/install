@@ -1,7 +1,10 @@
-database=GUSdev
-login=GUSrw
-password=myvs3131
-readOnlyDatabase=GUSdev
-readOnlyLogin=GUSdevreadonly
-readOnlyPassword=s7fp4erv
+databaseLogin=GUSrw
+databasePassword=myvs3131
+readOnlyDatabaseLogin=GUSdevReadOnly
+readOnlyDatabasePassword=s7fp4erv
+coreSchemaName=Core
+userName=$USER
+group=CBIL
+project=GUS
+dbiDsn=dbi:Oracle:host=erebus.pcbi.upenn.edu;sid=gusdev
 
