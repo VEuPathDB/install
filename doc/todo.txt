@@ -1,3 +1,7 @@
--add installing Ant details to readme
+- handle text substitution (eg @@PERL_VERSION@@)
 
--include checking out of some projects to readme
+- support release operation:
+    - removes CVS/ dirs
+    - does .tar.gz
+  
+

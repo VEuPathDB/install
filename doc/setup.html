@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>GUS Build System - set up</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center">The GUS Build System</h1>
+<br>
+<h2>INSTALLATION</h2>
+1. See if you have Ant installed:<br>
+<blockquote><tt>% ant -help</tt><tt><br>
+&nbsp; ant [options] [target [target2 [target3] ...]]</tt><br>
+  <tt>&nbsp; &nbsp;Options:</tt><br>
+  <tt>&nbsp;&nbsp; &nbsp; -help&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+print this message</tt><br>
+  <tt>&nbsp;&nbsp;&nbsp; &nbsp;-projecthelp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+print project help information</tt><br>
+</blockquote>
+<br>
+&nbsp; &nbsp;If not, get <a href="http://ant.apache.org/bindownload.cgi">download
+Ant</a> and unpack it.<br>
+<br>
+<br>
+2. See if your <tt>$JAVA_HOME</tt> variable is set:<br>
+<blockquote><tt>% echo $JAVA_HOME</tt><br>
+  <tt>/usr/java/j2sdk1.4.0/</tt><br>
+</blockquote>
+<br>
+&nbsp; &nbsp; If not, find out where your jdk is installed.<br>
+<br>
+<br>
+3. Set up a directory which will house your projects.&nbsp; (This is where
+you will check out from cvs, and where you will edit the files you are developing.)&nbsp;
+Wherever you decide to place this directory, set <tt>PROJECT_HOME</tt> to
+it:<br>
+<blockquote><tt>% mkdir $HOME/projects<br>
+  </tt><br>
+</blockquote>
+4. Set up a directory from which you will run GUS and related software.&nbsp;
+(This is the target of the build program):<br>
+ 
+<blockquote><tt>% mkdir $HOME/gus_home</tt><br>
+ </blockquote>
+<br>
+5. Set up your environment by placing the following in your .login or .cshrc
+(using the proper syntax for your shell):<br>
+<blockquote><tt># GUS build system<br>
+  </tt><tt>setenv ANT_HOME /usr/local/pkg/ant/jakarta-ant-1.5 &nbsp; (ie,
+where YOUR Ant is installed)<br>
+ setenv JAVA_HOME /usr/java/j2sdk1.4.0/ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; (ie, where YOUR Java is installed)</tt><br>
+  <tt> setenv PROJECT_HOME $HOME/projects<br>
+ setenv GUS_HOME $HOME/gushome<br>
+ setenv GUS_CONFIG_FILE $HOME/.gus.properties<br>
+ </tt><tt>setenv PATH $GUS_HOME/bin:$PROJECT_HOME/install/bin:$ANT_HOME/bin</tt><tt>:${PATH}</tt><br>
+</blockquote>
+<br>
+6. Make your new environment take effect by starting a new terminal session
+(or by using <tt>source</tt> and <tt>rehash).</tt><br>
+<br>
+<br>
+7. Check out the <tt>GUS</tt> and <tt>install</tt> projects from the public
+GUS CVS repository:<br>
+ 
+<blockquote><tt>% cd $PROJECT_HOME<br>
+ % cvs -d :ext:cvs.sanger.ac.uk:/cvsroot/GUS co install GUS</tt><br>
+  <br>
+ </blockquote>
+8. Get other CBIL projects. &nbsp;At a minimum you <i>need</i> the <tt>CBIL</tt>
+project because GUS depends upon it.. &nbsp;You may also get other CBIL projects
+as needed. &nbsp;<br>
+<blockquote>If you are not at CBIL, get them from the CBIL download site:<br>
+  <blockquote>
+    <ul>
+      <li><a href="http://www.cbil.upenn.edu/downloads/CBIL/releases">the
+CBIL project</a> (get the latest release)</li>
+      <li><a href="http://www.cbil.upenn.edu/downloads">other projects</a></li>
+    </ul>
+then install them:<br>
+    <blockquote><tt>% cd $PROJECT_HOME<br>
+ % tar -xf CBIL-x.x.x.tar &nbsp;</tt><br>
+ </blockquote>
+  </blockquote>
+If you are at CBIL, get them from the internal CBIL CVS:<br>
+  <blockquote><tt>% cd $PROJECT_HOME<br>
+% cvs -d /ptolemy/cbil/cvs/cvsroot co CBIL ...</tt><br>
+  </blockquote>
+</blockquote>
+<br>
+9. Set up the GUS config file.<br>
+<blockquote><tt>% cp </tt><tt>$PROJECT_HOME</tt><tt>/install/gus.properties.sample
+$GUS_CONFIG_FILE</tt><br>
+</blockquote>
+&nbsp; &nbsp; Edit the config file to reflect your personal information.<br>
+<br>
+<br>
+10. Give the build system a try:<br>
+<blockquote><tt>% build<br>
+usage:<br>
+&nbsp; build AllGenes|Annotator|CBIL|DJob|DoTS|GUS|ParaDBs|PlasmoDB[/componentname]<br>
+install|installweb|package&nbsp; targetDir -append [-co [version]]<br>
+  <br>
+% build GUS install -append<br>
+  </tt></blockquote>
+<br>
+</body>
+</html>
