@@ -28,7 +28,7 @@
     <replace dir="${targetDir}/bin" 
              propertyFile="${targetDir}/config/install.prop" > 
       <include name="**/*" />
-      <replacefilter token="@perlLocation@" property="perlLocation"/>
+      <replacefilter token="@perl@" property="perl"/>
     </replace> 
   </target>  
 
