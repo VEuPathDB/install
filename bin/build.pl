@@ -103,7 +103,7 @@ sub usage {
     print 
 "
 usage: 
-  build $projects\[/componentname]  $whats  targetDir -append [-webPropFile propfile] [-co [version]] 
+  build $projects\[/componentname]  $whats  targetDir -append [-skipJavaCompiling] [-webPropFile propfile] [-co [version]] 
   build $projects release version
 
 ";
