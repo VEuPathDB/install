@@ -60,7 +60,6 @@
 
   <target name="InstallInit" depends="validateTargetDir, checkoutProj,
                                      validateClean,  installConfigFile"/>
-<!--used to also depend on deleteOldJars; testing what consequences will be if this is not executed -->
 
   <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
                                      validateClean"/>
@@ -275,7 +274,8 @@
            depends="checkIfCleanAndHaveJava">
     <delete>
         <fileset dir="${projectsDir}/${project}/${component}/classes"/>
-     </delete>
+    </delete>
+    <delete file="${targetDir}/lib/java/${project}-${component}.jar"/>
     <echo message="deleted all old classes, clean is ${clean} and has java is ${hasJava}"/>
   </target>
 
