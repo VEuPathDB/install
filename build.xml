@@ -374,7 +374,7 @@
     </delete>
     <mkdir dir="${projectsDir}/cleanroom"/>
 
-    <cvs  cvsRoot="${cvsroot}" command="rtag ${tag} ${project}"/>
+    <cvs  cvsRoot="${cvsroot}" command="rtag -b ${tag} ${project}"/>
 
     <cvs package="install" cvsRoot="${cvsroot}" 
          dest="${projectsDir}/cleanroom" />
