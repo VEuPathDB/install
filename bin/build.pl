@@ -10,8 +10,6 @@
 use strict;
 use Cwd 'realpath'; 
 
-my @projects = ("AllGenes", "AnnotatorsInterface", "Annotator", "CBIL", "DJob", "DoTS", "GUS", "ParaDBs", "PlasmoDB","RAD","ApiDots", "TESS", "WDK");
-
 my @whats = ("install", "webinstall");
 
 my $projectHome = $ENV{PROJECT_HOME};
@@ -72,7 +70,7 @@ sub parseArgs {
 	$targetDir = shift @ARGV;
     }
 
-    &usage() unless $project && grep(/$project/, @projects);
+    &usage() unless $project;
     &usage() unless $doWhat && grep(/$doWhat/, (@whats, "release"));
     &usage() unless $targetDir;
 
@@ -113,14 +111,13 @@ sub parseArgs {
 }
 
 sub usage {
-    my $projects = join("|", @projects);
     my $whats = join("|", @whats);
 
     print 
 "
 usage: 
-  build $projects\[/componentname]  $whats  targetDir -append [-skipJavaCompiling] [-webPropFile propfile] [-co [version]] 
-  build $projects release version
+  build projectname\[/componentname]  $whats  targetDir -append [-skipJavaCompiling] [-webPropFile propfile] [-co [version]] 
+  build projectname release version
 
 ";
     exit 1;
