@@ -24,15 +24,26 @@ if (!$projectHome) {
   $projectHome = realpath("..");
 } 
 
-my ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, $doCheckout, $tag, $webPropFile) = &parseArgs(@ARGV);
+my ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, $doCheckout, $tag, $webPropFile, $returnErrStatus) = &parseArgs(@ARGV);
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $skipJava $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger | grep ']'";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $skipJava $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger ";
+
+
+# if not returning error status, then can pretty up output by keeping
+# only lines with bracketed ant target name (ie, ditch its commentary).
+# the grep, however, frustrates accurate status reporting
+if (!$returnErrStatus) {
+  $cmd .= " | grep ']'";
+}
 
 print "\n$cmd\n\n";
 system($cmd);
 
+# only valid if $returnErrStatus is set
+my $status = $? >>8;
+exit($status);
 
 
 ############################ subroutines ####################################
@@ -77,6 +88,11 @@ sub parseArgs {
         $clean = "-Dclean=true";
     }
    
+    if ($ARGV[0] eq "-returnErrStatus") {
+        shift @ARGV;
+        $returnErrStatus = 1;
+    }
+   
     if ($ARGV[0] eq "-skipJavaCompiling") {
 	shift @ARGV;
 	$skipJava = "-DskipJavaCompiling=true";
@@ -93,7 +109,7 @@ sub parseArgs {
 	$version = $ARGV[1];
     }
 
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, $doCheckout, $version, $webPropFile);
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, $doCheckout, $version, $webPropFile, $returnErrStatus);
 }
 
 sub usage {
