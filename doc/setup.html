@@ -9,7 +9,15 @@
 <h1 align="center">The GUS Build System</h1>
 <br>
 <h2>INSTALLATION</h2>
-1. See if you have Ant installed:<br>
+1. Check that Java is installed and your <tt>$JAVA_HOME</tt> variable is set:<br>
+<blockquote><tt>% echo $JAVA_HOME</tt><br>
+  <tt>/usr/java/j2sdk1.4.0/</tt><br>
+</blockquote>
+<br>
+&nbsp; &nbsp; If not, find out where your JDK is installed.<br>
+<br>
+<br>
+2. Check that Ant is installed:<br>
 <blockquote><tt>% ant -help</tt><tt><br>
 &nbsp; ant [options] [target [target2 [target3] ...]]</tt><br>
   <tt>&nbsp; &nbsp;Options:</tt><br>
@@ -23,23 +31,14 @@ print project help information</tt><br>
 Ant</a> and unpack it.<br>
 <br>
 <br>
-2. See if your <tt>$JAVA_HOME</tt> variable is set:<br>
-<blockquote><tt>% echo $JAVA_HOME</tt><br>
-  <tt>/usr/java/j2sdk1.4.0/</tt><br>
-</blockquote>
-<br>
-&nbsp; &nbsp; If not, find out where your jdk is installed.<br>
-<br>
-<br>
-3. Set up a directory which will house your projects.&nbsp; (This is where
+3. Set up a directory that will house your projects.&nbsp; (This is where
 you will check out from cvs, and where you will edit the files you are developing.)&nbsp;
-Wherever you decide to place this directory, set <tt>PROJECT_HOME</tt> to
-it:<br>
+This directory will be your <b><tt>PROJECT_HOME</tt></b> (see below).<br>
 <blockquote><tt>% mkdir $HOME/projects<br>
   </tt><br>
 </blockquote>
 4. Set up a directory from which you will run GUS and related software.&nbsp;
-(This is the target of the build program):<br>
+This is the target of the build program, and will be your <b><tt>GUS_HOME</tt></b>:<br>
  
 <blockquote><tt>% mkdir $HOME/gus_home</tt><br>
  </blockquote>
