@@ -40,7 +40,7 @@
   </target>  
 
 
-  <target name="webinstall" depends="InstallInit">
+  <target name="webinstall" depends="WebInstallInit">
     <ant antfile="../${proj}/build.xml" target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
     </ant>
@@ -60,6 +60,9 @@
   <target name="InstallInit" depends="validateTargetDir, checkoutProj,
                                      validateClean,  installConfigFile,
                                      deleteOldJars"/>
+
+  <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
+                                     validateClean,  "/>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
