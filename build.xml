@@ -9,7 +9,8 @@
   <!--   projectsDir                                                        -->
   <!--   targetDir                                                          -->
   <!--   append                                                             -->
-  <!--   clean           (recompile all java)                               -->
+  <!--   compileJava     (compile java classes in this component)           -->
+  <!--   clean           (recompile java already compiled                   -->
   <!--   checkout                                                           -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -18,7 +19,7 @@
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  Main Targets ooooooooooooooooooooooooooo -->
-  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
 
   <target name="install" depends="InstallInit">
@@ -58,8 +59,8 @@
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
   <target name="InstallInit" depends="validateTargetDir, checkoutProj,
-                                     validateClean,  installConfigFile,
-                                     deleteOldJars"/>
+                                     validateClean,  installConfigFile"/>
+<!--used to also depend on deleteOldJars; testing what consequences will be if this is not executed -->
 
   <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
                                      validateClean"/>
@@ -222,9 +223,10 @@
 
   </target>  
 
+  <!--we can only have one 'if' property...workaround by having 'if' and 'unless' -->
 
   <target name="defaultJavaCompile" if="hasJava" unless="skipJava" 
-                                    depends="deleteMyClasses, checkIfHaveJava">
+                                    depends="deleteMyClasses, checkIfHaveJava, userIsJavaCompiling">
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
@@ -248,6 +250,13 @@
                  file="${projectsDir}/${project}/${component}/src/java"/>
   </target>
 
+  <target name="userIsJavaCompiling">
+      <condition property="skipJava">
+         <not>
+           <isset property="compileJava"/>
+         </not>
+      </condition>
+  </target>
 
   <target name="checkIfCleanAndHaveJava" depends="checkIfHaveJava">
        <condition property="cleanAndHasJava">
