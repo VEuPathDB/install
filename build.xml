@@ -177,8 +177,8 @@
   </target>  
 
   <target name="componentPartCopySub" if="partAvailable">
-    <mkdir dir="${targetDir}/${part}/${prefix}"/>
-    <copy todir="${targetDir}/${part}/${prefix}">
+    <mkdir dir="${targetDir}/${to}/${prefix}"/>
+    <copy todir="${targetDir}/${to}/${prefix}">
       <fileset dir="${componentDir}/${part}" >
         <include name="**"/>
         <exclude name="**/CVS/*" />
