@@ -14,7 +14,7 @@
   <tt>/usr/java/j2sdk1.4.0/</tt><br>
 </blockquote>
 <br>
-&nbsp; &nbsp; If not, find out where your JDK is installed.<br>
+&nbsp; &nbsp; If not, install the JDK and/or set <tt>$JAVA_HOME</tt> accordingly.<br>
 <br>
 <br>
 2. Check that Ant is installed:<br>
@@ -54,6 +54,7 @@ where YOUR Ant is installed)<br>
  setenv GUS_HOME $HOME/gushome<br>
  setenv GUS_CONFIG_FILE $HOME/.gus.properties<br>
  </tt><tt>setenv PATH $GUS_HOME/bin:$PROJECT_HOME/install/bin:$ANT_HOME/bin</tt><tt>:${PATH}</tt><br>
+<tt>setenv PERL5LIB $GUS_HOME/lib/perl</tt>
 </blockquote>
 <br>
 6. Make your new environment take effect by starting a new terminal session
