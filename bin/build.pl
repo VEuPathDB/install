@@ -13,6 +13,7 @@ use Cwd 'realpath';
 my @whats = ("install", "webinstall");
 
 my $projectHome = $ENV{PROJECT_HOME};
+my $gusConfigFile = $ENV{GUS_CONFIG_FILE};
 
 if (!$projectHome) {
   if (! (-e "build.pl" && -d "../install")) {
@@ -22,11 +23,12 @@ if (!$projectHome) {
   $projectHome = realpath("..");
 } 
 
-my ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, $doCheckout, $tag, $webPropFile, $returnErrStatus) = &parseArgs(@ARGV);
+my ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, 
+    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus) = &parseArgs(@ARGV);
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DprojectsDir=$projectHome $clean $skipJava $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger ";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $skipJava $installDBSchema $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger ";
 
 
 # if not returning error status, then can pretty up output by keeping
@@ -36,7 +38,7 @@ if (!$returnErrStatus) {
   $cmd .= " | grep ']'";
 }
 
-print "\n$cmd\n\n";
+# print "\n$cmd\n\n";
 system($cmd);
 
 # only valid if $returnErrStatus is set
@@ -75,7 +77,7 @@ sub parseArgs {
     &usage() unless $targetDir;
 
 
-    my ($append, $clean, $skipJava, $doCheckout, $version, $webPropFile);
+    my ($append, $clean, $skipJava, $installDBSchema, $doCheckout, $version, $webPropFile);
     if ($ARGV[0] eq "-append") {
 	shift @ARGV;
         $append = "-Dappend=true";
@@ -96,6 +98,11 @@ sub parseArgs {
 	$skipJava = "-DskipJavaCompiling=true";
     }
 
+    if ($ARGV[0] eq "-installDBSchema") {
+	shift @ARGV;
+	$installDBSchema = "-DinstallDBSchema=true";
+    }
+
     if ($ARGV[0] eq "-webPropFile") {
         shift @ARGV;
 	my $wpFile = shift @ARGV;
@@ -107,7 +114,7 @@ sub parseArgs {
 	$version = $ARGV[1];
     }
 
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, $doCheckout, $version, $webPropFile, $returnErrStatus);
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus);
 }
 
 sub usage {
@@ -116,7 +123,7 @@ sub usage {
     print 
 "
 usage: 
-  build projectname\[/componentname]  $whats  targetDir -append [-skipJavaCompiling] [-webPropFile propfile] [-co [version]] 
+  build projectname\[/componentname]  $whats  targetDir -append [-skipJavaCompiling] [-installDBSchema] [-webPropFile propfile] [-co [version]] 
   build projectname release version
 
 ";

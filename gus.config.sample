@@ -1,0 +1,83 @@
+##
+## GUS Configuration
+##
+##
+## @version $Revision$ $Date$
+##
+
+### GUS End User Configurtion
+###
+
+
+####### gus.properties
+
+# RDBMS Connection Strings
+## dbiDsn is for Perl ( i.e. dbi:Oracle:NAME_OF_DATABASE )
+## jdbcDsn is for JDBC/Java ( i.e. jdbc:oracle:thin:@HOSTNAME:PORT:NAME_OF_DATABASE )
+
+dbiDsn=
+jdbcDsn=
+
+# Login and Password to the RDBMS
+
+databaseLogin=
+databasePassword=
+
+# Username, group, and project info from the relevant Core tables
+
+userName=
+group=
+project=
+
+####### install.prop
+
+# Path to Perl Executable
+perl=/usr/bin/perl
+
+####### GUS-PluginMgr.prop
+
+# Path to MD5 Executable
+md5sum=/sbin/md5
+
+################################################################################
+###   Warning:  Do not change items below here unless you know what you're doing
+################################################################################
+
+sourceDbUsername=msaffitz
+sourceDbPassword=90int47a
+#sourceDbDsn=jdbc:oracle:thin:@localhost:1521:cbilbld
+sourceDbDsn=jdbc:oracle:thin:@cbildb01.pcbi.upenn.edu:1521:cdev1
+
+targetDbUsername=msaffitz
+targetDbPassword=
+targetDbDsn=jdbc:postgresql:gus
+
+gusSchemas=Core,App,RAD3,DoTS,SRes,TESS
+coreSchemaName=CORE
+
+sequenceStart=1
+
+### Common delimited list of housekeeping columns.  In order as they should appear in the tables
+housekeepingColumns=MODIFICATION_DATE,USER_READ,USER_WRITE,GROUP_READ,GROUP_WRITE,OTHER_READ,OTHER_WRITE,ROW_USER_ID,ROW_GROUP_ID,ROW_PROJECT_ID,ROW_ALG_INVOCATION_ID
+housekeepingColumnsVer=MODIFICATION_DATE,USER_READ,USER_WRITE,GROUP_READ,GROUP_WRITE,OTHER_READ,OTHER_WRITE,ROW_USER_ID,ROW_GROUP_ID,ROW_PROJECT_ID,ROW_ALG_INVOCATION_ID,VERSION_ALG_INVOCATION_ID,VERSION_DATE,VERSION_TRANSACTION_ID
+
+### type,length,precision,nullable
+
+hkspec.MODIFICATION_DATE=Date,0,0,false
+hkspec.USER_READ=Character,1,0,false
+hkspec.USER_WRITE=Character,1,0,false
+hkspec.GROUP_READ=Character,1,0,false
+hkspec.GROUP_WRITE=Character,1,0,false
+hkspec.OTHER_READ=Character,1,0,false
+hkspec.OTHER_WRITE=Character,1,0,false
+hkspec.ROW_USER_ID=Number,12,0,false
+hkspec.ROW_GROUP_ID=Number,4,0,false
+hkspec.ROW_PROJECT_ID=Number,4,0,false
+hkspec.ROW_ALG_INVOCATION_ID=Number,12,0,false
+
+hkspec.VERSION_ALG_INVOCATION_ID=Number,12,0,true
+hkspec.VERSION_DATE=Date,0,0,true
+hkspec.VERSION_TRANSACTION_ID=Number,12,0,true
+
+hibernate.mapdir=/Users/msaffitz/cvswork/gusdba/build/hbm
+hibernate.basePkg=org.gus.model
