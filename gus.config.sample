@@ -29,6 +29,8 @@ userName=
 group=
 project=
 
+tablespace=GUS
+
 ####### install.prop
 
 # Path to Perl Executable
