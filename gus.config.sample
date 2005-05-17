@@ -45,15 +45,6 @@ md5sum=/sbin/md5
 ###   Warning:  Do not change items below here unless you know what you're doing
 ################################################################################
 
-sourceDbUsername=msaffitz
-sourceDbPassword=90int47a
-#sourceDbDsn=jdbc:oracle:thin:@localhost:1521:cbilbld
-sourceDbDsn=jdbc:oracle:thin:@cbildb01.pcbi.upenn.edu:1521:cdev1
-
-targetDbUsername=msaffitz
-targetDbPassword=
-targetDbDsn=jdbc:postgresql:gus
-
 gusSchemas=Core,App,RAD3,DoTS,SRes,TESS
 coreSchemaName=CORE
 
