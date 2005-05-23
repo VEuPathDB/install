@@ -11,6 +11,8 @@
 
 ####### gus.properties
 
+dbVendor=
+
 # RDBMS Connection Strings
 ## dbiDsn is for Perl ( i.e. dbi:Oracle:NAME_OF_DATABASE )
 ## jdbcDsn is for JDBC/Java ( i.e. jdbc:oracle:thin:@HOSTNAME:PORT:NAME_OF_DATABASE )
