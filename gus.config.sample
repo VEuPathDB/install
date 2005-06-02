@@ -11,12 +11,12 @@
 
 ####### gus.properties
 
-dbVendor=
-
 # RDBMS Connection Strings
+## dbVendor is the RDBMS Vendor.  Postgres or Oracle
 ## dbiDsn is for Perl ( i.e. dbi:Oracle:NAME_OF_DATABASE )
 ## jdbcDsn is for JDBC/Java ( i.e. jdbc:oracle:thin:@HOSTNAME:PORT:NAME_OF_DATABASE )
 
+dbVendor=
 dbiDsn=
 jdbcDsn=
 
@@ -47,7 +47,7 @@ md5sum=/sbin/md5
 ###   Warning:  Do not change items below here unless you know what you're doing
 ################################################################################
 
-gusSchemas=Core,App,RAD3,DoTS,SRes,TESS
+gusSchemas=Core,App,RAD,DoTS,SRes,TESS,prot,study
 coreSchemaName=CORE
 
 sequenceStart=1
@@ -59,12 +59,12 @@ housekeepingColumnsVer=MODIFICATION_DATE,USER_READ,USER_WRITE,GROUP_READ,GROUP_W
 ### type,length,precision,nullable
 
 hkspec.MODIFICATION_DATE=Date,0,0,false
-hkspec.USER_READ=Character,1,0,false
-hkspec.USER_WRITE=Character,1,0,false
-hkspec.GROUP_READ=Character,1,0,false
-hkspec.GROUP_WRITE=Character,1,0,false
-hkspec.OTHER_READ=Character,1,0,false
-hkspec.OTHER_WRITE=Character,1,0,false
+hkspec.USER_READ=Number,1,0,false
+hkspec.USER_WRITE=Number,1,0,false
+hkspec.GROUP_READ=Number,1,0,false
+hkspec.GROUP_WRITE=Number,1,0,false
+hkspec.OTHER_READ=Number,1,0,false
+hkspec.OTHER_WRITE=Number,1,0,false
 hkspec.ROW_USER_ID=Number,12,0,false
 hkspec.ROW_GROUP_ID=Number,4,0,false
 hkspec.ROW_PROJECT_ID=Number,4,0,false
@@ -73,6 +73,3 @@ hkspec.ROW_ALG_INVOCATION_ID=Number,12,0,false
 hkspec.VERSION_ALG_INVOCATION_ID=Number,12,0,true
 hkspec.VERSION_DATE=Date,0,0,true
 hkspec.VERSION_TRANSACTION_ID=Number,12,0,true
-
-hibernate.mapdir=/Users/msaffitz/cvswork/gusdba/build/hbm
-hibernate.basePkg=org.gus.model
