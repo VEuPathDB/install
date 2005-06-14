@@ -41,7 +41,7 @@ perl=/usr/bin/perl
 ####### GUS-PluginMgr.prop
 
 # Path to MD5 Executable
-md5sum=/sbin/md5
+md5sum=/usr/bin/md5sum
 
 ################################################################################
 ###   Warning:  Do not change items below here unless you know what you're doing
