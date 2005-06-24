@@ -47,7 +47,7 @@ md5sum=/usr/bin/md5sum
 ###   Warning:  Do not change items below here unless you know what you're doing
 ################################################################################
 
-gusSchemas=Core,App,RAD,DoTS,SRes,TESS,prot,study
+gusSchemas=Core,RAD,DoTS,SRes,TESS,prot,study
 coreSchemaName=CORE
 
 sequenceStart=1
