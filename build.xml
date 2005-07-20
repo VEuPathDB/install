@@ -342,6 +342,16 @@
     </antcall>
 
     <antcall target="webComponentPartCopy">
+      <param name="part" value="cgi-lib"/>
+      <param name="to" value="${cgilibTargetDir}"/>
+    </antcall>
+
+    <antcall target="webComponentPartCopy">
+      <param name="part" value="webconfig"/>
+      <param name="to" value="${webconfigTargetDir}"/>
+    </antcall>
+
+    <antcall target="webComponentPartCopy">
       <param name="part" value="webapp"/>
       <param name="to" value="${webappTargetDir}"/>
     </antcall>
