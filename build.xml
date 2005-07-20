@@ -347,8 +347,8 @@
     </antcall>
 
     <antcall target="webComponentPartCopy">
-      <param name="part" value="webconfig"/>
-      <param name="to" value="${webconfigTargetDir}"/>
+      <param name="part" value="conf"/>
+      <param name="to" value="${confTargetDir}"/>
     </antcall>
 
     <antcall target="webComponentPartCopy">
