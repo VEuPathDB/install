@@ -132,7 +132,9 @@
      </delete>
    </target>
 
-  <target name="installConfigFile" depends="compileInstall">
+  <available property="configFileExists" file="${gusConfigFile}"/> 
+
+  <target name="installConfigFile" depends="compileInstall" unless="configFileExists">
     <WritePropertyFiles ProjectHome="${projectsDir}"
                         GusConfigFile="${gusConfigFile}"/>
     <ant target="configFile">
