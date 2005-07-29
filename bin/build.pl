@@ -13,7 +13,7 @@ use Cwd 'realpath';
 my @whats = ("install", "webinstall");
 
 my $projectHome = $ENV{PROJECT_HOME};
-my $gusConfigFile = $ENV{GUS_CONFIG_FILE};
+my $gusConfigFile = $ENV{GUS_HOME} . "/config/gus.config";
 
 if (!$projectHome) {
   if (! (-e "build.pl" && -d "../install")) {
