@@ -31,7 +31,7 @@
     </ant>
 
     <replace dir="${targetDir}/bin" 
-             propertyFile="${targetDir}/config/install.prop" > 
+             propertyFile="${targetDir}/config/gus.config" > 
       <include name="**/*" />
       <replacefilter token="@perl@" property="perl"/>
     </replace> 
@@ -63,35 +63,11 @@
   <!-- oooooooooooooooooooooooooo  Initialization ooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-  <target name="InstallInit" depends="compileInstall, validateTargetDir, checkoutProj,
+  <target name="InstallInit" depends="validateTargetDir, checkoutProj,
                                      validateClean,  installConfigFile"/>
 
-  <target name="WebInstallInit" depends="compileInstall, validateTargetDir, checkoutProj,
+  <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
                                      validateClean"/>
-
-  <target name="compileInstall">
-    <mkdir dir="${projectsDir}/install/classes"/>
-    <javac srcdir="${projectsDir}/install/src/java"
-           destdir="${projectsDir}/install/classes"
-	   debug="on"
-	   fork="true"
-	   memoryMaximumSize="128m">
-	   <classpath>
-	     <fileset dir="${projectsDir}/install/lib/java/">
-	       <include name="*.jar"/>
-	     </fileset>
-	   </classpath>
-    </javac>
-    <taskdef name="WritePropertyFiles"
-	   classname="org.gusdb.install.WritePropertyFileTask">
-      <classpath>
-           <pathelement path="${projectsDir}/install/classes"/>
-	   <fileset dir="${projectsDir}/install/lib/java/">
-             <include name="*.jar"/>
-           </fileset>
-      </classpath>
-    </taskdef>
-  </target>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
@@ -134,20 +110,9 @@
 
   <available property="configFileExists" file="${gusConfigFile}"/> 
 
-  <target name="installConfigFile" depends="compileInstall" unless="configFileExists">
-    <WritePropertyFiles ProjectHome="${projectsDir}"
-                        GusConfigFile="${gusConfigFile}"/>
-    <ant target="configFile">
-      <property name="cFileName" value="install.prop"/>
-      <property name="cFileSrcDir"
-                value="${projectsDir}/install/config"/>
-    </ant>
-    <ant target="configFile">
-      <property name="cFileName" value="GUS-PluginMgr.prop"/>
-      <property name="cFileSrcDir"
-                        value="${projectsDir}/install/config"/>
-    </ant>	
-
+  <target name="installConfigFile" unless="configFileExists">
+    <copy file="${projectsDir}/install/gus.config" tofile="${targetDir}/config/gus.config"/>
+    <copy file="${projectsDir}/install/config/log4j.properties" tofile="${targetDir}/config/log4j.properties"/>
   </target>  
 
 
