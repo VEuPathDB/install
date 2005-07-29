@@ -33,8 +33,6 @@ project=
 
 tablespace=GUS
 
-####### install.prop
-
 # Path to Perl Executable
 perl=/usr/bin/perl
 
