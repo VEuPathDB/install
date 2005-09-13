@@ -53,7 +53,7 @@ sub parseArgs {
     my $project = shift @ARGV;
     my $component; 
 
-    if ($project =~ /(\w+)(\/\w+)/ ) {
+    if ($project =~ /([\w-]+)(\/\w+)/ ) {
 	$project = $1;
 	$component = $2;
     }
