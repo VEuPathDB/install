@@ -108,9 +108,7 @@
      </delete>
    </target>
 
-  <available property="configFileExists" file="${gusConfigFile}"/> 
-
-  <target name="installConfigFile" unless="configFileExists">
+  <target name="installConfigFile">
     <copy file="${projectsDir}/install/gus.config" tofile="${targetDir}/config/gus.config"/>
     <copy file="${projectsDir}/install/config/log4j.properties" tofile="${targetDir}/config/log4j.properties"/>
   </target>  
