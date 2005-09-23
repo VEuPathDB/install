@@ -106,6 +106,10 @@ sub parseArgs {
     if ($ARGV[0] eq "-webPropFile") {
         shift @ARGV;
 	my $wpFile = shift @ARGV;
+	if (!-e $wpFile) { 
+	  print "Error: webPropFile not found\n"; 
+	  exit 1; 
+	}
 	$webPropFile = "-propertyfile $wpFile -DwebPropFile=$wpFile";
     }
 
