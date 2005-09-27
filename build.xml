@@ -242,6 +242,7 @@
                                     depends="deleteMyClasses, checkIfHaveJava">
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
+     <mkdir dir="${targetDir}/lib/java/db_driver"/>
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
             destdir="${projectsDir}/${project}/${component}/classes"
 	    debug="on"
