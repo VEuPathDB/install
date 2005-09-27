@@ -106,6 +106,12 @@
      <delete>
        <fileset dir="${targetDir}/lib/java" includes="*.jar"/>
      </delete>
+     <delete>
+       <fileset dir="${targetDir}/lib/java/db_driver" includes="*.jar"/>
+     </delete>
+     <delete>
+       <fileset dir="${targetDir}/lib/java" includes="*.zip"/>
+     </delete>
    </target>
 
   <target name="installConfigFile">
@@ -244,6 +250,12 @@
         <classpath>
            <fileset dir="${targetDir}/lib/java/">
               <include name="*.jar"/>
+           </fileset>
+           <fileset dir="${targetDir}/lib/java/db_driver">
+              <include name="*.jar"/>
+           </fileset>
+           <fileset dir="${targetDir}/lib/java/db_driver">
+              <include name="*.zip"/>
            </fileset>
         </classpath>
      </javac>
