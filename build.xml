@@ -115,7 +115,16 @@
    </target>
 
   <target name="installConfigFile">
-<!--    <copy file="${projectsDir}/install/gus.config" tofile="${targetDir}/config/gus.config"/>-->
+   <condition property="noConfigFile">
+       <not>
+         <available file="${targetDir}/config/gus.config" />
+       </not>
+    </condition>  
+
+    <fail if="noConfigFile">
+      Error: Not gus.config file. Please run "cp ${projectsDir}/install/gus.config.sample ${targetDir}/config/gus.config" and edit ${targetDir}/config/gus.config as appropriate for your environment before try again.
+    </fail>
+
     <copy file="${projectsDir}/install/config/log4j.properties" tofile="${targetDir}/config/log4j.properties"/>
   </target>  
 
