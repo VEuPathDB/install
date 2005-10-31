@@ -140,6 +140,11 @@
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
+  <target name="defaultC-CodeMakeInstall">
+    <exec executable="/usr/bin/make" dir="${projectsDir}/${project}/${component}/src/c">
+      <arg line="all" />
+    </exec>
+  </target>
 
   <!-- oooooooooooooooooooo default project install ooooooooooooooooooooooo -->
 
