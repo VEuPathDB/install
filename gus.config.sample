@@ -56,18 +56,18 @@ housekeepingColumnsVer=MODIFICATION_DATE,USER_READ,USER_WRITE,GROUP_READ,GROUP_W
 
 ### type,length,precision,nullable
 
-hkspec.MODIFICATION_DATE=Date,0,0,false
-hkspec.USER_READ=Number,1,0,false
-hkspec.USER_WRITE=Number,1,0,false
-hkspec.GROUP_READ=Number,1,0,false
-hkspec.GROUP_WRITE=Number,1,0,false
-hkspec.OTHER_READ=Number,1,0,false
-hkspec.OTHER_WRITE=Number,1,0,false
-hkspec.ROW_USER_ID=Number,12,0,false
-hkspec.ROW_GROUP_ID=Number,4,0,false
-hkspec.ROW_PROJECT_ID=Number,4,0,false
-hkspec.ROW_ALG_INVOCATION_ID=Number,12,0,false
+hkspec.MODIFICATION_DATE=DATE,0,0,false
+hkspec.USER_READ=NUMBER,1,0,false
+hkspec.USER_WRITE=NUMBER,1,0,false
+hkspec.GROUP_READ=NUMBER,1,0,false
+hkspec.GROUP_WRITE=NUMBER,1,0,false
+hkspec.OTHER_READ=NUMBER,1,0,false
+hkspec.OTHER_WRITE=NUMBER,1,0,false
+hkspec.ROW_USER_ID=NUMBER,12,0,false
+hkspec.ROW_GROUP_ID=NUMBER,4,0,false
+hkspec.ROW_PROJECT_ID=NUMBER,4,0,false
+hkspec.ROW_ALG_INVOCATION_ID=NUMBER,12,0,false
 
-hkspec.VERSION_ALG_INVOCATION_ID=Number,12,0,true
-hkspec.VERSION_DATE=Date,0,0,true
-hkspec.VERSION_TRANSACTION_ID=Number,12,0,true
+hkspec.VERSION_ALG_INVOCATION_ID=NUMBER,12,0,true
+hkspec.VERSION_DATE=DATE,0,0,true
+hkspec.VERSION_TRANSACTION_ID=NUMBER,12,0,true
