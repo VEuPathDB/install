@@ -375,6 +375,11 @@
       <param name="to" value="${servletsTargetDir}"/>
     </antcall>
 
+    <antcall target="webComponentPartCopy">
+      <param name="part" value="lib"/>
+      <param name="to" value="${libTargetDir}"/>
+    </antcall>
+
   </target>  
 
 
