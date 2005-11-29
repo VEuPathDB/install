@@ -23,12 +23,12 @@ if (!$projectHome) {
   $projectHome = realpath("..");
 } 
 
-my ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, 
+my ($project, $component, $doWhat, $targetDir, $append, $clean, 
     $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus) = &parseArgs(@ARGV);
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $skipJava $installDBSchema $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger ";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $installDBSchema $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger ";
 
 
 # if not returning error status, then can pretty up output by keeping
@@ -77,7 +77,7 @@ sub parseArgs {
     &usage() unless $targetDir;
 
 
-    my ($append, $clean, $skipJava, $installDBSchema, $doCheckout, $version, $webPropFile);
+    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile);
     if ($ARGV[0] eq "-append") {
 	shift @ARGV;
         $append = "-Dappend=true";
@@ -93,11 +93,6 @@ sub parseArgs {
         $returnErrStatus = 1;
     }
    
-    if ($ARGV[0] eq "-skipJavaCompiling") {
-	shift @ARGV;
-	$skipJava = "-DskipJavaCompiling=true";
-    }
-
     if ($ARGV[0] eq "-installDBSchema") {
 	shift @ARGV;
 	$installDBSchema = "-DinstallDBSchema=true";
@@ -118,7 +113,7 @@ sub parseArgs {
 	$version = $ARGV[1];
     }
 
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $skipJava, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus);
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus);
 }
 
 sub usage {
@@ -127,7 +122,7 @@ sub usage {
     print 
 "
 usage: 
-  build projectname\[/componentname]  $whats  targetDir -append [-skipJavaCompiling] [-installDBSchema] [-webPropFile propfile] [-co [version]] 
+  build projectname\[/componentname]  $whats  targetDir -append [-installDBSchema] [-webPropFile propfile] [-co [version]] 
   build projectname release version
 
 ";

@@ -10,7 +10,6 @@
   <!--   targetDir                                                          -->
   <!--   append                                                             -->
   <!--   clean           (recompile java already compiled)                  -->
-  <!--   skipJavaCompiling                                                  -->
   <!--   installDBSchema (Install the schema in the DB.  Normally  Skipped) -->
   <!--   checkout                                                           -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -274,8 +273,7 @@
   </target>  
 
 
-  <target name="defaultJavaCompile" if="hasJava" unless="skipJavaCompiling"  
-                                    depends="deleteMyClasses, checkIfHaveJava">
+  <target name="defaultJavaCompile" if="hasJava" depends="deleteMyClasses, checkIfHaveJava">
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
      <mkdir dir="${targetDir}/lib/java/db_driver"/>
