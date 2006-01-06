@@ -79,10 +79,10 @@
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
   <target name="InstallInit" depends="validateTargetDir, checkoutProj,
-                                     validateClean,  installConfigFile"/>
+                                     validateClean, installConfigFile"/>
 
   <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
-                                     validateClean"/>
+                                     validateClean, installConfigFile"/>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
