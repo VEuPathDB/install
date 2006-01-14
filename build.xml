@@ -34,7 +34,7 @@
       <include name="**/*" />
       <replacefilter token="@perl@" property="perl"/>
       <replacefilter token="@targetDir@" value="${targetDir}" />
-    </replace> 
+   </replace> 
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
     <chmod perm="+x">
@@ -50,21 +50,12 @@
     <ant antfile="../${proj}/build.xml" target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
     </ant>
-
-    <replace dir="${cgibinTargetDir}" 
-             propertyFile="${targetDir}/config/gus.config" > 
-      <include name="**/*" />
-      <replacefilter token="@perl@" property="perl"/>
-      <replacefilter token="@targetDir@" value="${targetDir}" />
-    </replace> 
-
-    <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
-    <chmod perm="+x">
-      <fileset dir="${cgibinTargetDir}" />
-    </chmod>
-
+    
+    <available property="cgibinAvailable" file="${cgibinTargetDir}" type="dir"/>
+    <antcall target="cgibinReplace"/>
+    <antcall target="cgibinCmod"/>
+    
     <echo message="WebInstallation Complete"/>
-
   </target>  
 
   <target name="release">
@@ -408,8 +399,24 @@
         <exclude name="${exclude}/" />
       </fileset>
     </copy>
-  </target>  
+  </target> 
+  
+  <target name="cgibinReplace" if="cgibinAvailable">
+    <replace dir="${cgibinTargetDir}" 
+             propertyFile="${targetDir}/config/gus.config"> 
+      <include name="**/*" />
+      <replacefilter token="@perl@" property="perl"/>
+      <replacefilter token="@targetDir@" value="${targetDir}" />
+    </replace> 
+  </target>
 
+  <target name="cgibinCmod" if="cgibinAvailable">
+    <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
+    <chmod perm="+x">
+      <fileset dir="${cgibinTargetDir}" />
+    </chmod>
+  </target>
+  
   <target name="configFile">
     <property name="cFile" value="${cFileSrcDir}/${cFileName}"/>
     <property name="cFileTarget" value="${targetDir}/config/${cFileName}"/>
