@@ -28,9 +28,6 @@ my ($project, $component, $doWhat, $targetDir, $append, $clean,
 
 $| = 1;
 
-# TEST
-print "TODO - $doWhat";
-
 my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $installDBSchema $append $webPropFile $tag $branch -logger org.apache.tools.ant.NoBannerLogger ";
 
 
