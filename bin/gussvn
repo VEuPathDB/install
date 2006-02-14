@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# A wrapper around the perl wrapper around ant.  Avoids assumptions of perl's
+# location.
+
+if [ "$PROJECT_HOME" = "" ]; then
+  perl bin/gussvn.pl $*
+else
+  perl $PROJECT_HOME/install/bin/gussvn.pl $*
+fi
