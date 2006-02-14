@@ -12,6 +12,7 @@
   <!--   clean           (recompile java already compiled)                  -->
   <!--   installDBSchema (Install the schema in the DB.  Normally  Skipped) -->
   <!--   checkout                                                           -->
+  <!--   svnurl (do not specify trunk or branch, version in the url) -->
   <!--   branch (if it's set, then check out the branch; otherwise, check out the trunk) -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -76,13 +77,22 @@
   </target>  
 
   <target name="checkout">
-    <ant antfile="../${proj}/build.xml" target="${proj}-Checkout">
-      <property name="project" value="${proj}"/>
-    </ant>
+    <!-- detect if the project exist -->
+    <available property="project.present" file="${projectsDir}/${proj}" type="dir" />
+    <!-- do not check out existing project -->
+    <fail if="project.present">${proj} has already been checked out.</fail>
+    
+    <!-- otherwise, check out the project -->
+    <antcall target="defaultProjectCheckout">
+      <property name="svnurl" value="${svnurl}"/>
+      <property name="project" value="{proj}"/>
+      <property name="version" value="${vers}"/>
+    </antcall>
   </target>  
 
   <target name="update">
-    <ant antfile="../${proj}/build.xml" target="${proj}-Update">
+    <!-- update the project itself -->
+    <ant target="defaultProjectUpdate">
       <property name="project" value="${proj}"/>
     </ant>
   </target>  
@@ -479,11 +489,11 @@
     
     <!-- check out the project from svn -->
     <exec dir="${projectsDir}" executable="svn">
-      <arg line="co --username ${username} ${svnurl}/${svnflag} ${project}"/>
+      <arg line="co ${svnurl}/${svnflag} ${project}"/>
     </exec>
     
     <!-- run dependency check out-->
-    <ant antfile="../${project}/build.xml" target="${project}-Checkout">
+    <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-Checkout">
       <property name="project" value="${project}"/>
       <property name="version" value="${version}"/>
     </ant>
@@ -505,13 +515,22 @@
   
     <echo> Update ${project}... </echo>
 
-    <!-- check if the project has been checked out before -->
-    <available file="/usr/local/lib" type="dir"
-               property="project.present"/>
-    <echo>TEST - project.present = ${project.present}</echo>
-    
-    <antcall target="checkoutProject"/>
-    
+    <!-- detect if the project exist -->
+    <available property="project.present" file="${projectsDir}/${proj}" type="dir" />
+
+    <!-- do not update non-existing project -->
+    <fail unless="project.present">${proj} hasn't been checked out yet.</fail>
+
+    <!-- check out the project from svn -->
+    <exec dir="${projectsDir}/${project}" executable="svn">
+      <arg line="update"/>
+    </exec>
+ 
+    <!-- update the dependencies of the project -->
+    <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-Update">
+      <property name="project" value="${project}"/>
+    </ant>
+   
   </target>
 
 </project>

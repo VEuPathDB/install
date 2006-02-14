@@ -10,7 +10,7 @@
 use strict;
 use Cwd 'realpath'; 
 
-my @whats = ("checkout", "install", "webinstall");
+my @whats = ("install", "webinstall", "checkout", "update");
 
 my $projectHome = $ENV{PROJECT_HOME};
 my $gusConfigFile = $ENV{GUS_HOME} . "/config/gus.config";
@@ -24,7 +24,7 @@ if (!$projectHome) {
 } 
 
 my ($project, $component, $doWhat, $targetDir, $append, $clean, 
-    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus, $branch) = &parseArgs(@ARGV);
+    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus, $branch, $svnurl) = &parseArgs(@ARGV);
 
 $| = 1;
 
