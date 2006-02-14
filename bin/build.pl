@@ -10,7 +10,7 @@
 use strict;
 use Cwd 'realpath'; 
 
-my @whats = ("install", "webinstall", "checkout", "update");
+my @whats = ("install", "webinstall");
 
 my $projectHome = $ENV{PROJECT_HOME};
 my $gusConfigFile = $ENV{GUS_HOME} . "/config/gus.config";
@@ -24,7 +24,7 @@ if (!$projectHome) {
 } 
 
 my ($project, $component, $doWhat, $targetDir, $append, $clean, 
-    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus, $branch, $svnurl) = &parseArgs(@ARGV);
+    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus) = &parseArgs(@ARGV);
 
 $| = 1;
 
@@ -113,12 +113,7 @@ sub parseArgs {
 	$version = $ARGV[1];
     }
 
-    if ($ARGV[0] eq "-branch") {
-        shift @ARGV;
-        $branch = "-Dbranch=true";
-    }
-
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus, $branch);
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus);
 }
 
 sub usage {

@@ -493,7 +493,7 @@
     </exec>
     
     <!-- run dependency check out-->
-    <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-Checkout">
+    <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-ChildCheckout">
       <property name="project" value="${project}"/>
       <property name="version" value="${version}"/>
     </ant>
@@ -513,7 +513,7 @@
 
   <target name="defaultProjectUpdate">
   
-    <echo> Update ${project}... </echo>
+    <echo> Update ${projectsDir}/${project}... </echo>
 
     <!-- detect if the project exist -->
     <available property="project.present" file="${projectsDir}/${proj}" type="dir" />
@@ -527,7 +527,7 @@
     </exec>
  
     <!-- update the dependencies of the project -->
-    <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-Update">
+    <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-ChildUpdate">
       <property name="project" value="${project}"/>
     </ant>
    
