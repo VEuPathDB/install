@@ -12,10 +12,9 @@
   <!--   clean           (recompile java already compiled)                  -->
   <!--   installDBSchema (Install the schema in the DB.  Normally  Skipped) -->
   <!--   checkout                                                           -->
+  <!--   branch (if it's set, then check out the branch with given version) -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
-
-
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  Main Targets ooooooooooooooooooooooooooo -->
@@ -24,6 +23,9 @@
 
   <target name="install" depends="InstallInit">
 
+    <!-- TEST -->
+    <echo> proj=${proj} </echo>
+    
     <ant antfile="../${proj}/build.xml" target="${proj}${comp}-Installation">
       <property name="project" value="${proj}"/>
       <property name="logger" value="${logger}"/>
@@ -34,7 +36,7 @@
       <include name="**/*" />
       <replacefilter token="@perl@" property="perl"/>
       <replacefilter token="@targetDir@" value="${targetDir}" />
-   </replace> 
+    </replace> 
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
     <chmod perm="+x">
@@ -50,17 +52,35 @@
     <ant antfile="../${proj}/build.xml" target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
     </ant>
-    
-    <available property="cgibinAvailable" file="${cgibinTargetDir}" type="dir"/>
-    <antcall target="cgibinReplace"/>
-    <antcall target="cgibinCmod"/>
-    
+
+    <replace dir="${cgibinTargetDir}" 
+             propertyFile="${targetDir}/config/gus.config" > 
+      <include name="**/*" />
+      <replacefilter token="@perl@" property="perl"/>
+      <replacefilter token="@targetDir@" value="${targetDir}" />
+    </replace> 
+
+    <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
+    <chmod perm="+x">
+      <fileset dir="${cgibinTargetDir}" />
+    </chmod>
+
     <echo message="WebInstallation Complete"/>
+
   </target>  
 
   <target name="release">
     <ant antfile="../${proj}/build.xml" target="${proj}-Release">
       <property name="project" value="${proj}"/>
+    </ant>
+  </target>  
+
+  <target name="checkout" depends="trunkCheckoutInit, branchCheckoutInit">
+    <!-- define the trunk/branch part of svn url -->
+    <ant antfile="../${proj}/build.xml" target="${proj}-Checkout">
+      <property name="project" value="${proj}"/>
+      <property name="trunkflag" value="${trunkflag}"/>
+      <property name="version" value="${version}"/>
     </ant>
   </target>  
 
@@ -136,10 +156,22 @@
 
 
   <target name="checkoutProj" if="checkout">
+    <echo>Top level check out</echo>
     <antcall target="cvsCheckOut">
       <param name="package" value="${proj}"/>
     </antcall>
   </target>  
+
+
+  <target name="trunkCheckoutInit" unless="${branch}">
+    <property name="trunkflag" value="trunk" />
+  </target>
+
+
+  <target name="branchCheckoutInit" if="${branh}">
+    <property name="trunkflag" value="branches" />
+  </target>
+
 
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -399,24 +431,8 @@
         <exclude name="${exclude}/" />
       </fileset>
     </copy>
-  </target> 
-  
-  <target name="cgibinReplace" if="cgibinAvailable">
-    <replace dir="${cgibinTargetDir}" 
-             propertyFile="${targetDir}/config/gus.config"> 
-      <include name="**/*" />
-      <replacefilter token="@perl@" property="perl"/>
-      <replacefilter token="@targetDir@" value="${targetDir}" />
-    </replace> 
-  </target>
+  </target>  
 
-  <target name="cgibinCmod" if="cgibinAvailable">
-    <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
-    <chmod perm="+x">
-      <fileset dir="${cgibinTargetDir}" />
-    </chmod>
-  </target>
-  
   <target name="configFile">
     <property name="cFile" value="${cFileSrcDir}/${cFileName}"/>
     <property name="cFileTarget" value="${targetDir}/config/${cFileName}"/>
@@ -457,6 +473,40 @@
          excludes="**/CVS/**"/>
 
     <gzip zipfile="${tarfile}.gz" src="${tarfile}"/>
+
+  </target>
+
+
+  <!-- oooooooooooooooooooo default project checkout ooooooooooooooooooooooo -->
+
+  <target name="defaultProjectCheckout">
+  
+    <echo> Detecting if we need to check out ${project}... </echo>
+
+    <!-- check if the project has been checked out before -->
+    <available file="/usr/local/lib" type="dir"
+               property="project.present"/>
+    <echo>TEST - project.present = ${project.present}</echo>
+    
+    <antcall target="checkoutProject"/>
+    
+  </target>
+
+  <target name="checkoutProject" unless="${project}.present">
+  
+    <echo> Checking out ${project}... </echo>
+    
+    <!-- check out the project from svn -->
+    <exec dir="${projectsDir}" executable="svn">
+      <arg line="co --username ${username} ${svnurl} ${project}"/>
+    </exec>
+    
+    <!-- run dependency check out-->
+    <ant antfile="../${project}/build.xml" target="${project}-Checkout">
+      <property name="project" value="${project}"/>
+      <property name="trunkflag" value="${trunkflag}"/>
+      <property name="version" value="${version}"/>
+    </ant>
 
   </target>
 

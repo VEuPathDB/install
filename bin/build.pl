@@ -10,7 +10,7 @@
 use strict;
 use Cwd 'realpath'; 
 
-my @whats = ("install", "webinstall");
+my @whats = ("checkout", "install", "webinstall");
 
 my $projectHome = $ENV{PROJECT_HOME};
 my $gusConfigFile = $ENV{GUS_HOME} . "/config/gus.config";
@@ -24,11 +24,14 @@ if (!$projectHome) {
 } 
 
 my ($project, $component, $doWhat, $targetDir, $append, $clean, 
-    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus) = &parseArgs(@ARGV);
+    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus, $branch) = &parseArgs(@ARGV);
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $installDBSchema $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger ";
+# TEST
+print "TODO - $doWhat";
+
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $installDBSchema $append $webPropFile $tag $branch -logger org.apache.tools.ant.NoBannerLogger ";
 
 
 # if not returning error status, then can pretty up output by keeping
@@ -77,7 +80,7 @@ sub parseArgs {
     &usage() unless $targetDir;
 
 
-    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile);
+    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $branch);
     if ($ARGV[0] eq "-append") {
 	shift @ARGV;
         $append = "-Dappend=true";
@@ -113,7 +116,12 @@ sub parseArgs {
 	$version = $ARGV[1];
     }
 
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus);
+    if ($ARGV[0] eq "-branch") {
+        shift @ARGV;
+        $branch = "-Dbranch=true";
+    }
+
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus, $branch);
 }
 
 sub usage {
