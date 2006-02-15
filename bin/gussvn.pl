@@ -60,10 +60,9 @@ sub parseArgs {
       return ($project, $doWhat, '', '', '');
     }
     
-    print "Passed update.";
-    
     # should be checkout command, the url must be present
-    my $svnurl = shift @ARGV;
+    my $url = shift @ARGV;
+    my $svnurl = "-Dtopsvnurl=$url";
 
     &usage() unless $project;
     &usage() unless $doWhat && grep(/$doWhat/, (@whats));
@@ -90,7 +89,7 @@ sub usage {
     print 
 "
 usage: 
-  build projectname checkout svnurl [-branch [version]] 
+  build projectname checkout svnurl [-branch version] 
   build projectname update
 
 ";

@@ -12,7 +12,7 @@
   <!--   clean           (recompile java already compiled)                  -->
   <!--   installDBSchema (Install the schema in the DB.  Normally  Skipped) -->
   <!--   checkout                                                           -->
-  <!--   svnurl (do not specify trunk or branch, version in the url) -->
+  <!--   topsvnurl (do not specify trunk or branch, version in the url) -->
   <!--   branch (if it's set, then check out the branch; otherwise, check out the trunk) -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -83,11 +83,11 @@
     <fail if="project.present">${proj} has already been checked out.</fail>
     
     <!-- otherwise, check out the project -->
-    <antcall target="defaultProjectCheckout">
-      <property name="svnurl" value="${svnurl}"/>
-      <property name="project" value="{proj}"/>
+    <ant target="defaultProjectCheckout">
+      <property name="svnurl" value="${topsvnurl}"/>
+      <property name="project" value="${proj}"/>
       <property name="version" value="${vers}"/>
-    </antcall>
+    </ant>
   </target>  
 
   <target name="update">
@@ -482,10 +482,25 @@
 
   <!-- oooooooooooooooooooo default project checkout ooooooooooooooooooooooo -->
 
-  <target name="defaultProjectCheckout" depends="constructTrunkSvnUrl,constructBranchSvnUrl">
+  <target name="defaultProjectCheckout">
     <!-- the trunkflag is composed properly in the dependencies -->
-  
-    <echo> Checking out ${project}... </echo>
+    <antcall target="constructTrunkSvnUrl" />
+    <antcall target="constructBranchSvnUrl" />
+  </target>  
+
+  <target name="constructTrunkSvnUrl" unless="${branch}">
+    <property name="svnflag" value="trunk" />
+    <antcall target="projectCheckout" />
+  </target>
+
+
+  <target name="constructBranchSvnUrl" if="${branch}">
+    <property name="svnflag" value="branches/${version}" />
+    <antcall target="projectCheckout" />
+  </target>
+    
+  <target name="projectCheckout">
+    <echo> Checking out ${project} from ${svnurl}/${svnflag}... </echo>
     
     <!-- check out the project from svn -->
     <exec dir="${projectsDir}" executable="svn">
@@ -498,15 +513,6 @@
       <property name="version" value="${version}"/>
     </ant>
 
-  </target>
-
-  <target name="constructTrunkSvnUrl" unless="${branch}">
-    <property name="svnflag" value="trunk" />
-  </target>
-
-
-  <target name="constructBranchSvnUrl" if="${branch}">
-    <property name="svnflag" value="branches/${version}" />
   </target>
 
   <!-- oooooooooooooooooooo default project update ooooooooooooooooooooooo -->
