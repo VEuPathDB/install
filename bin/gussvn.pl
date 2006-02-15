@@ -77,6 +77,7 @@ sub parseArgs {
         if ($ver) {
             $version = "-Dversion=$ver";
             shift @ARGV;
+            &usage() unless $version;
         }
     } 
 
