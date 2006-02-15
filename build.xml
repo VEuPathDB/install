@@ -5,13 +5,7 @@
   <!-- Properties expected:                                                 -->
   <!--   proj            (project)                                          -->
   <!--   vers            (version)                                          -->
-  <!--   comp            (component: either "" or "/componentname")         -->
   <!--   projectsDir                                                        -->
-  <!--   targetDir                                                          -->
-  <!--   append                                                             -->
-  <!--   clean           (recompile java already compiled)                  -->
-  <!--   installDBSchema (Install the schema in the DB.  Normally  Skipped) -->
-  <!--   checkout                                                           -->
   <!--   topsvnurl (do not specify trunk or branch, version in the url) -->
   <!--   branch (if it's set, then check out the branch; otherwise, check out the trunk) -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -483,24 +477,18 @@
   <!-- oooooooooooooooooooo default project checkout ooooooooooooooooooooooo -->
 
   <target name="defaultProjectCheckout">
-    <!-- the trunkflag is composed properly in the dependencies -->
-    <antcall target="constructTrunkSvnUrl" />
-    <antcall target="constructBranchSvnUrl" />
-  </target>  
-
-  <target name="constructTrunkSvnUrl" unless="${branch}">
-    <property name="svnflag" value="trunk" />
-    <antcall target="projectCheckout" />
-  </target>
-
-
-  <target name="constructBranchSvnUrl" if="${branch}">
-    <property name="svnflag" value="branches/${version}" />
-    <antcall target="projectCheckout" />
-  </target>
     
-  <target name="projectCheckout">
-    <echo> Checking out ${project} from ${svnurl}/${svnflag}... </echo>
+    <!-- the trunkflag is composed properly in the dependencies -->
+    <condition property="svnflag" value="trunk">
+      <not>
+        <isset property="branch" />
+      </not>
+    </condition>
+    <condition property="svnflag" value="branches/${version}">
+      <isset property="branch" />
+    </condition>
+
+    <echo> Checking out ${project} (${version}) from ${svnurl}/${svnflag}... </echo>
     
     <!-- check out the project from svn -->
     <exec dir="${projectsDir}" executable="svn">

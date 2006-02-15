@@ -75,7 +75,7 @@ sub parseArgs {
         $branch = "-Dbranch=true";
         my $ver = shift @ARGV;
         if ($ver) {
-            $version = "-Dversion=$ver";
+            $version = "-Dvers=$ver";
             shift @ARGV;
             &usage() unless $version;
         }
