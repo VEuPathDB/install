@@ -494,13 +494,17 @@
     <exec dir="${projectsDir}" executable="svn">
       <arg line="co ${svnurl}/${svnflag} ${project}"/>
     </exec>
-    
+
+    <!-- try to checkout dependencies -->
+    <antcall target="checkoutDependencies" />
+  </target>
+  
+  <target name="checkoutDependencies" unless="excludeChildren">
     <!-- run dependency check out-->
     <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-ChildCheckout">
       <property name="project" value="${project}"/>
       <property name="version" value="${version}"/>
     </ant>
-
   </target>
 
   <!-- oooooooooooooooooooo default project update ooooooooooooooooooooooo -->
