@@ -28,7 +28,7 @@ my ($project, $component, $doWhat, $targetDir, $append, $clean,
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $installDBSchema $append $webPropFile $tag $branch -logger org.apache.tools.ant.NoBannerLogger ";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $installDBSchema $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger ";
 
 
 # if not returning error status, then can pretty up output by keeping
@@ -77,7 +77,7 @@ sub parseArgs {
     &usage() unless $targetDir;
 
 
-    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $branch);
+    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile);
     if ($ARGV[0] eq "-append") {
 	shift @ARGV;
         $append = "-Dappend=true";
