@@ -308,9 +308,6 @@
            <fileset dir="${targetDir}/lib/java/db_driver">
               <include name="*.zip"/>
            </fileset>
-           <fileset dir="${targetDir}/wsf-lib/java">
-              <include name="*.jar"/>
-           </fileset>
         </classpath>
      </javac>
      <copy todir="${projectsDir}/${project}/${component}/classes/META-INF">
