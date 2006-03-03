@@ -151,7 +151,7 @@
     </condition>  
 
     <fail if="noConfigFile">
-      Error: Not gus.config file. Please run "cp ${projectsDir}/install/gus.config.sample ${targetDir}/config/gus.config" and edit ${targetDir}/config/gus.config as appropriate for your environment before try again.
+      Error: No gus.config file. Please run "mkdir -p ${targetDir}/config; cp ${projectsDir}/install/gus.config.sample ${targetDir}/config/gus.config" and edit ${targetDir}/config/gus.config as appropriate for your environment before try again.
     </fail>
 
     <copy file="${projectsDir}/install/config/log4j.properties" tofile="${targetDir}/config/log4j.properties"/>
@@ -381,7 +381,7 @@
 
     <antcall target="webComponentPartCopy">
       <param name="part" value="webapp"/>
-      <param name="to" value="${Webapptargetdir}"/>
+      <param name="to" value="${webappTargetDir}"/>
     </antcall>
 
     <antcall target="webComponentPartCopy">
