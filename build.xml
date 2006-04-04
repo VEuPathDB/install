@@ -412,9 +412,6 @@
 
   <target name="webComponentPartCopy">
     <available property="partAvailable" file="${componentDir}/${part}"/>
-    
-    <echo>TEST - partDir=${componentDir}/${part}</echo>
-
     <antcall target="webComponentPartCopySub"/>
   </target>  
 
