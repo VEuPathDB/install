@@ -89,10 +89,32 @@ sub usage {
 
     print 
 "
-usage: 
-  build projectname checkout svnurl [-branch version] 
-  build projectname update
+Checkout or update a top-level project, either the trunk or a branch.
 
+gussvn is \"smart\" in that it recursively follows the project dependency
+structure as defined in the build.xml files.  If you give it a project,
+it will find the projects it depends on, recursively.  It also obeys the
+version information in the build.xml files.  This way, you can have it find
+all depended upon projects within a branch.
+
+Usage:
+  gussvn <projectname> checkout <svnurl> [-branch <version>]
+  gussvn <projectname> update
+
+Where:
+  projectname:  is the name of a project that you have already checked out.
+  checkout:     use this option to do a svn checkout
+  update:       use this option to do a svn update
+  svnurl:       the location in the svn repository of the top-level project, but  stopping
+                before /branches or /trunk (see Examples).
+  -branch:      use this option to check out from a branch
+  version:      the name of the branch to check out (ie, the name after /branches/ in an svn url)
+
+Examples:
+    gussvn PlasmoDBWebsite checkout https://www.cbil.upenn.edu/svn/apidb/PlasmoDBWebsite
+    gussvn PlasmoDBWebsite checkout https://www.cbil.upenn.edu/svn/apidb/PlasmoDBWebsite -branch plasmodb5.0beta
+    gussvn PlasmoDBWebsite update
+  
 ";
     exit 1;
 }
