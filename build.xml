@@ -534,6 +534,11 @@
       <arg line="update"/>
     </exec>
  
+    <!-- try to update dependencies -->
+    <antcall target="updateDependencies" />
+  </target>
+
+  <target name="updateDependencies" unless="excludeChildren">
     <!-- update the dependencies of the project -->
     <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-ChildUpdate">
       <property name="project" value="${project}"/>
