@@ -114,7 +114,14 @@ Examples:
     gussvn PlasmoDBWebsite checkout https://www.cbil.upenn.edu/svn/apidb/PlasmoDBWebsite
     gussvn PlasmoDBWebsite checkout https://www.cbil.upenn.edu/svn/apidb/PlasmoDBWebsite -branch plasmodb5.0beta
     gussvn PlasmoDBWebsite update
-  
+
+NOTE: gussvn writes to your \$PROJECT_HOME not your current directory.  To use gussvn checkout:
+  (1) make sure that your \$PROJECT_HOME is set to the directory you want to
+      check out into
+  (2) make sure that \$PROJECT_HOME/install exists.  If not, do this
+       % cd \$PROJECT_HOME
+       % svn co https://www.cbil.upenn.edu/svn/gus/install install
+
 ";
     exit 1;
 }
