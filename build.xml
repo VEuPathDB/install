@@ -365,6 +365,11 @@
     </antcall>
 
     <antcall target="webComponentPartCopy">
+      <param name="part" value="html"/>
+      <param name="to" value="${htdocsTargetDir}"/>
+    </antcall>
+
+    <antcall target="webComponentPartCopy">
       <param name="part" value="cgi-bin"/>
       <param name="to" value="${cgibinTargetDir}"/>
     </antcall>
