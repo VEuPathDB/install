@@ -154,7 +154,7 @@
       Error: No gus.config file. Please run "mkdir -p ${targetDir}/config; cp ${projectsDir}/install/gus.config.sample ${targetDir}/config/gus.config" and edit ${targetDir}/config/gus.config as appropriate for your environment before try again.
     </fail>
 
-    <copy file="${projectsDir}/install/config/log4j.properties" tofile="${targetDir}/config/log4j.properties"/>
+    <!--copy file="${projectsDir}/install/config/log4j.properties" tofile="${targetDir}/config/log4j.properties"/ -->
   </target>  
 
 
