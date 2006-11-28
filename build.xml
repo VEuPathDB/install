@@ -503,7 +503,7 @@
       <isset property="branch" />
     </condition>
 
-    <echo> Checking out ${project} (${version}) from ${svnurl}/${svnflag}... </echo>
+    <echo> Checking out ${project} (${svnflag}) from ${svnurl}/${svnflag}... </echo>
     
     <!-- check out the project from svn -->
     <exec dir="${projectsDir}" executable="svn">
