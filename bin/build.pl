@@ -35,7 +35,7 @@ my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/insta
 # only lines with bracketed ant target name (ie, ditch its commentary).
 # the grep, however, frustrates accurate status reporting
 if (!$returnErrStatus) {
-  $cmd .= " | grep ']'";
+  $cmd .= " | grep ']' | grep -v chmod";
 }
 
 # print "\n$cmd\n\n";
