@@ -297,6 +297,7 @@
             destdir="${projectsDir}/${project}/${component}/classes"
 	    debug="on"
 	    fork="true"
+	    tempdir="${projectsDir}/${project}/${component}/classes"
 	    memoryMaximumSize="128m">
         <classpath>
            <fileset dir="${targetDir}/lib/java/">
