@@ -298,7 +298,7 @@
 	    debug="on"
 	    fork="true"
 	    tempdir="${projectsDir}/${project}/${component}/classes"
-	    memoryMaximumSize="128m">
+	    memoryMaximumSize="256m">
         <classpath>
            <fileset dir="${targetDir}/lib/java/">
               <include name="*.jar"/>
