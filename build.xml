@@ -225,6 +225,12 @@
       <param name="prefix" value=""/>
     </antcall>
 
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/wdk"/>
+      <param name="to" value="lib/wdk"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
     <chmod perm="+x">
       <fileset dir="${targetDir}/bin"/>
     </chmod>
