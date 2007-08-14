@@ -28,15 +28,15 @@ my ($project, $component, $doWhat, $targetDir, $append, $clean,
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=$component -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $installDBSchema $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger ";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=\"$component\" -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $installDBSchema $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger ";
 
 
 # if not returning error status, then can pretty up output by keeping
 # only lines with bracketed ant target name (ie, ditch its commentary).
 # the grep, however, frustrates accurate status reporting
-if (!$returnErrStatus) {
-  $cmd .= " | grep ']' | grep -v chmod";
-}
+#if (!$returnErrStatus) {
+#   $cmd .= " | grep ']' | grep -v chmod";
+#}
 
 # print "\n$cmd\n\n";
 system($cmd);

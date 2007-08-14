@@ -26,6 +26,7 @@
 
     <!-- TEST -->
     <echo> proj=${proj} </echo>
+    <echo> comp=${comp} </echo>
     
     <ant antfile="../${proj}/build.xml" target="${proj}${comp}-Installation">
       <property name="project" value="${proj}"/>
