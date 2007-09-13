@@ -201,7 +201,7 @@
     <fail unless="componentAvail">
        Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
-
+    
     <antcall target="componentPartCopy">
       <param name="part" value="bin"/>
       <param name="to" value="bin"/>
@@ -414,7 +414,12 @@
 
   <target name="componentPartCopySub" if="partAvailable">
     <mkdir dir="${targetDir}/${to}/${prefix}"/>
-    <copy todir="${targetDir}/${to}/${prefix}">
+
+    <!-- define the filter values that will be applied to all component files -->
+    <filter token="targetDir" value="${targetDir}"/>   
+    <filter token="webappTargetDir" value="${webappTargetDir}"/>
+    
+    <copy todir="${targetDir}/${to}/${prefix}" filtering="true">
       <fileset dir="${componentDir}/${part}" >
         <include name="**"/>
         <exclude name="**/CVS/*" />
@@ -430,7 +435,12 @@
 
   <target name="webComponentPartCopySub" if="partAvailable">
     <mkdir dir="${to}"/>
-    <copy todir="${to}">
+
+    <!-- define the filter values that will be applied to all component files -->
+    <filter token="targetDir" value="${targetDir}"/>   
+    <filter token="webappTargetDir" value="${webappTargetDir}"/>
+
+    <copy todir="${to}" filtering="true">
       <fileset dir="${componentDir}/${part}" >
         <include name="**"/>
         <exclude name="**/CVS/*" />
