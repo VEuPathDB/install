@@ -414,12 +414,8 @@
 
   <target name="componentPartCopySub" if="partAvailable">
     <mkdir dir="${targetDir}/${to}/${prefix}"/>
-
-    <!-- define the filter values that will be applied to all component files -->
-    <filter token="targetDir" value="${targetDir}"/>   
-    <filter token="webappTargetDir" value="${webappTargetDir}"/>
     
-    <copy todir="${targetDir}/${to}/${prefix}" filtering="true">
+    <copy todir="${targetDir}/${to}/${prefix}">
       <fileset dir="${componentDir}/${part}" >
         <include name="**"/>
         <exclude name="**/CVS/*" />
@@ -436,11 +432,7 @@
   <target name="webComponentPartCopySub" if="partAvailable">
     <mkdir dir="${to}"/>
 
-    <!-- define the filter values that will be applied to all component files -->
-    <filter token="targetDir" value="${targetDir}"/>   
-    <filter token="webappTargetDir" value="${webappTargetDir}"/>
-
-    <copy todir="${to}" filtering="true">
+    <copy todir="${to}">
       <fileset dir="${componentDir}/${part}" >
         <include name="**"/>
         <exclude name="**/CVS/*" />
