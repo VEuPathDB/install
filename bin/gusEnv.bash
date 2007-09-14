@@ -24,14 +24,14 @@
 #  % source gusEnv.csh
 #
 
-if [ ! -d $PWD/project_home ]; then
+if [ ! -d $PWD/project_home -a ! -L $PWD/project_home ]; then
   echo "Error: directory '$PWD/project_home' does not exist"
-  exit 1
+#  exit 1
 fi
 
-if [ ! -d $PWD/gus_home ]; then
+if [ ! -d $PWD/gus_home -a ! -L $PWD/gus_home ]; then
   echo "Error: directory '$PWD/gus_home' does not exist"
-  exit 1
+#  exit 1
 fi
 
 export PROJECT_HOME=$PWD/project_home
