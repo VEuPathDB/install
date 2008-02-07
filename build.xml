@@ -27,6 +27,7 @@
     <!-- TEST -->
     <echo> proj=${proj} </echo>
     <echo> comp=${comp} </echo>
+    <property name="initialTarget" value="install"/>
     
     <ant antfile="../${proj}/build.xml" target="${proj}${comp}-Installation">
       <property name="project" value="${proj}"/>
@@ -51,6 +52,8 @@
 
 
   <target name="webinstall" depends="WebInstallInit">    
+    <property name="initialTarget" value="webinstall"/>
+
     <ant antfile="../${proj}/build.xml" target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
     </ant>
@@ -293,6 +296,8 @@
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
 
+    <antcall target="buildInfo" />
+
   </target>  
 
 
@@ -402,6 +407,8 @@
       <param name="to" value="${servletsTargetDir}"/>
     </antcall>
 
+    <antcall target="buildInfo" />
+
   </target>  
 
 
@@ -470,6 +477,83 @@
 
   </target>
   
+  
+  <target name="buildInfo" depends="svnInfo,recordBuildState" />
+
+  <target name="recordBuildState">
+
+    <condition property="svninfo" value="${svnInfoOut}">
+      <isset property="svnInfoOut"/>
+    </condition>
+    <condition property="svninfo" value="NA">
+      <not><isset property="svnInfoOut"/></not>
+    </condition>
+
+    <condition property="svnstat" value="${svnStatOut}">
+      <isset property="svnStatOut"/>
+    </condition>
+    <condition property="svnstat" value="NA">
+      <not><isset property="svnStatOut"/></not>
+    </condition>
+
+    <tstamp>
+      <format property="tstamp" pattern="yyyy/MM/dd HH:mm:ss"/>
+    </tstamp>
+  
+    <propertyfile comment="Build Information"
+                  file="${targetDir}/config/.build.info">
+      <entry key="!Last.build.initialTarget"
+             value="${initialTarget}"/>
+      <entry key="!Last.build.component"
+             value="${proj}${comp}"/>
+      <entry key="!Last.build.timestamp"
+             value="${tstamp}"/>
+      <entry key="!Last.build"
+             value="${proj}${comp} @ ${tstamp}"/>
+      <entry key="${project}.${component}.buildtime"
+             type="date"
+             pattern="yyyy/MM/dd HH:mm:ss"
+             value="now"/>
+      <entry key="${project}.svn.info"
+             value="${svninfo}"/>
+      <entry key="${project}.svn.status"
+             value="${svnstat}"/>
+    </propertyfile>
+  </target>  
+
+  <target name="svnInfo" if="can.do.svn" depends="canDoSvn">
+    <exec dir="${projectsDir}" 
+           executable="sh"
+           outputproperty="svnInfoOut"
+           failonerror="false"
+           failifexecutionfails="false">
+       <arg line="-c"/>
+       <arg line="'svn info ${project} | egrep URL\|Rev\|Date'"/>
+    </exec>
+    <exec dir="${projectsDir}" 
+           executable="sh"
+           outputproperty="svnStatOut"
+           failonerror="false"
+           failifexecutionfails="false">
+       <arg line="-c"/>
+       <arg line="'svn status ${project}'"/>
+    </exec>
+  </target>
+
+  <target name="canDoSvn">
+      <property environment="env" />
+      <condition property="can.do.svn">
+         <and>
+           <available file="${projectsDir}/${project}/.svn" type="dir" />
+           <available file="svn" type="file">
+             <filepath>
+               <pathelement path="${env.PATH}"/>
+             </filepath>
+           </available>
+         </and>
+      </condition>
+  </target>
+
   <!-- oooooooooooooooooooo default project release ooooooooooooooooooooooo -->
 
   <target name="defaultProjectRelease">
