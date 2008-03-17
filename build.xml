@@ -5,15 +5,20 @@
   <!-- Properties expected:                                                 -->
   <!--   proj            (project)                                          -->
   <!--   vers            (version)                                          -->
-  <!--   comp		(component)                                                        -->
-  <!--   gusConfigFile                                                        -->
+  <!--   comp            (component)                                        -->
+  <!--   gusConfigFile                                                      -->
   <!--   projectsDir                                                        -->
-  <!--   clean                                                        -->
-  <!--   installDBSchema                                                        -->
-  <!--   append                                                        -->
+  <!--   clean                                                              -->
+  <!--   installDBSchema                                                    -->
+  <!--   append                                                             -->
   <!--   webPropFile                                                        -->
-  <!--   tag                                                        -->
+  <!--   tag                                                                -->
   <!--   projectsDir                                                        -->
+  <!--   projectsDir                                                        -->
+  <!--   projectsDir                                                        -->
+  <!--   svnurl             must present in dependent checkout targets      -->
+  <!--   excludeChildren    optional, only presents in dependent checkout targets -->
+  <!--   useBranch          optional, only presents in dependent checkout targets -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
@@ -42,7 +47,7 @@
     </replace> 
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
-    <chmod perm="+x">
+    <chmod perm="a+x">
       <fileset dir="${targetDir}/bin"/>
     </chmod>
 
@@ -307,10 +312,10 @@
      <mkdir dir="${targetDir}/lib/java/db_driver"/>
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
             destdir="${projectsDir}/${project}/${component}/classes"
-	    debug="on"
-	    fork="true"
-	    tempdir="${projectsDir}/${project}/${component}/classes"
-	    memoryMaximumSize="256m">
+        debug="on"
+        fork="true"
+        tempdir="${projectsDir}/${project}/${component}/classes"
+        memoryMaximumSize="256m">
         <classpath>
            <fileset dir="${targetDir}/lib/java/">
               <include name="*.jar"/>
@@ -590,11 +595,17 @@
     <!-- the trunkflag is composed properly in the dependencies -->
     <condition property="svnflag" value="trunk">
       <not>
-        <isset property="branch" />
+        <or>
+          <isset property="branch" />
+          <isset property="useBranch" />
+        </or>
       </not>
     </condition>
     <condition property="svnflag" value="branches/${version}">
-      <isset property="branch" />
+      <or>
+        <isset property="branch" />
+        <isset property="useBranch" />
+      </or>
     </condition>
 
     <echo> Checking out ${project} (${svnflag}) from ${svnurl}/${svnflag}... </echo>
