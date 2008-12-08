@@ -594,18 +594,26 @@
     
     <!-- the trunkflag is composed properly in the dependencies -->
     <condition property="svnflag" value="trunk">
-      <not>
+      <or>
+        <not>
+          <or>
+            <isset property="branch" />
+            <isset property="useBranch" />
+          </or>
+        </not>
+        <equals arg1="${useBranch}" arg2="false"/>
+      </or>
+    </condition>
+    <condition property="svnflag" value="branches/${version}">
+      <and>
         <or>
           <isset property="branch" />
           <isset property="useBranch" />
         </or>
-      </not>
-    </condition>
-    <condition property="svnflag" value="branches/${version}">
-      <or>
-        <isset property="branch" />
-        <isset property="useBranch" />
-      </or>
+        <not>
+          <equals arg1="${useBranch}" arg2="false"/>
+        </not>
+      </and>
     </condition>
 
     <echo> Checking out ${project} (${svnflag}) from ${svnurl}/${svnflag}... </echo>
