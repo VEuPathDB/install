@@ -148,6 +148,9 @@
        <fileset dir="${targetDir}/lib/java/db_driver" includes="*.jar"/>
      </delete>
      <delete>
+       <fileset dir="${targetDir}/lib/java/not-deployed" includes="*.jar"/>
+     </delete>
+     <delete>
        <fileset dir="${targetDir}/lib/java" includes="*.zip"/>
      </delete>
    </target>
@@ -310,6 +313,7 @@
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
      <mkdir dir="${targetDir}/lib/java/db_driver"/>
+     <mkdir dir="${targetDir}/lib/java/not-deployed"/>
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
             destdir="${projectsDir}/${project}/${component}/classes"
         debug="on"
@@ -325,6 +329,9 @@
            </fileset>
            <fileset dir="${targetDir}/lib/java/db_driver">
               <include name="*.zip"/>
+           </fileset>
+           <fileset dir="${targetDir}/lib/java/not-deployed">
+              <include name="*.jar"/>
            </fileset>
         </classpath>
      </javac>
