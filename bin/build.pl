@@ -122,7 +122,7 @@ sub usage {
     print 
 "
 usage: 
-  build projectname\[/componentname]  $whats  targetDir -append [-installDBSchema] [-webPropFile propfile] [-co [version]] 
+  build projectname\[/componentname]  $whats -append [-installDBSchema] [-webPropFile propfile] [-co [version]] 
   build projectname release version
 
 ";
