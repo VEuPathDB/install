@@ -266,8 +266,8 @@
     </antcall>
 
     <antcall target="componentPartCopy">
-      <param name="part" value="lib/wizard"/>
-      <param name="to" value="lib/wizard"/>
+      <param name="part" value="lib/wdk-wizard"/>
+      <param name="to" value="lib/wdk-wizard"/>
       <param name="prefix" value=""/>
     </antcall>
 
