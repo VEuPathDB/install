@@ -266,12 +266,6 @@
     </antcall>
 
     <antcall target="componentPartCopy">
-      <param name="part" value="lib/wdk-wizard"/>
-      <param name="to" value="lib/wdk-wizard"/>
-      <param name="prefix" value=""/>
-    </antcall>
-
-    <antcall target="componentPartCopy">
       <param name="part" value="plugin/perl"/>
       <param name="to" value="lib/perl"/>
       <param name="prefix" value="${project}/${component}/Plugin/"/>
