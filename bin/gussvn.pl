@@ -37,7 +37,7 @@ my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/insta
 #}
 
 # print "\n$cmd\n\n";
-system($cmd);
+system("/bin/sh $cmd");
 
 # only valid if $returnErrStatus is set
 my $status = $? >>8;
