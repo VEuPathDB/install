@@ -1,12 +1,12 @@
-#!/bin/csh
+#!/bin/bash
 
-if ($#argv != 1) then
+if [ -z "$1" ]; then
    echo ""
    echo "Usage: bld project[/component]"
    echo ""
    echo "  calls 'build project[/component] install -append'"
    echo ""
    exit 1
-endif
-build $argv[1] install -append
+fi
+build $1 install -append
 
