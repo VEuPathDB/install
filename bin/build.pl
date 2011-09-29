@@ -98,6 +98,11 @@ sub parseArgs {
 	$installDBSchema = "-DinstallDBSchema=true";
     }
 
+    if ($ARGV[0] eq "-installDBSchemaSkipRoles") {
+	shift @ARGV;
+	$installDBSchema = "-DinstallDBSchema=true -DskipRoles=true";
+    }
+
     if ($ARGV[0] eq "-webPropFile") {
         shift @ARGV;
 	my $wpFile = shift @ARGV;
@@ -122,7 +127,7 @@ sub usage {
     print 
 "
 usage: 
-  build projectname\[/componentname]  $whats -append [-installDBSchema] [-webPropFile propfile] [-co [version]] 
+  build projectname\[/componentname]  $whats -append [-installDBSchema | -installDBSchemaSkipRoles] [-webPropFile propfile] [-co [version]] 
   build projectname release version
 
 ";
