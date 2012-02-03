@@ -479,7 +479,14 @@
     </fail>
   </target>  
 
-  <target name="webinstall-postprocess" if="cgibinTargetDir">
+  <target name="webinstall-postprocess">
+
+    <antcall target="webinstall-cgi-bin" />
+    <antcall target="webinstall-webapp" />
+
+  </target>
+
+  <target name="webinstall-cgi-bin" if="cgibinTargetDir">
 
     <replace dir="${cgibinTargetDir}" 
              propertyFile="${targetDir}/config/gus.config" > 
@@ -494,7 +501,30 @@
     </chmod>
 
   </target>
-  
+
+  <target name="webinstall-webapp" if="webappTargetDir">
+
+    <echo>Copying default and custom tags...</echo>
+    <!--  remove all tags first -->
+    <delete>
+      <fileset dir="${webappTargetDir}/WEB-INF/tags/imp" includes="*.tag"/>
+    </delete>
+
+    <!-- need to copy the default tags from WDK first -->
+    <copy todir="${webappTargetDir}/WEB-INF/tags/imp">
+      <fileset dir="${webappTargetDir}/WEB-INF/tags/wdk">
+        <include name="*.tag"/>
+      </fileset>
+    </copy>
+
+    <!-- lastly, copy custom tags from site, and overwrite existing ones -->
+    <copy todir="${webappTargetDir}/WEB-INF/tags/imp" overwrite="true">
+      <fileset dir="${webappTargetDir}/WEB-INF/tags/site">
+        <include name="*.tag"/>
+      </fileset>
+    </copy>
+
+  </target>
   
   <target name="buildInfo" depends="svnInfo,recordBuildState" />
 
