@@ -505,6 +505,9 @@
   <target name="webinstall-webapp" if="webappTargetDir">
 
     <echo>Copying default and custom tags...</echo>
+
+    <mkdir dir="${webappTargetDir}/WEB-INF/tags/imp"/>
+
     <!--  remove all tags first -->
     <delete>
       <fileset dir="${webappTargetDir}/WEB-INF/tags/imp" includes="*.tag"/>
