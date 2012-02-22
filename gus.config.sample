@@ -50,7 +50,7 @@ coreSchemaName=CORE
 
 sequenceStart=1
 
-### Common delimited list of housekeeping columns.  In order as they should appear in the tables
+### Comma-delimited list of housekeeping columns.  In order as they should appear in the tables
 housekeepingColumns=MODIFICATION_DATE,USER_READ,USER_WRITE,GROUP_READ,GROUP_WRITE,OTHER_READ,OTHER_WRITE,ROW_USER_ID,ROW_GROUP_ID,ROW_PROJECT_ID,ROW_ALG_INVOCATION_ID
 housekeepingColumnsVer=MODIFICATION_DATE,USER_READ,USER_WRITE,GROUP_READ,GROUP_WRITE,OTHER_READ,OTHER_WRITE,ROW_USER_ID,ROW_GROUP_ID,ROW_PROJECT_ID,ROW_ALG_INVOCATION_ID,VERSION_ALG_INVOCATION_ID,VERSION_DATE,VERSION_TRANSACTION_ID
 
