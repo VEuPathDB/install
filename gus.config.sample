@@ -45,7 +45,8 @@ md5sum=/usr/bin/md5sum
 ###   Warning:  Do not change items below here unless you know what you're doing
 ################################################################################
 
-gusSchemas=Core,DoTS,SRes,Study,Platform,Model,Results
+gusSchemas=Core,RAD,DoTS,SRes,TESS,prot,study
+# gusSchemas=Core,DoTS,SRes,Study,Platform,Model,Results # GUS 4.0 candidate schemata
 coreSchemaName=CORE
 
 sequenceStart=1
