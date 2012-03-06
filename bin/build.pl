@@ -24,12 +24,11 @@ if (!$projectHome) {
 } 
 
 my ($project, $component, $doWhat, $targetDir, $append, $clean, 
-    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus) = &parseArgs(@ARGV);
+    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus, $installConfigFile) = &parseArgs(@ARGV);
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=\"$component\" -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $installDBSchema $append $webPropFile $tag -logger org.apache.tools.ant.NoBannerLogger ";
-
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=\"$component\" -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome $clean $installDBSchema $append $webPropFile $tag $installConfigFile -logger org.apache.tools.ant.NoBannerLogger ";
 
 # if not returning error status, then can pretty up output by keeping
 # only lines with bracketed ant target name (ie, ditch its commentary).
@@ -54,8 +53,8 @@ sub parseArgs {
     my $component; 
 
     if ($project =~ /([\w-]+)(\/\w+)/ ) {
-	$project = $1;
-	$component = $2;
+        $project = $1;
+        $component = $2;
     }
     my $doWhat = shift @ARGV;
 
@@ -67,19 +66,19 @@ sub parseArgs {
 
     my $targetDir;
     if ($ENV{GUS_HOME} && (!$ARGV[0] || $ARGV[0] =~ /^-/)) {
-	$targetDir = $ENV{GUS_HOME};
+        $targetDir = $ENV{GUS_HOME};
     } else {
-	$targetDir = shift @ARGV;
+        $targetDir = shift @ARGV;
     }
 
     &usage() unless $project;
-    &usage() unless $doWhat && grep(/$doWhat/, (@whats, "release"));
-    &usage() unless $targetDir;
+    &usage("unknown subcommand '$doWhat'") unless $doWhat && grep(/$doWhat/, (@whats, "release"));
+    &usage("targetDir not defined") unless $targetDir;
 
 
-    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile);
+    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $installConfigFile);
     if ($ARGV[0] eq "-append") {
-	shift @ARGV;
+        shift @ARGV;
         $append = "-Dappend=true";
     } 
 
@@ -93,41 +92,49 @@ sub parseArgs {
         $returnErrStatus = 1;
     }
    
+    if ($ARGV[0] eq "-installConfigFile") {
+        shift @ARGV;
+        $installConfigFile = "-DinstallConfigFile=true";
+    }
+
     if ($ARGV[0] eq "-installDBSchema") {
-	shift @ARGV;
-	$installDBSchema = "-DinstallDBSchema=true";
+        &usage("--installConfigFile not allowed with --installDBSchema") if ($installConfigFile);
+        shift @ARGV;
+        $installDBSchema = "-DinstallDBSchema=true";
     }
 
     if ($ARGV[0] eq "-installDBSchemaSkipRoles") {
-	shift @ARGV;
-	$installDBSchema = "-DinstallDBSchema=true -DskipRoles=true";
+        shift @ARGV;
+        $installDBSchema = "-DinstallDBSchema=true -DskipRoles=true";
     }
 
     if ($ARGV[0] eq "-webPropFile") {
         shift @ARGV;
-	my $wpFile = shift @ARGV;
-	if (!-e $wpFile) { 
-	  print "Error: webPropFile not found\n"; 
-	  exit 1; 
-	}
-	$webPropFile = "-propertyfile $wpFile -DwebPropFile=$wpFile";
+        my $wpFile = shift @ARGV;
+        if (!-e $wpFile) { 
+            print "Error: webPropFile not found\n"; 
+            exit 1; 
+        }
+        $webPropFile = "-propertyfile $wpFile -DwebPropFile=$wpFile";
     }
 
     if ($doCheckout = $ARGV[0]) {
-	&usage() if ($doCheckout ne "-co");
-	$version = $ARGV[1];
+        &usage("") if ($doCheckout ne "-co");
+        $version = $ARGV[1];
     }
 
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus);
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus, $installConfigFile);
 }
 
 sub usage {
+    my ($error) = @_;
+    print "\nFATAL: $error\n" if ($error);
     my $whats = join("|", @whats);
 
     print 
 "
 usage: 
-  build projectname\[/componentname]  $whats -append [-installDBSchema | -installDBSchemaSkipRoles] [-webPropFile propfile] [-co [version]] 
+  build projectname\[/componentname]  $whats -append [-installConfigFile] [-installDBSchema | -installDBSchemaSkipRoles] [-webPropFile propfile] [-co [version]]
   build projectname release version
 
 ";

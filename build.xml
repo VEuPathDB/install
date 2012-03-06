@@ -1,26 +1,27 @@
 <project name="MAIN" default="Installation"  basedir=".">
  
-  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
-  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
-  <!-- Properties expected:                                                 -->
-  <!--   proj            (project)                                          -->
-  <!--   vers            (version)                                          -->
-  <!--   comp            (component)                                        -->
-  <!--   gusConfigFile                                                      -->
-  <!--   projectsDir                                                        -->
-  <!--   clean                                                              -->
-  <!--   installDBSchema                                                    -->
-  <!--   append                                                             -->
-  <!--   webPropFile                                                        -->
-  <!--   tag                                                                -->
-  <!--   projectsDir                                                        -->
-  <!--   projectsDir                                                        -->
-  <!--   projectsDir                                                        -->
-  <!--   svnurl             must present in dependent checkout targets      -->
-  <!--   excludeChildren    optional, only presents in dependent checkout targets -->
-  <!--   useBranch          optional, only presents in dependent checkout targets -->
-  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
-  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- Properties expected:                                                         -->
+  <!--   proj            (project)                                                  -->
+  <!--   vers            (version)                                                  -->
+  <!--   comp            (component)                                                -->
+  <!--   gusConfigFile                                                              -->
+  <!--   projectsDir                                                                -->
+  <!--   clean                                                                      -->
+  <!--   installDBSchema                                                            -->
+  <!--   append                                                                     -->
+  <!--   webPropFile                                                                -->
+  <!--   tag                                                                        -->
+  <!--   installConfigFile  optional, installs $GUS_HOME/gus.config from sample     -->
+  <!--   projectsDir                                                                -->
+  <!--   projectsDir                                                                -->
+  <!--   projectsDir                                                                -->
+  <!--   svnurl             must present in dependent checkout targets              -->
+  <!--   excludeChildren    optional, only presents in dependent checkout targets   -->
+  <!--   useBranch          optional, only presents in dependent checkout targets   -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  Main Targets ooooooooooooooooooooooooooo -->
@@ -102,10 +103,10 @@
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
   <target name="InstallInit" depends="validateTargetDir, checkoutProj,
-                                     validateClean, installConfigFile"/>
+                                     validateClean, hasConfigFile"/>
 
   <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
-                                     validateClean, installConfigFile"/>
+                                     validateClean, hasConfigFile"/>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
@@ -155,7 +156,7 @@
      </delete>
    </target>
 
-  <target name="installConfigFile">
+  <target name="hasConfigFile" depends="optionInstallConfigFile">
    <condition property="noConfigFile">
        <not>
          <available file="${targetDir}/config/gus.config" />
@@ -166,9 +167,12 @@
       Error: No gus.config file. Please run "mkdir -p ${targetDir}/config; cp ${projectsDir}/install/gus.config.sample ${targetDir}/config/gus.config" and edit ${targetDir}/config/gus.config as appropriate for your environment before try again.
     </fail>
 
-    <!--copy file="${projectsDir}/install/config/log4j.properties" tofile="${targetDir}/config/log4j.properties"/ -->
   </target>  
 
+  <target name="optionInstallConfigFile" if="installConfigFile">
+    <mkdir dir="${targetDir}/config"/>
+    <copy file="${projectsDir}/install/gus.config.sample" tofile="${targetDir}/config/gus.config" overwrite="false" verbose="true" />
+  </target>
 
   <target name="checkoutProj" if="checkout">
     <echo>Top level check out</echo>
