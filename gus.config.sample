@@ -31,6 +31,7 @@ userName=
 group=
 project=
 
+# override "tablespace=" attribute of <table> entities in gus_schema.xml
 tablespace=GUS
 
 # Path to Perl Executable
