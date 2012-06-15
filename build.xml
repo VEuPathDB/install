@@ -1,4 +1,4 @@
-<project name="MAIN" default="Installation"  basedir=".">
+<project name="MAIN" default="install" basedir=".">
  
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -23,9 +23,21 @@
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
+  <!-- oooooooooooooooooooo Define additional resources oooooooooooooooooooo -->
+
+	<!-- deleting for now -->
+  <!--
+	<path id="maven-ant-tasks.classpath" path="lib/maven-ant-tasks-2.1.3.jar" />
+  <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+           uri="antlib:org.apache.maven.artifact.ant"
+           classpathref="maven-ant-tasks.classpath" />
+  -->
+	<!-- if using maven ant tags, uncomment above and add the following to the project tag at top -->
+	<!--    xmlns:artifact="antlib:org.apache.maven.artifact.ant" -->
+	
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  Main Targets ooooooooooooooooooooooooooo -->
-  <!-- ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
 
   <target name="install" depends="InstallInit">
@@ -123,8 +135,7 @@
     <fail if="targetDirExists">
       Error: Target directory ${targetDir} already exists and you have not set the 'append' property to true
     </fail>
-  </target>  
-
+  </target>
 
    <target name="validateClean" if="clean" depends="checkEmptyComponent">
       <fail if="notEmptyComponent">
@@ -201,6 +212,11 @@
          <include name="version"/>
       </fileset>
     </concat>
+    
+    <!-- all Maven-based components are built at the project level -->
+    <!-- KLUGE: disable this by default for now, so must call this target explicitly in
+           project build files (probably before installing non-maven components). -->
+    <!-- <antcall target="defaultMavenInstall"/> -->
   </target>
 
 
@@ -299,7 +315,7 @@
       <param name="to" value="test"/>
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
-       
+   
    <antcall target="defaultJavaCompile"/>
    
    <antcall target="componentPartCopy">
@@ -316,10 +332,9 @@
 
     <antcall target="buildInfo" />
 
-  </target>  
-
-
-  <target name="defaultJavaCompile" if="hasJava" depends="deleteMyClasses, checkIfHaveJava">
+  </target>
+  
+  <target name="defaultJavaCompile" if="${isNonMavenJava}" depends="deleteMyClasses,checkNonMavenJava">
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
      <mkdir dir="${targetDir}/lib/java/db_driver"/>
@@ -355,21 +370,27 @@
           destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
   </target>   
 
-
+  <target name="checkNonMavenJava" depends="checkIfMavenComponent,checkIfHaveJava">
+    <condition property="isNonMavenJava">
+      <and>
+        <istrue value="${isMavenComponent}"/>
+        <istrue value="${hasJava}"/>
+      </and>
+    </condition>
+  </target>
+  
   <target name="checkIfHaveJava">
-      <available property="hasJava" 
-                 file="${projectsDir}/${project}/${component}/src/java"/>
+      <available property="hasJava" file="${projectsDir}/${project}/${component}/src/java"/>
   </target>
 
   <target name="checkIfCleanAndHaveJava" depends="checkIfHaveJava">
        <condition property="cleanAndHasJava">
           <and>
-             <isset property="hasJava"/>
-             <isset property="clean"/>
+             <istrue value="${hasJava}"/>
+             <istrue value="${clean}"/>
           </and>
        </condition>
   </target>
-
 
    <target name="deleteMyClasses" if="cleanAndHasJava" 
            depends="checkIfCleanAndHaveJava">
@@ -379,7 +400,6 @@
     <delete file="${targetDir}/lib/java/${project}-${component}.jar"/>
     <echo message="deleted all old classes, clean is ${clean} and has java is ${hasJava}"/>
   </target>
-
 
   <!-- oooooooooooooooooooo default web install ooooooooooooooooooooooooooo -->
 
@@ -433,7 +453,40 @@
 
   </target>  
 
+  <!-- ooooooooooooooooooo Maven-related targets ooooooooooooooooooooooo -->
 
+  <target name="checkIfMavenProject">
+    <available property="isMavenProject" file="${projectsDir}/${project}/pom.xml"/>
+  </target>
+  
+  <target name="checkIfMavenComponent">
+    <available property="isMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
+  </target>  
+  
+  <target name="defaultMavenInstall" if="${isMavenProject}" depends="checkIfMavenProject">
+  	
+    <!-- build the project with maven -->
+    <exec dir="${projectsDir}/${project}"
+           executable="mvn"
+           failonerror="true"
+           failifexecutionfails="true">
+       <arg line="clean"/>
+       <arg line="install"/>
+       <arg line="-Dmaven.test.skip=true"/>
+    </exec>
+    
+    <!-- copy generated jar file to gus_home -->
+  	<!-- TODO: more explicitly copy the jar/war artifact from each maven component -->
+    <!-- <artifact:pom id="projectPom" file="${projectsDir}/${project}/pom.xml" /> -->
+    <!-- <echo message="The build directory is ${projectPom.name}"/> -->
+    <copy todir="${targetDir}/lib/java" flatten="true">
+      <fileset dir="${projectsDir}/${project}" >
+        <include name="*/target/*.jar"/>
+      </fileset>
+    </copy>
+    
+  </target>
+  
   <!-- oooooooooooooooooooo utility subroutines  ooooooooooooooooooooooo -->
 
   <target name="componentPartCopy">
