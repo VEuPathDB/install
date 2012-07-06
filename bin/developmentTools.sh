@@ -23,6 +23,9 @@
 ##  an argument, your DEFAULT_SITE is used (set configuration below).  The basic
 ##  tools are:
 ##
+##     sites:
+##        Shows a list of the sites configured in the SITES env variable
+##
 ##     setup [<site_name>]:
 ##        Sets the "current" site, along with GUS_HOME and PROJECT_HOME.  When
 ##        logged in to blender, sets up the environment for the passed site and
@@ -55,6 +58,10 @@
 ##
 ##     log:
 ##        displays logs for the current site (using cattail)
+##
+##     pullProject <proj_1> <proj_2> ...
+##        zips projects passed and copies from the current site on the dev
+##        server to the PROJECT_HOME on the client machine
 ##
 ##     pushProject <proj_1> <proj_2> ...
 ##        zips projects passed, copies them to the current site on blender, then
@@ -124,6 +131,16 @@
 export SITE_REPO=/var/www
 export BLENDER_JAVA_HOME=/usr/java/jdk1.7.0
 export ZIPD_PROJ_TMP_FILE=".tmpProject.zip" # will be written to you home dir
+
+function sites() {
+    echo "Available sites:"
+    echo "  Name: ( Type , URL/Dir , Instance )"
+    local dataArray=
+    for siteData in ${SITES[@]}; do
+        dataArray=( $(echo $siteData | sed 's/:/ /g') )
+        echo "  ${dataArray[0]}: ( ${dataArray[1]} , ${dataArray[2]} , ${dataArray[3]} )"
+    done
+}
 
 function getSiteData() {
 
@@ -281,6 +298,52 @@ function log() {
     cattail $SITE_DIR
 }
 
+function pullProject() {
+    local currentDir=`pwd`
+    cd $PROJECT_HOME
+
+    assignSiteValues
+    
+    local tmpFile=~/$ZIPD_PROJ_TMP_FILE
+    local remoteTmpFile=/home/$LOGNAME/$ZIPD_PROJ_TMP_FILE
+    local remoteProjHome=$SITE_REPO/$SITE_DIR/project_home
+
+    echo "Retrieving project(s) from $CURRENT_SITE"
+
+    for projectName in $*; do
+
+        echo "Processing $projectName"
+        echo "  Zipping up project on $DEV_SERVER"
+        ssh $DEV_SERVER "cd $remoteProjHome; zip -q -r $remoteTmpFile $projectName"
+        echo "  Copying zipped project to client..."
+        scp $DEV_SERVER:$remoteTmpFile $tmpFile
+        ssh $DEV_SERVER "rm -f $remoteTmpFile"
+
+        # check to see if project was successfully transferred
+        if [ -e $tmpFile ]; then
+        
+            # see if local project versions exist and back up if so
+            if [ -d ${projectName}.old ]; then
+                echo "  Moving ${projectName}.old to ${projectName}.older"
+                mv ${projectName}.old ${projectName}.older
+            fi
+            if [ -d $projectName ]; then
+                echo "  Moving $projectName to ${projectName}.old"
+                mv $projectName ${projectName}.old
+            fi
+
+            # move local zip file to project home and unzip
+            echo "  Extracting $projectName from zip file into $(pwd)"
+            unzip -q -d . $tmpFile
+            rm $tmpFile
+        else
+            echo "  Unable to successfully transfer project ${projectName}.  Skipping."
+        fi
+        
+    done
+    cd $currentDir
+}
+
 function pushProject() {
     local currentDir=`pwd`
 
@@ -307,23 +370,23 @@ function pushProject() {
         if [ -e $projectDir ]; then
         
             # zip project for import
-	    rm -f $tmpFile
-	    cd $projectDir
+            rm -f $tmpFile
+            cd $projectDir
 
             echo "  Cleaning .class files from project"
             find . -name "*.class" | xargs rm
-	    cd ..
+            cd ..
 
             echo "  Zipping $projectName for copy"
-	    zip -q -r $tmpFile $projectName
+            zip -q -r $tmpFile $projectName
 
-	    # copy zip file to server
+            # copy zip file to server
             echo "  Transferring file"
-	    scp $tmpFile $DEV_SERVER:$remoteTmpFile
+            scp $tmpFile $DEV_SERVER:$remoteTmpFile
 
-	    # unzip on server and deploy
+            # unzip on server and deploy
             echo "  Deploying project $projectName to $SITE_DIR"
-	    ssh $DEV_SERVER "deployProject $SITE_DIR $projectName"
+            ssh $DEV_SERVER "deployProject $SITE_DIR $projectName"
 
         else
             echo "  ERROR: project $projectName does not exist; skipping...";
@@ -359,23 +422,23 @@ function deployProject() {
     elif [ -d $projectDir ]; then
         if [ -e $tmpFile ]; then
             # move old versions
-	    if [ -e ${projectDir}.older ]; then
-	        echo "  Removing ${projectDir}.older";
-	        rm -rf ${projectDir}.older
+            if [ -e ${projectDir}.older ]; then
+                echo "  Removing ${projectDir}.older";
+                rm -rf ${projectDir}.older
             fi
-	    if [ -e ${projectDir}.old ]; then
-	        echo "  Moving ${projectDir}.old to ${projectDir}.older";
-	        mv ${projectDir}.old ${projectDir}.older
+            if [ -e ${projectDir}.old ]; then
+                echo "  Moving ${projectDir}.old to ${projectDir}.older";
+                mv ${projectDir}.old ${projectDir}.older
             fi
-	    echo "  Moving $projectDir to ${projectDir}.old";
-	    mv $projectDir ${projectDir}.old
+            echo "  Moving $projectDir to ${projectDir}.old";
+            mv $projectDir ${projectDir}.old
 
-	    # extract project
-	    echo "  Extracting project to $projectDir";
-	    unzip -q $tmpFile -d $projectHome	
+            # extract project
+            echo "  Extracting project to $projectDir";
+            unzip -q $tmpFile -d $projectHome
         else
-	    echo "ERROR: No files have been sent (looking for $tmpFile)";
-	    exit 3;
+            echo "ERROR: No files have been sent (looking for $tmpFile)";
+            exit 3;
         fi
     else
         echo "ERROR: $1 is not a project";
