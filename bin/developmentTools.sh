@@ -242,13 +242,12 @@ function svnup() {
 #   Arg 1: please pass Website or WebService
 function getTopLevelProject() {
     local topLevelProjectType=$1
-    local numWebsiteProjects=`ls $PROJECT_DIR | grep "$topLevelProjectType\$" | wc -l`
+    local numWebsiteProjects=`ls $PROJECT_HOME | grep "$topLevelProjectType\$" | wc -l`
     if [ $numWebsiteProjects == 1 ]; then
-        echo $(ls $PROJECT_DIR | grep "$topLevelProjectType\$")
+        echo $(ls $PROJECT_HOME | grep "$topLevelProjectType\$")
     else
-        echo "More than one $topLevelProjectType project detected in $PROJECT_DIR" 1>&2
-        ls $PROJECT_DIR | grep "$topLevelProjectType\$" 1>&2
-        exit 1
+        echo "Zero or more than one $topLevelProjectType project detected in $PROJECT_HOME" 1>&2
+        ls $PROJECT_HOME | grep "$topLevelProjectType\$" 1>&2
     fi
 }
 
@@ -263,7 +262,6 @@ function reloadGeneric() {
     if [ "$project" == "" ]; then
         echo "Cannot determine $topLevelProjectType to reload."
         echo "Please ensure exactly one $topLevelProjectType project exists in $PROJECT_HOME"
-        exit 1
     else
         export JAVA_HOME=$BLENDER_JAVA_HOME;
         bldw $project $SITE_REPO/$SITE_DIR/$configFile && instance_manager manage $SITE_TYPE reload $SITE_ID
