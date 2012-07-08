@@ -1,7 +1,7 @@
 #!/bin/bash
 ################################################################################
 ##
-##  file:    deploymentTools.sh
+##  file:    developmentTools.sh
 ##  author:  Ryan Doherty
 ##  purpose: provide a variety of tools for assisting EuPath developers
 ##
@@ -28,8 +28,8 @@
 ##
 ##     setup [<site_name>]:
 ##        Sets the "current" site, along with GUS_HOME and PROJECT_HOME.  When
-##        logged in to blender, sets up the environment for the passed site and
-##        goes to the site's project_home.  If site_name is omitted, uses
+##        logged in to a dev server, sets up the environment for the passed site
+##        and goes to the site's project_home.  If site_name is omitted, uses
 ##        DEFAULT_SITE.
 ##
 ##     current:
@@ -54,18 +54,18 @@
 ##        forces restart of the tomcat instance for the current site
 ##
 ##     rebuild:
-##        calls rebuilder on the current site (but does not reload)
+##        calls rebuilder on the current site (which also reloads)
 ##
 ##     log:
-##        displays logs for the current site (using cattail)
+##        displays logs for the current site (in tail -f fashion, using cattail)
 ##
 ##     pullProject <proj_1> <proj_2> ...
 ##        zips projects passed and copies from the current site on the dev
 ##        server to the PROJECT_HOME on the client machine
 ##
 ##     pushProject <proj_1> <proj_2> ...
-##        zips projects passed, copies them to the current site on blender, then
-##        executes a reload (build plus deploy) on that site
+##        zips projects passed, copies them to the current site on the dev
+##        server, then executes a reload (i.e. build plus reload) on that site
 ##
 ##     deployProject <site_dir> <project_name>
 ##        (not to be called directly!) This utility is called remotely by
@@ -97,7 +97,7 @@
 ##  values to configure are (colon-delimited):
 ##
 ##     site_name: your nickname for that site
-##     project:   project for that site (directories in /var/www)
+##     project:   project type for that site (directories in /var/www)
 ##     site_url:  url of YOUR site (as seen in /var/www)
 ##     instance:  instance name (as seen in /var/www/<project>)
 ##
@@ -124,12 +124,12 @@
 ##  Warning: 
 ##     Please note that while this script uses gusEnv.bash, using gusEnv.bash
 ##     independently of this script will lead to inconsistent state.  To reset
-##     the related environment variables, run setup <site_name> (see below).
+##     the related environment variables, run "setup <site_name>" (see above).
 ################################################################################
 
 # Constants (should be good for the foreseeable future)
 export SITE_REPO=/var/www
-export BLENDER_JAVA_HOME=/usr/java/jdk1.7.0
+export DEV_SITE_JAVA_HOME=/usr/java/jdk1.7.0
 export ZIPD_PROJ_TMP_FILE=".tmpProject.zip" # will be written to you home dir
 
 function sites() {
@@ -263,7 +263,7 @@ function reloadGeneric() {
         echo "Cannot determine $topLevelProjectType to reload."
         echo "Please ensure exactly one $topLevelProjectType project exists in $PROJECT_HOME"
     else
-        export JAVA_HOME=$BLENDER_JAVA_HOME;
+        export JAVA_HOME=$DEV_SITE_JAVA_HOME;
         bldw $project $SITE_REPO/$SITE_DIR/$configFile && instance_manager manage $SITE_TYPE reload $SITE_ID
     fi
 }
@@ -283,7 +283,10 @@ function restart() {
 
 function restart_force() {
     assignSiteValues
-    sudo instance_manager stop $SITE_TYPE force && sudo instance_manager start $SITE_TYPE
+    sudo instance_manager stop $SITE_TYPE force && \
+        echo "Waiting for tomcat shutdown..." && \
+        sleep 5 && \
+        sudo instance_manager start $SITE_TYPE
 }
 
 function rebuild() {
@@ -411,7 +414,7 @@ function deployProject() {
     local projectDir=$projectHome/$2
 
     # set java home and confirm version
-    export JAVA_HOME=$BLENDER_JAVA_HOME
+    export JAVA_HOME=$DEV_SITE_JAVA_HOME
     echo "  Java Version: $($JAVA_HOME/bin/java -version 2>&1 | grep version | sed 's/.*\"\(.*\)\"/\1/g')"
 
     if [ $# != 2 ]; then
