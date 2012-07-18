@@ -243,6 +243,12 @@
     </antcall>
 
     <antcall target="componentPartCopy">
+      <param name="part" value="lib/xsl"/>
+      <param name="to" value="lib/xsl"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
       <param name="part" value="lib/sql"/>
       <param name="to" value="lib/sql"/>
       <param name="prefix" value=""/>
