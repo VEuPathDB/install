@@ -332,6 +332,7 @@
   </target>
   
   <target name="defaultJavaCompile" if="isNonMavenJava" depends="deleteMyClasses,checkNonMavenJava">
+     <echo message="Java source found in non-maven project.  Building traditional way..."/>
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
      <mkdir dir="${targetDir}/lib/java/db_driver"/>
