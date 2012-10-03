@@ -41,6 +41,13 @@
 ##     svnst:
 ##        displays svn status of all projects in the current site's project_home
 ##
+##     hgup:
+##        updates local (client) contents to match that in the hg repo for all
+##        hg projects in the current site's project_home
+##
+##     hgst:
+##       displays hg status of all projects in the current site's project_home
+##
 ##     reload:
 ##        builds and (if successful) reloads the website in the current site
 ##
@@ -66,6 +73,12 @@
 ##     pushProject <proj_1> <proj_2> ...
 ##        zips projects passed, copies them to the current site on the dev
 ##        server, then executes a reload (i.e. build plus reload) on that site
+##
+##     pushHg <proj_1> <proj_2> ...
+##       commits and pushes changes from client hg projects to your hg repo,
+##       then pulls and updates those changes on the current site, and reloads
+##       the current site.  An effort is made to only recompile Java code when
+##       necessary.
 ##
 ##     deployProject <site_dir> <project_name>
 ##        (not to be called directly!) This utility is called remotely by
@@ -116,6 +129,12 @@
 ##  scp do NOT prompt for your password).  For example:
 ##
 ##     export DEV_SERVER=blender.pcbi.upenn.edu
+##
+##  4. (Optional) Define your Mercurial repository if you are using one to
+##  quickent changeset deploytment on your dev server.  The value is an absolute
+##  path or one relative to your home directory on the server.  For example:
+##
+##     export 
 ##
 ##  Lastly, you must source this file in your .bashrc.  Again, this must be done
 ##  both on your client machine and on your dev server.
@@ -216,26 +235,39 @@ function current() {
 }
 
 # internal function; pass svn operation to be performed on all your projects
-function svnOperation() {
+function projectOperation() {
     local operation=$1
     local currentDir=`pwd`
-    echo "Performing 'svn $operation' on each project in $PROJECT_HOME"
-    for project in `ls $PROJECT_HOME`; do
+    echo "Performing '$operation' on each project in $PROJECT_HOME"
+    for project in `\ls $PROJECT_HOME`; do
         cd $PROJECT_HOME/$project
-        echo "###################################"
-        echo "#####     $project"
-        echo "###################################"
-        svn $operation
+        if [ -e $2 ]; then
+            echo "###################################"
+            echo "#####     $project"
+            echo "###################################"
+            operation=$(echo $operation | sed "s/#project#/${project}/")
+            $operation
+        else
+            echo "Skipping ${project}..."
+        fi
     done
     cd $currentDir
 }
 
 function svnst() {
-    svnOperation status
+    projectOperation "svn status" .svn
 }
 
 function svnup() {
-    svnOperation update
+    projectOperation "svn update" .svn
+}
+
+function hgst() {
+    projectOperation "hg status" .hg
+}
+
+function hgup() {
+    projectOperation "hg pull ssh://$(logname)@$DEV_SERVER//home/$(logname)/hgrepo/#project# && hg update" .hg
 }
 
 # internal function: single argument
@@ -343,6 +375,40 @@ function pullProject() {
         
     done
     cd $currentDir
+}
+
+function pushHg() {
+  local currentDir=`pwd`
+  assignSiteValues
+
+  for projectName in $*; do
+
+    cd $PROJECT_HOME/$projectName
+
+    echo; echo "%%%%% Committing ${projectName}..."
+    hg commit -m "checkpoint commit"
+    echo; echo "%%%%% Pushing ${projectName}..."
+    hg push
+    echo; echo "%%%%% Pulling ${projectName}..."
+    ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; cd $projectName; hg pull"
+    echo; echo "%%%%% Updating ${projectName}..."
+    ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; cd $projectName; hg update"
+
+  done
+  
+  local numJava=$(hg status | grep ".java" | wc -l | awk '{ print $1 }');
+  local loadCmd
+  #if [ "$numJava"=="0" ]; do
+  #  Example: bldw WDK/View <your_webapp.prop>; bldw ApiCommonWebsite/Site <your_webapp.prop>
+  #  loadCmd="reload" # <-- FIX ME TO ONLY MOVE FILES, NOT BUILD JAVA!!
+  #else
+    loadCmd="reload"
+  #fi
+  
+  echo; echo -n "Building code..."
+  ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; $loadCmd >& /dev/null"
+  cd $currentDir
+  echo "done."
 }
 
 function pushProject() {
