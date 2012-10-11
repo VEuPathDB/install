@@ -594,11 +594,13 @@
     </copy>
 
  <!-- need to copy the default tags from EuPathCommon first -->
+ <!-- comment out until api build.xml can handle it
     <copy todir="${webappTargetDir}/WEB-INF/tags/imp">
       <fileset dir="${webappTargetDir}/WEB-INF/tags/site-common">
         <include name="*.tag"/>
       </fileset>
     </copy>
+-->
 
     <!-- lastly, copy custom tags from site, and overwrite existing ones -->
     <copy todir="${webappTargetDir}/WEB-INF/tags/imp" overwrite="true">
