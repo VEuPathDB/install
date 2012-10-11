@@ -71,6 +71,8 @@
       <property name="project" value="${proj}"/>
     </ant>
 
+
+
     <antcall target="webinstall-postprocess" />
     
     <echo message="WebInstallation Complete"/>
@@ -332,7 +334,7 @@
   </target>
   
   <target name="defaultJavaCompile" if="isNonMavenJava" depends="deleteMyClasses,checkNonMavenJava">
-     <echo message="Java source found in non-maven project.  Building traditional way..."/>
+    <!--  <echo message="Java source found in non-maven project.  Building traditional way..."/> -->
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
      <mkdir dir="${targetDir}/lib/java/db_driver"/>
@@ -414,6 +416,7 @@
        Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
 
+<!-- if the file exists, it does not copy over -->
     <antcall target="webComponentPartCopy">
       <param name="part" value="htdocs"/>
       <param name="to" value="${htdocsTargetDir}"/>
@@ -586,6 +589,13 @@
     <!-- need to copy the default tags from WDK first -->
     <copy todir="${webappTargetDir}/WEB-INF/tags/imp">
       <fileset dir="${webappTargetDir}/WEB-INF/tags/wdk">
+        <include name="*.tag"/>
+      </fileset>
+    </copy>
+
+ <!-- need to copy the default tags from EuPathCommon first -->
+    <copy todir="${webappTargetDir}/WEB-INF/tags/imp">
+      <fileset dir="${webappTargetDir}/WEB-INF/tags/site-common">
         <include name="*.tag"/>
       </fileset>
     </copy>
