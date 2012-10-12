@@ -530,7 +530,8 @@
   <target name="webComponentPartCopySub" if="partAvailable">
     <mkdir dir="${to}"/>
 
-    <copy todir="${to}">
+<!-- ****************** CHANGE **************** now overwrite true -->
+    <copy todir="${to}" overwrite="true">
       <fileset dir="${componentDir}/${part}" >
         <include name="**"/>
         <exclude name="**/CVS/*" />
