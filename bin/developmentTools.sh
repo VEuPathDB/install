@@ -406,7 +406,7 @@ function pushHg() {
   #fi
   
   echo; echo -n "Building code..."
-  ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; $loadCmd >& /dev/null"
+  ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; $loadCmd"
   cd $currentDir
   echo "done."
 }
