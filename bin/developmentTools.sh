@@ -262,6 +262,18 @@ function svnup() {
     projectOperation "svn update" .svn
 }
 
+function svnupnohg() {
+    projectOperation "svnupnohg_proj" .svn
+}
+
+function svnupnohg_proj() {
+    if [ ! -e .hg ]; then
+        svn update
+    else
+        echo "Skipping, as this project contains .hg"
+    fi
+}
+
 function hgst() {
     projectOperation "hg status" .hg
 }
