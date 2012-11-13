@@ -245,6 +245,12 @@
     </antcall>
 
     <antcall target="componentPartCopy">
+      <param name="part" value="lib/dst"/>
+      <param name="to" value="lib/dst"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
       <param name="part" value="lib/gbrowse"/>
       <param name="to" value="lib/gbrowse"/>
       <param name="prefix" value=""/>
