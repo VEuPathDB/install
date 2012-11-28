@@ -38,6 +38,10 @@
 ##     svnup:
 ##        updates all subversion projects in the current site's project_home
 ##
+##     svnupnohg:
+##        updates all non-mercurial subversion projects in the current site's
+##        project_home
+##
 ##     svnst:
 ##        displays svn status of all projects in the current site's project_home
 ##
