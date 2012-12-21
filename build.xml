@@ -613,6 +613,28 @@
     </copy>
 
   </target>
+
+  <target name="webinstall-javascript">
+
+    <echo>Concatenating JavaScript...</echo>
+    <concat destfile="${destDir}/${destFilename}">
+      <filelist dir="${srcDir}" files="${initialFiles}"/>
+      <fileset dir="${srcDir}" includes="**/*.js" excludes="${initialFiles}"/>
+    </concat>
+
+    <echo>Minifying JavaScript...</echo>
+    <apply executable="java" failonerror="true">
+      <fileset dir="${destDir}" includes="${destFilename}"/>
+      <arg line="-jar" />
+      <arg path="${targetDir}/lib/java/yuicompressor-2.4.7.jar" />
+      <!-- <arg line="${yuicompressor.options}" /> -->
+      <srcfile />
+      <arg line="-o" />
+      <mapper type="glob" from="*.js" to="${webappTargetDir}/wdk/js/*-min.js"/>
+      <targetfile />
+    </apply>
+
+  </target>
   
   <target name="buildInfo" depends="svnInfo,recordBuildState" />
 
