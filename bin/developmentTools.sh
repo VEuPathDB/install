@@ -79,10 +79,14 @@
 ##        server, then executes a reload (i.e. build plus reload) on that site
 ##
 ##     pushHg <proj_1> <proj_2> ...
-##       commits and pushes changes from client hg projects to your hg repo,
-##       then pulls and updates those changes on the current site, and reloads
-##       the current site.  An effort is made to only recompile Java code when
-##       necessary.
+##        commits and pushes changes from client hg projects to your hg repo,
+##        then pulls and updates those changes on the current site, and reloads
+##        the current site.  An effort is made to only recompile Java code when
+##        necessary* (*not yet functional!).
+##
+##     pushFiles <proj_1> <proj_2> ...
+##        copies all files that have current SVN changes from a remote machine
+##        into the current site's project home; then reloads the current site
 ##
 ##     deployProject <site_dir> <project_name>
 ##        (not to be called directly!) This utility is called remotely by
@@ -391,6 +395,25 @@ function pullProject() {
         
     done
     cd $currentDir
+}
+
+function pushFiles() {
+  local currentDir=`pwd`;
+  assignSiteValues
+
+  for projectName in $*; do
+    echo "Processing $projectName"
+    cd $PROJECT_HOME/$projectName
+    for file in `svn st | awk '{ print $NF }'`; do
+      cmd="scp $file $DEV_SERVER:$SITE_REPO/$SITE_DIR/project_home/$projectName/$file"
+      echo "  Running $cmd"
+      $cmd
+    done
+  done
+  echo -n "Building code..."
+  ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; reload"
+  cd $currentDir
+  echo "done."
 }
 
 function pushHg() {
