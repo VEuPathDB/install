@@ -111,10 +111,10 @@
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
   <target name="InstallInit" depends="validateTargetDir, checkoutProj,
-                                     validateClean, hasConfigFile"/>
+                                     validateClean, hasConfigFile, selfBuildInfo"/>
 
   <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
-                                     validateClean, hasConfigFile"/>
+                                     validateClean, hasConfigFile, selfBuildInfo"/>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
@@ -188,6 +188,11 @@
     </antcall>
   </target>  
 
+  <target name="selfBuildInfo">
+    <property name="project" value="install"/>
+    <property name="component" value=""/>
+    <antcall target="buildInfo" />
+  </target>
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
