@@ -16,14 +16,14 @@
 ## dbiDsn is for Perl ( i.e. dbi:Oracle:NAME_OF_DATABASE )
 ## jdbcDsn is for JDBC/Java ( i.e. jdbc:oracle:thin:@HOSTNAME:PORT:NAME_OF_DATABASE )
 
-dbVendor=
-dbiDsn=
-jdbcDsn=
+dbVendor=<dbVendor>
+dbiDsn=<dbiDsn>
+jdbcDsn=<jdbcDsn>
 
 # Login and Password to the RDBMS
 
-databaseLogin=
-databasePassword=
+databaseLogin=<dbLogin>
+databasePassword=<dbPassword>
 
 # Username, group, and project info from the relevant Core tables
 
