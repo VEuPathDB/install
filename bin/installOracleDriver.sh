@@ -13,9 +13,9 @@
 ## constants related to this script (subject to change)
 ###########################################################################
 
-jarFileName=ojdbc5.jar
+jarFileName=ojdbc6.jar
 serverOracleHome=/u01/app/oracle/product/11.2.0.3/db_1
-artifactId=ojdbc5
+artifactId=ojdbc6
 version=11.2.0.3
 
 ###########################################################################
