@@ -67,6 +67,9 @@
 ##     rebuild:
 ##        calls rebuilder on the current site (which also reloads)
 ##
+##     gbrowse_install:
+##        reinstalls gbrowse on the current site
+##
 ##     log:
 ##        displays logs for the current site (in tail -f fashion, using cattail)
 ##
@@ -395,6 +398,11 @@ function pullProject() {
         
     done
     cd $currentDir
+}
+
+function gbrowse_install() {
+  assignSiteValues
+  $SITE_REPO/$SITE_DIR/project_home/ApiCommonWebsite/Model/bin/install_gbrowse2 $SITE_REPO/$SITE_DIR/etc/webapp.prop build_install_patch
 }
 
 function pushFiles() {
