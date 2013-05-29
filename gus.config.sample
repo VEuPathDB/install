@@ -2,7 +2,7 @@
 ## GUS Configuration
 ##
 ##
-## @version $Revision$ $Date$
+## @version $Revision: 11821 $ $Date: 2013-04-07 15:41:45 -0400 (Sun, 07 Apr 2013) $
 ##
 
 ### GUS End User Configurtion
@@ -16,14 +16,14 @@
 ## dbiDsn is for Perl ( i.e. dbi:Oracle:NAME_OF_DATABASE )
 ## jdbcDsn is for JDBC/Java ( i.e. jdbc:oracle:thin:@HOSTNAME:PORT:NAME_OF_DATABASE )
 
-dbVendor=
-dbiDsn=
-jdbcDsn=
+dbVendor=<dbVendor>
+dbiDsn=<dbiDsn>
+jdbcDsn=<jdbcDsn>
 
 # Login and Password to the RDBMS
 
-databaseLogin=
-databasePassword=
+databaseLogin=<dbLogin>
+databasePassword=<dbPassword>
 
 # Username, group, and project info from the relevant Core tables
 
