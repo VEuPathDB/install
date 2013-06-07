@@ -39,8 +39,6 @@ then
   APP_DIR=`cd ${SCRIPT_DIR}; cd ../../..; pwd`
 fi
 
-echo "[debug] \$APP_DIR=\"$APP_DIR\""
-
 if [ ! -d ${APP_DIR}/project_home -a ! -L ${APP_DIR}/project_home ]; then
   echo "Error: directory '${APP_DIR}/project_home' does not exist"
 #  exit 1
