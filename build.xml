@@ -424,7 +424,7 @@
     <property name="componentDir" value="${projectsDir}/${project}/${component}"/>
 
     <echo message="."/>
-    <echo message="Installing ${project}/${component}"/>
+    <echo message="Installing web ${project}/${component}"/>
 
     <available property="componentAvail" file="${projectsDir}/${project}/${component}"/>
     <fail unless="componentAvail">
