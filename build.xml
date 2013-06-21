@@ -16,8 +16,6 @@
   <!--   tag                                                                        -->
   <!--   installConfigFile  optional, installs $GUS_HOME/gus.config from sample     -->
   <!--   projectsDir                                                                -->
-  <!--   projectsDir                                                                -->
-  <!--   projectsDir                                                                -->
   <!--   svnurl             must present in dependent checkout targets              -->
   <!--   excludeChildren    optional, only presents in dependent checkout targets   -->
   <!--   useBranch          optional, only presents in dependent checkout targets   -->
@@ -426,7 +424,7 @@
     <property name="componentDir" value="${projectsDir}/${project}/${component}"/>
 
     <echo message="."/>
-    <echo message="Installing ${project}/${component}"/>
+    <echo message="Installing web ${project}/${component}"/>
 
     <available property="componentAvail" file="${projectsDir}/${project}/${component}"/>
     <fail unless="componentAvail">
