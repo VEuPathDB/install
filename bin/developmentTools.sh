@@ -297,9 +297,13 @@ function hgup() {
 #   Arg 1: please pass Website or WebService
 function getTopLevelProject() {
     local topLevelProjectType=$1
-    local numWebsiteProjects=`ls $PROJECT_HOME | grep "$topLevelProjectType\$" | wc -l`
-    if [ $numWebsiteProjects == 1 ]; then
-        echo $(ls $PROJECT_HOME | grep "$topLevelProjectType\$")
+    local numWebsiteProjects=`\ls $PROJECT_HOME | grep "$topLevelProjectType\$" | wc -l`
+    if [[ $numWebsiteProjects -eq 1 ]]; then
+        local topLevel=$(\ls $PROJECT_HOME | grep "$topLevelProjectType\$")
+        if [[ "$topLevel" == "ApiCommonWebsite" ]]; then
+          topLevel="EuPathPresenters";
+        fi
+        echo $topLevel
     else
         echo "Zero or more than one $topLevelProjectType project detected in $PROJECT_HOME" 1>&2
         ls $PROJECT_HOME | grep "$topLevelProjectType\$" 1>&2
