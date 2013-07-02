@@ -416,7 +416,7 @@ function pushFiles() {
   for projectName in $*; do
     echo "Processing $projectName"
     cd $PROJECT_HOME/$projectName
-    for file in `svn st | awk '{ print $NF }'`; do
+    for file in $(svn st | awk '{ if ($1 != "D") { print $NF; } }'); do
       cmd="scp $file $DEV_SERVER:$SITE_REPO/$SITE_DIR/project_home/$projectName/$file"
       echo "  Running $cmd"
       $cmd
