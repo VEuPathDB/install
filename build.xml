@@ -248,6 +248,12 @@
     </antcall>
 
     <antcall target="componentPartCopy">
+      <param name="part" value="lib/yaml"/>
+      <param name="to" value="lib/yaml"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
       <param name="part" value="lib/dst"/>
       <param name="to" value="lib/dst"/>
       <param name="prefix" value=""/>
