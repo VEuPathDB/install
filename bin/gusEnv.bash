@@ -58,6 +58,10 @@ export PROJECT_HOME=${APP_DIR}/project_home
 export GUS_HOME=${APP_DIR}/gus_home
 export PATH=$PRE_GUS_PATH/:$PROJECT_HOME/install/bin:$GUS_HOME/bin:$POST_GUS_PATH
 
+# use a Perl one-liner to edit PERL5LIB, removing existing
+# gus_home/lib/perl entries and adding the new one
+export PERL5LIB=`perl -e 'my @dirlist; push(@dirlist, $ENV{GUS_HOME} . "/lib/perl"); map { push(@dirlist, $_) unless /gus_home.lib.perl/ } split(/:/, $ENV{PERL5LIB}); print join(":", @dirlist);'`
+
 pwd=`basename ${APP_DIR}`
 PS1="[\h:$pwd \W]$ "
 
@@ -67,6 +71,8 @@ echo
 echo GUS_HOME: $GUS_HOME
 echo
 echo PATH: $PATH
+echo
+echo PERL5LIB: $PERL5LIB
 echo
 
 
