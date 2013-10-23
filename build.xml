@@ -330,7 +330,9 @@
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
    
+<!--
    <antcall target="defaultCCompile"/>
+-->
    
    <antcall target="defaultJavaCompile"/>
    
