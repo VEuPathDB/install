@@ -195,12 +195,6 @@
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-  <target name="defaultC-CodeMakeInstall">
-    <exec executable="/usr/bin/make" dir="${projectsDir}/${project}/${component}/src/c">
-      <arg line="all" />
-    </exec>
-  </target>
-
   <!-- oooooooooooooooooooo default project install ooooooooooooooooooooooo -->
 
   <target name="defaultProjectInstall">
@@ -336,6 +330,8 @@
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
    
+   <antcall target="defaultCCompile"/>
+   
    <antcall target="defaultJavaCompile"/>
    
    <antcall target="componentPartCopy">
@@ -354,6 +350,17 @@
 
   </target>
   
+  <target name="defaultCCompile">
+    <apply executable="cc" dest="${targetDir}/bin" parallel="false" verbose="true" failonerror="true">
+      <arg value="-o"/>
+      <targetfile/>
+      <srcfile/>
+      <fileset dir="${projectsDir}/${project}/${component}/src/c" includes="*.c"/>
+      <mapper type="glob" from="*.c" to="*"/>
+
+    </apply>  
+  </target>
+
   <target name="defaultJavaCompile" if="isNonMavenJava" depends="deleteMyClasses,checkNonMavenJava">
     <!--  <echo message="Java source found in non-maven project.  Building traditional way..."/> -->
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
