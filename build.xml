@@ -330,9 +330,7 @@
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
    
-<!--
    <antcall target="defaultCCompile"/>
--->
    
    <antcall target="defaultJavaCompile"/>
    
@@ -352,7 +350,11 @@
 
   </target>
   
-  <target name="defaultCCompile">
+  <target name="checkHasCCode">
+    <available property="hasCCode" file="${projectsDir}/${project}/${component}/src/c"/>
+  </target>
+
+  <target name="defaultCCompile" if="hasCCode"  depends="checkHasCCode">
     <apply executable="cc" dest="${targetDir}/bin" parallel="false" verbose="true" failonerror="true">
       <arg value="-o"/>
       <targetfile/>
