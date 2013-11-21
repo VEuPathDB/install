@@ -91,6 +91,10 @@
 ##        copies all files that have current SVN changes from a remote machine
 ##        into the current site's project home; then reloads the current site
 ##
+##     sendFiles <proj_1> <proj_2> ...
+##        copies all files that have current SVN changes from a remote machine
+##        into the current site's project home
+##
 ##     deployProject <site_dir> <project_name>
 ##        (not to be called directly!) This utility is called remotely by
 ##        pushProject. It unzips a project placed on the server and deploys it
@@ -410,6 +414,14 @@ function gbrowse_install() {
 }
 
 function pushFiles() {
+  sendFiles $*
+  echo -n "Building code..."
+  ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; reload"
+  echo "done."
+}
+
+function sendFiles() {
+
   local currentDir=`pwd`;
   assignSiteValues
 
@@ -422,10 +434,9 @@ function pushFiles() {
       $cmd
     done
   done
-  echo -n "Building code..."
-  ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; reload"
+
   cd $currentDir
-  echo "done."
+  echo "File transfers complete."
 }
 
 function pushHg() {
