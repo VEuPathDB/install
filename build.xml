@@ -28,7 +28,9 @@
   <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
            uri="antlib:org.apache.maven.artifact.ant"
            classpathref="maven-ant-tasks.classpath"/>
-  
+ 
+  <import file="${projectsDir}/${proj}/build.xml" />
+
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  Main Targets ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -40,7 +42,7 @@
     <echo> comp=${comp} </echo>
     <property name="initialTarget" value="install"/>
     
-    <ant antfile="../${proj}/build.xml" target="${proj}${comp}-Installation">
+    <ant target="${proj}${comp}-Installation">
       <property name="project" value="${proj}"/>
       <property name="logger" value="${logger}"/>
     </ant>
@@ -65,7 +67,7 @@
   <target name="webinstall" depends="WebInstallInit">    
     <property name="initialTarget" value="webinstall"/>
 
-    <ant antfile="../${proj}/build.xml" target="${proj}${comp}-WebInstallation">
+    <ant target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
     </ant>
 
@@ -78,7 +80,7 @@
   </target>  
 
   <target name="release">
-    <ant antfile="../${proj}/build.xml" target="${proj}-Release">
+    <ant target="${proj}-Release">
       <property name="project" value="${proj}"/>
     </ant>
   </target>  
@@ -373,7 +375,7 @@
      <mkdir dir="${targetDir}/lib/java/not-deployed"/>
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
             destdir="${projectsDir}/${project}/${component}/classes"
-        debug="on"
+        includeAntRuntime="false"
         fork="true"
         tempdir="${projectsDir}/${project}/${component}/classes"
         memoryMaximumSize="256m">
@@ -517,7 +519,7 @@
 
     <!-- copy generated build file to gus_home -->
     <copy todir="${targetDir}/lib/java" flatten="true">
-      <fileset dir="${projectsDir}/${project}/${module}/target" >
+      <fileset dir="${projectsDir}/${project}/${component}/target" >
         <include name="*.jar"/>
         <include name="*.war"/>
         <include name="*.ear"/>
@@ -526,7 +528,7 @@
     
     <!-- gather dependencies from this maven project -->
     <artifact:dependencies filesetId="depsFileset" useScope="runtime">
-      <pom file="${projectsDir}/${project}/${module}/pom.xml"/>
+      <pom file="${projectsDir}/${project}/${component}/pom.xml"/>
     </artifact:dependencies>
 
     <!-- copy dependency jars to gus_home lib -->
@@ -803,7 +805,7 @@
   
   <target name="checkoutDependencies" unless="excludeChildren">
     <!-- run dependency check out-->
-    <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-ChildCheckout">
+    <ant target="${project}-ChildCheckout">
       <property name="project" value="${project}"/>
       <property name="version" value="${version}"/>
     </ant>
@@ -832,7 +834,7 @@
 
   <target name="updateDependencies" unless="excludeChildren">
     <!-- update the dependencies of the project -->
-    <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-ChildUpdate">
+    <ant target="${project}-ChildUpdate">
       <property name="project" value="${project}"/>
     </ant>
    
