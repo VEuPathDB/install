@@ -376,6 +376,7 @@
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
             destdir="${projectsDir}/${project}/${component}/classes"
         includeAntRuntime="false"
+        debug="on"
         fork="true"
         tempdir="${projectsDir}/${project}/${component}/classes"
         memoryMaximumSize="256m">
