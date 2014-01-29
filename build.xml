@@ -377,6 +377,7 @@
             destdir="${projectsDir}/${project}/${component}/classes"
         includeAntRuntime="false"
         fork="true"
+        debug="on"
         tempdir="${projectsDir}/${project}/${component}/classes"
         memoryMaximumSize="256m">
         <classpath>
