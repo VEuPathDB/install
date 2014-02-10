@@ -1,0 +1,14 @@
+#!/usr/bin/perl
+
+# copies stdin to stdout, replacing occurrences of arg1 with arg2
+
+use strict;
+
+my $old = $ARGV[0];
+my $new = $ARGV[1];
+
+while (<STDIN>) {
+  $_ =~ s/$old/$new/;
+  print $_;
+}
+
