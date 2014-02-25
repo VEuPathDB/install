@@ -664,6 +664,8 @@
   <target name="buildInfo" depends="svnInfo,recordBuildState" />
 
   <target name="recordBuildState">
+    <property name="buildLogDir" value="${targetDir}/.buildlog" />
+    <mkdir dir="${buildLogDir}" />
 
     <condition property="svninfo" value="${svnInfoOut}">
       <isset property="svnInfoOut"/>
@@ -684,7 +686,7 @@
     </tstamp>
   
     <propertyfile comment="Build Information"
-                  file="${targetDir}/config/.build.info">
+                  file="${buildLogDir}/gus-build-state.log">
       <entry key="!Last.build.initialTarget"
              value="${initialTarget}"/>
       <entry key="!Last.build.component"
