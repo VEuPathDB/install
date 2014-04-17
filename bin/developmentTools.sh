@@ -362,6 +362,11 @@ function log() {
     cattail $SITE_DIR
 }
 
+function logall() {
+    assignSiteValues
+    cattail -atc $SITE_DIR
+}
+
 function pullProject() {
     local currentDir=`pwd`
     cd $PROJECT_HOME
