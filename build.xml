@@ -395,15 +395,30 @@
            </fileset>
         </classpath>
      </javac>
+    
+     <!-- copy over resource files -->
+     <antcall target="compileResources" />
+
      <copy todir="${projectsDir}/${project}/${component}/classes/META-INF">
        <fileset dir="${componentDir}" >
          <include name="META-INF/**"/>
          <exclude name="**/CVS/*" />
        </fileset>
      </copy>
+
      <jar basedir="${projectsDir}/${project}/${component}/classes" 
           destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
   </target>   
+
+  <target name="compileResources" if="hasResources" depends="checkIfHaveResources">
+    <copy todir="${projectsDir}/${project}/${component}/classes/">
+      <fileset dir="${projectsDir}/${project}/${component}/src/resources" />
+    </copy>
+  </target>
+
+  <target name="checkIfHaveResources">
+    <available property="hasResources" file="${projectsDir}/${project}/${component}/src/resources"/>
+  </target>
 
   <target name="checkNonMavenJava" depends="checkIfMavenComponent,checkIfHaveJava">
     <condition property="isNonMavenJava">
