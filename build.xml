@@ -525,7 +525,7 @@
            failifexecutionfails="true">
        <arg line="clean"/>
        <arg line="install"/>
-       <arg line="--quiet"/>
+       <!--<arg line="- -quiet"/>-->
        <arg line="-Dmaven.test.skip=true"/>
        <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
@@ -545,6 +545,7 @@
     
     <!-- gather dependencies from this maven project -->
     <artifact:dependencies filesetId="depsFileset" useScope="runtime">
+      <localRepository path="${mvnRepo}"/>
       <pom file="${projectsDir}/${project}/${component}/pom.xml"/>
     </artifact:dependencies>
 
