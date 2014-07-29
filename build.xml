@@ -846,7 +846,9 @@
     <fail unless="project.present">${proj} hasn't been checked out yet.</fail>
 
     <!-- check out the project from svn -->
-    <exec dir="${projectsDir}/${project}" executable="svn">
+    <exec dir="${projectsDir}/${project}" 
+          executable="svn"
+          failonerror="true">
       <arg line="update"/>
     </exec>
  
