@@ -145,7 +145,12 @@
 ##
 ##     export DEV_SERVER=blender.pcbi.upenn.edu
 ##
-##  4. (Optional) Define your Mercurial repository if you are using one to
+##  4. (Optional) Define the account name to login as on the development server.
+##  If you do not specify a name as follows, $(logname) will be used.
+##
+##     export REMOTE_LOGNAME=rdoherty
+##
+##  5. (Optional) Define your Mercurial repository if you are using one to
 ##  quickent changeset deploytment on your dev server.  The value is an absolute
 ##  path or one relative to your home directory on the server.  For example:
 ##
@@ -209,6 +214,9 @@ function assignSiteValues() {
     export SITE_TYPE=${dataArray[1]}
     export SITE_DIR=${dataArray[2]}
     export SITE_ID=${dataArray[3]}
+    if [ "$REMOTE_LOGNAME" == "" ]; then
+        export REMOTE_LOGNAME=$(logname)
+    fi
     #echo "Found site $CURRENT_SITE in site repository.  Will use: $SITE_TYPE $SITE_DIR $SITE_ID" 1>&2
 }
 
@@ -294,7 +302,7 @@ function hgst() {
 }
 
 function hgup() {
-    projectOperation "hg pull ssh://$(logname)@$DEV_SERVER//home/$(logname)/hgrepo/#project# && hg update" .hg
+    projectOperation "hg pull ssh://$REMOTE_LOGNAME@$DEV_SERVER//home/$REMOTE_LOGNAME/hgrepo/#project# && hg update" .hg
 }
 
 # internal function: single argument
@@ -383,10 +391,10 @@ function pullProject() {
 
         echo "Processing $projectName"
         echo "  Zipping up project on $DEV_SERVER"
-        ssh $DEV_SERVER "cd $remoteProjHome; zip -q -r $remoteTmpFile $projectName"
+        ssh $REMOTE_LOGNAME@$DEV_SERVER "cd $remoteProjHome; zip -q -r $remoteTmpFile $projectName"
         echo "  Copying zipped project to client..."
-        scp $DEV_SERVER:$remoteTmpFile $tmpFile
-        ssh $DEV_SERVER "rm -f $remoteTmpFile"
+        scp $REMOTE_LOGNAME@$DEV_SERVER:$remoteTmpFile $tmpFile
+        ssh $REMOTE_LOGNAME@$DEV_SERVER "rm -f $remoteTmpFile"
 
         # check to see if project was successfully transferred
         if [ -e $tmpFile ]; then
@@ -421,7 +429,7 @@ function gbrowse_install() {
 function pushFiles() {
   sendFiles $*
   echo -n "Building code..."
-  ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; reload"
+  ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; reload"
   echo "done."
 }
 
@@ -434,7 +442,7 @@ function sendFiles() {
     echo "Processing $projectName"
     cd $PROJECT_HOME/$projectName
     for file in $(svn st | awk '{ if ($1 != "D") { print $NF; } }'); do
-      cmd="scp $file $DEV_SERVER:$SITE_REPO/$SITE_DIR/project_home/$projectName/$file"
+      cmd="scp $file $REMOTE_LOGNAME@$DEV_SERVER:$SITE_REPO/$SITE_DIR/project_home/$projectName/$file"
       echo "  Running $cmd"
       $cmd
     done
@@ -457,9 +465,9 @@ function pushHg() {
     echo; echo "%%%%% Pushing ${projectName}..."
     hg push
     echo; echo "%%%%% Pulling ${projectName}..."
-    ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; cd $projectName; hg pull"
+    ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; cd $projectName; hg pull"
     echo; echo "%%%%% Updating ${projectName}..."
-    ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; cd $projectName; hg update"
+    ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; cd $projectName; hg update"
 
   done
   
@@ -473,7 +481,7 @@ function pushHg() {
   #fi
   
   echo; echo -n "Building code..."
-  ssh $DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; $loadCmd"
+  ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; $loadCmd"
   cd $currentDir
   echo "done."
 }
@@ -516,11 +524,11 @@ function pushProject() {
 
             # copy zip file to server
             echo "  Transferring file"
-            scp $tmpFile $DEV_SERVER:$remoteTmpFile
+            scp $tmpFile $REMOTE_LOGNAME@$DEV_SERVER:$remoteTmpFile
 
             # unzip on server and deploy
             echo "  Deploying project $projectName to $SITE_DIR"
-            ssh $DEV_SERVER "deployProject $SITE_DIR $projectName"
+            ssh $REMOTE_LOGNAME@$DEV_SERVER "deployProject $SITE_DIR $projectName"
 
         else
             echo "  ERROR: project $projectName does not exist; skipping...";
@@ -530,11 +538,11 @@ function pushProject() {
     done
 
     echo "Compiling and deploying web app..."
-    ssh $DEV_SERVER "setup ${CURRENT_SITE}; reload"
+    ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE}; reload"
 
     if [ "$rebuildWebService" == "true" ]; then
         echo "Compiling and deploying web service..."
-        ssh $DEV_SERVER "setup ${CURRENT_SITE}; reloadWS"
+        ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE}; reloadWS"
     fi
 
     cd $currentDir
