@@ -263,13 +263,17 @@ function projectOperation() {
     local currentDir=`pwd`
     echo "Performing '$operation' on each project in $PROJECT_HOME"
     for project in `\ls $PROJECT_HOME`; do
-        cd $PROJECT_HOME/$project
-        if [ -e $2 ]; then
-            echo "###################################"
-            echo "#####     $project"
-            echo "###################################"
-            operation=$(echo $operation | sed "s/#project#/${project}/")
-            $operation
+        if [ -d $PROJECT_HOME/$project ]; then
+            cd $PROJECT_HOME/$project
+            if [ -e $2 ]; then
+                echo "###################################"
+                echo "#####     $project"
+                echo "###################################"
+                operation=$(echo $operation | sed "s/#project#/${project}/")
+                $operation
+            else
+                echo "Skipping ${project}..."
+            fi
         else
             echo "Skipping ${project}..."
         fi
