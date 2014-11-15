@@ -193,6 +193,7 @@
     <property name="component" value=""/>
     <antcall target="buildInfo" />
   </target>
+
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -206,10 +207,22 @@
       </fileset>
     </concat>
     
-    <!-- all Maven-based components are built at the project level -->
-    <!-- KLUGE: disable this by default for now, so must call this target explicitly in
-           project build files (probably before installing non-maven components). -->
-    <!-- <antcall target="mavenCleanInstall"/> -->
+    <!-- Note: Maven-based projects should be built at the project level in the  -->
+    <!--       project's build.xml -before- components are built, and should use -->
+    <!--       code similar to that below.  If this is not done, Maven-based     -->
+    <!--       components will still be built at the component level but will    -->
+    <!--       lose any project-level benefits.  Omitting the "alreadyBuilt"     -->
+    <!--       will cause Maven components to be built twice: at the project     -->
+    <!--       and component levels.                                             -->
+    <!--
+      <target name="WDK-MavenInstallation">
+        <ant target="mavenBuildProject">
+          <property name="project" value="WDK"/>
+        </ant>
+        <property name="alreadyBuilt" value="true"/>
+      </target>
+    -->
+
   </target>
 
   <!-- ooooooooooooooooooo default component install oooooooooooooooooooooo -->
@@ -334,7 +347,8 @@
    
    <antcall target="defaultCCompile"/>
    
-   <antcall target="defaultJavaCompile"/>
+   <antcall target="defaultJavaCompile"/>   <!-- will run if non-maven -->
+   <antcall target="mavenBuildComponent"/>  <!-- will run if manen -->
    
    <antcall target="componentPartCopy">
       <param name="part" value="data"/>
@@ -363,12 +377,11 @@
       <srcfile/>
       <fileset dir="${projectsDir}/${project}/${component}/src/c" includes="*.c"/>
       <mapper type="glob" from="*.c" to="*"/>
-
     </apply>  
   </target>
 
   <target name="defaultJavaCompile" if="isNonMavenJava" depends="deleteMyClasses,checkNonMavenJava">
-    <!--  <echo message="Java source found in non-maven project.  Building traditional way..."/> -->
+     <echo message="Java source found in non-maven component.  Building traditional way..."/>
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
      <mkdir dir="${targetDir}/lib/java/db_driver"/>
@@ -508,18 +521,8 @@
 
   <!-- ooooooooooooooooooo Maven-related targets ooooooooooooooooooooooo -->
 
-  <target name="checkIfMavenProject">
-    <available property="isMavenProject" file="${projectsDir}/${project}/pom.xml"/>
-  </target>
-
-  <target name="checkIfMavenComponent">
-    <available property="isMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
-  </target>
-  
-  <target name="mavenCleanInstall" if="isMavenProject" depends="checkIfMavenProject">
-  
-    <!-- build the project with maven -->
-    <exec dir="${projectsDir}/${project}"
+  <target name="mavenCleanInstall">
+    <exec dir="${buildDir}"
            executable="mvn"
            failonerror="true"
            failifexecutionfails="true">
@@ -529,9 +532,44 @@
        <arg line="-Dmaven.test.skip=true"/>
        <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
-    
+  </target>
+
+  <target name="checkIfMavenProject">
+    <available property="isMavenProject" file="${projectsDir}/${project}/pom.xml"/>
+  </target>
+
+  <target name="checkIfMavenComponent">
+    <available property="isMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
   </target>
   
+  <target name="mavenBuildProject" if="isMavenProject" depends="checkIfMavenProject">
+    <echo>Building Maven Project: ${project}</echo>
+    <!-- build the project with maven -->
+    <ant target="mavenCleanInstall">
+      <property name="buildDir" value="${projectsDir}/${project}"/>
+    </ant>
+  </target>
+
+  <target name="checkAlreadyBuilt" unless="alreadyBuilt">
+    <property name="alreadyBuilt" value="false"/>
+  </target>
+
+  <target name="mavenBuildComponent" if="isMavenComponent" depends="checkIfMavenComponent,checkAlreadyBuilt">
+    <echo>Building Maven Component: ${project}/${component}, Already built? ${alreadyBuilt}</echo>
+    <ant target="conditionalMavenCleanInstall">
+      <property name="buildDir" value="${projectsDir}/${project}/${component}"/>
+    </ant>
+    <!-- deploy artifacts for this component -->
+    <ant target="deployMavenArtifacts">
+      <property name="project" value="${project}"/>
+      <property name="component" value="${component}"/>
+    </ant>
+  </target>
+
+  <target name="conditionalMavenCleanInstall" unless="${alreadyBuilt}">
+    <ant target="mavenCleanInstall"/>
+  </target>
+
   <target name="deployMavenArtifacts">
 
     <!-- copy generated build file to gus_home -->
