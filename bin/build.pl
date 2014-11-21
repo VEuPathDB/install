@@ -28,11 +28,11 @@ my ($project, $component, $doWhat, $targetDir, $append, $clean,
 
 # set local maven repo to user's env var if available, else use $HOME/.m2/repository
 my $mvnRepo = ( "$ENV{M2_REPO}" eq "" ? "$ENV{HOME}/.m2/repository" : "$ENV{M2_REPO}" );
-print STDERR "\nMaven local repository set to: $mvnRepo\n\n";
+print STDERR "  Maven local repository set to: $mvnRepo\n";
 
 # set NPM_REGISTRY to http://npm.apidb.org unless user already has it set
 my $npmRegistry = ( "$ENV{NPM_REGISTRY}" eq "" ? "http://npm.apidb.org" : "$ENV{NPM_REGISTRY}" );
-print STDERR "\nnpm registry set to: $npmRegistry\n\n";
+print STDERR "  npm registry set to: $npmRegistry\n";
 
 $| = 1;
 
