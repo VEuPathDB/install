@@ -1,43 +1,35 @@
 ##
 ## GUS Configuration
 ##
+## @version $Revision: 11821 $ $Date: 2013-04-07 15:41:45 -0400 (Sun, 07 Apr 2013) $
 ##
-## @version $Revision$ $Date$
-##
 
-### GUS End User Configurtion
-###
-
-
-####### gus.properties
+### GUS End User Configuration
 
 # RDBMS Connection Strings
 ## dbVendor is the RDBMS Vendor.  Postgres or Oracle
-## dbiDsn is for Perl ( i.e. dbi:Oracle:NAME_OF_DATABASE )
-## jdbcDsn is for JDBC/Java ( i.e. jdbc:oracle:thin:@HOSTNAME:PORT:NAME_OF_DATABASE )
+## dbiDsn is for Perl ( dbi:Oracle:NAME_OF_DATABASE )
+## jdbcDsn is for Java ( eg jdbc:oracle:thin:@HOSTNAME:PORT:NAME_OF_DATABASE )
+## NAME_OF_DATABASE can be the full service name or a valid alias
+dbVendor=<dbVendor>  
+dbiDsn=<dbiDsn>   
+jdbcDsn=<jdbcDsn>
 
-dbVendor=
-dbiDsn=
-jdbcDsn=
-
-# Login and Password to the RDBMS
-
-databaseLogin=
-databasePassword=
+# Your login and Password to the RDBMS
+databaseLogin=<dbLogin>
+databasePassword=<dbPassword>
 
 # Username, group, and project info from the relevant Core tables
-
-userName=
-group=
-project=
+# All rows written by you will be tagged with this information
+userName=<unixLogin>
+group=dontcare
+project=<projectName>  # eg, PlasmoDB.  Workflow configuration must agree with this
 
 # override "tablespace=" attribute of <table> entities in gus_schema.xml
 tablespace=GUS
 
 # Path to Perl Executable
 perl=/usr/bin/perl
-
-####### GUS-PluginMgr.prop
 
 # Path to MD5 Executable
 md5sum=/usr/bin/md5sum

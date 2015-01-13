@@ -1,4 +1,5 @@
-<project name="MAIN" default="Installation"  basedir=".">
+<project name="MAIN" default="install" basedir="."
+  xmlns:artifact="antlib:org.apache.maven.artifact.ant">
  
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -15,18 +16,24 @@
   <!--   tag                                                                        -->
   <!--   installConfigFile  optional, installs $GUS_HOME/gus.config from sample     -->
   <!--   projectsDir                                                                -->
-  <!--   projectsDir                                                                -->
-  <!--   projectsDir                                                                -->
   <!--   svnurl             must present in dependent checkout targets              -->
   <!--   excludeChildren    optional, only presents in dependent checkout targets   -->
   <!--   useBranch          optional, only presents in dependent checkout targets   -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
+  <!-- oooooooooooooooooooo Define additional resources oooooooooooooooooooo -->
+
+  <path id="maven-ant-tasks.classpath" path="lib/maven-ant-tasks-2.1.3.jar" />
+  <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+           uri="antlib:org.apache.maven.artifact.ant"
+           classpathref="maven-ant-tasks.classpath"/>
+ 
+  <import file="${projectsDir}/${proj}/build.xml" />
+
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  Main Targets ooooooooooooooooooooooooooo -->
-  <!-- ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
-
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
   <target name="install" depends="InstallInit">
 
@@ -35,7 +42,7 @@
     <echo> comp=${comp} </echo>
     <property name="initialTarget" value="install"/>
     
-    <ant antfile="../${proj}/build.xml" target="${proj}${comp}-Installation">
+    <ant target="${proj}${comp}-Installation">
       <property name="project" value="${proj}"/>
       <property name="logger" value="${logger}"/>
     </ant>
@@ -54,15 +61,17 @@
 
     <echo message="Installation Complete"/>
 
-  </target>  
+  </target>
 
 
   <target name="webinstall" depends="WebInstallInit">    
     <property name="initialTarget" value="webinstall"/>
 
-    <ant antfile="../${proj}/build.xml" target="${proj}${comp}-WebInstallation">
+    <ant target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
     </ant>
+
+
 
     <antcall target="webinstall-postprocess" />
     
@@ -71,7 +80,7 @@
   </target>  
 
   <target name="release">
-    <ant antfile="../${proj}/build.xml" target="${proj}-Release">
+    <ant target="${proj}-Release">
       <property name="project" value="${proj}"/>
     </ant>
   </target>  
@@ -95,18 +104,17 @@
     <ant target="defaultProjectUpdate">
       <property name="project" value="${proj}"/>
     </ant>
-  </target>  
-
+  </target>
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  Initialization ooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
   <target name="InstallInit" depends="validateTargetDir, checkoutProj,
-                                     validateClean, hasConfigFile"/>
+                                     validateClean, hasConfigFile, selfBuildInfo"/>
 
   <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
-                                     validateClean, hasConfigFile"/>
+                                     validateClean, hasConfigFile, selfBuildInfo"/>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
@@ -123,8 +131,7 @@
     <fail if="targetDirExists">
       Error: Target directory ${targetDir} already exists and you have not set the 'append' property to true
     </fail>
-  </target>  
-
+  </target>
 
    <target name="validateClean" if="clean" depends="checkEmptyComponent">
       <fail if="notEmptyComponent">
@@ -181,17 +188,15 @@
     </antcall>
   </target>  
 
-
+  <target name="selfBuildInfo">
+    <property name="project" value="install"/>
+    <property name="component" value=""/>
+    <antcall target="buildInfo" />
+  </target>
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
-
-  <target name="defaultC-CodeMakeInstall">
-    <exec executable="/usr/bin/make" dir="${projectsDir}/${project}/${component}/src/c">
-      <arg line="all" />
-    </exec>
-  </target>
 
   <!-- oooooooooooooooooooo default project install ooooooooooooooooooooooo -->
 
@@ -201,8 +206,24 @@
          <include name="version"/>
       </fileset>
     </concat>
-  </target>
+    
+    <!-- Note: Maven-based projects should be built at the project level in the  -->
+    <!--       project's build.xml -before- components are built, and should use -->
+    <!--       code similar to that below.  If this is not done, Maven-based     -->
+    <!--       components will still be built at the component level but will    -->
+    <!--       lose any project-level benefits.  Omitting the "alreadyBuilt"     -->
+    <!--       will cause Maven components to be built twice: at the project     -->
+    <!--       and component levels.                                             -->
+    <!--
+      <target name="WDK-MavenInstallation">
+        <ant target="mavenBuildProject">
+          <property name="project" value="WDK"/>
+        </ant>
+        <property name="alreadyBuilt" value="true"/>
+      </target>
+    -->
 
+  </target>
 
   <!-- ooooooooooooooooooo default component install oooooooooooooooooooooo -->
 
@@ -232,6 +253,30 @@
     <antcall target="componentPartCopy">
       <param name="part" value="lib/rng"/>
       <param name="to" value="lib/rng"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/yaml"/>
+      <param name="to" value="lib/yaml"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/dst"/>
+      <param name="to" value="lib/dst"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/gbrowse"/>
+      <param name="to" value="lib/gbrowse"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/xsl"/>
+      <param name="to" value="lib/xsl"/>
       <param name="prefix" value=""/>
     </antcall>
 
@@ -299,8 +344,11 @@
       <param name="to" value="test"/>
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
-       
-   <antcall target="defaultJavaCompile"/>
+   
+   <antcall target="defaultCCompile"/>
+   
+   <antcall target="defaultJavaCompile"/>   <!-- will run if non-maven -->
+   <antcall target="mavenBuildComponent"/>  <!-- will run if manen -->
    
    <antcall target="componentPartCopy">
       <param name="part" value="data"/>
@@ -316,18 +364,33 @@
 
     <antcall target="buildInfo" />
 
-  </target>  
+  </target>
+  
+  <target name="checkHasCCode">
+    <available property="hasCCode" file="${projectsDir}/${project}/${component}/src/c"/>
+  </target>
 
+  <target name="defaultCCompile" if="hasCCode"  depends="checkHasCCode">
+    <apply executable="cc" dest="${targetDir}/bin" parallel="false" verbose="true" failonerror="true">
+      <arg value="-o"/>
+      <targetfile/>
+      <srcfile/>
+      <fileset dir="${projectsDir}/${project}/${component}/src/c" includes="*.c"/>
+      <mapper type="glob" from="*.c" to="*"/>
+    </apply>  
+  </target>
 
-  <target name="defaultJavaCompile" if="hasJava" depends="deleteMyClasses, checkIfHaveJava">
+  <target name="defaultJavaCompile" if="isNonMavenJava" depends="deleteMyClasses,checkNonMavenJava">
+     <echo message="Java source found in non-maven component.  Building traditional way..."/>
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
      <mkdir dir="${targetDir}/lib/java/db_driver"/>
      <mkdir dir="${targetDir}/lib/java/not-deployed"/>
      <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
             destdir="${projectsDir}/${project}/${component}/classes"
-        debug="on"
+        includeAntRuntime="false"
         fork="true"
+        debug="on"
         tempdir="${projectsDir}/${project}/${component}/classes"
         memoryMaximumSize="256m">
         <classpath>
@@ -345,20 +408,44 @@
            </fileset>
         </classpath>
      </javac>
+    
+     <!-- copy over resource files -->
+     <antcall target="compileResources" />
+
      <copy todir="${projectsDir}/${project}/${component}/classes/META-INF">
        <fileset dir="${componentDir}" >
          <include name="META-INF/**"/>
          <exclude name="**/CVS/*" />
        </fileset>
      </copy>
+
      <jar basedir="${projectsDir}/${project}/${component}/classes" 
           destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
   </target>   
 
+  <target name="compileResources" if="hasResources" depends="checkIfHaveResources">
+    <copy todir="${projectsDir}/${project}/${component}/classes/">
+      <fileset dir="${projectsDir}/${project}/${component}/src/resources" />
+    </copy>
+  </target>
 
+  <target name="checkIfHaveResources">
+    <available property="hasResources" file="${projectsDir}/${project}/${component}/src/resources"/>
+  </target>
+
+  <target name="checkNonMavenJava" depends="checkIfMavenComponent,checkIfHaveJava">
+    <condition property="isNonMavenJava">
+      <and>
+        <not>
+          <isset property="isMavenComponent"/>
+        </not>
+        <isset property="hasJava"/>
+      </and>
+    </condition>
+  </target>
+  
   <target name="checkIfHaveJava">
-      <available property="hasJava" 
-                 file="${projectsDir}/${project}/${component}/src/java"/>
+      <available property="hasJava" file="${projectsDir}/${project}/${component}/src/java"/>
   </target>
 
   <target name="checkIfCleanAndHaveJava" depends="checkIfHaveJava">
@@ -370,16 +457,14 @@
        </condition>
   </target>
 
-
-   <target name="deleteMyClasses" if="cleanAndHasJava" 
+  <target name="deleteMyClasses" if="cleanAndHasJava" 
            depends="checkIfCleanAndHaveJava">
     <delete>
-        <fileset dir="${projectsDir}/${project}/${component}/classes"/>
+      <fileset dir="${projectsDir}/${project}/${component}/classes"/>
     </delete>
     <delete file="${targetDir}/lib/java/${project}-${component}.jar"/>
     <echo message="deleted all old classes, clean is ${clean} and has java is ${hasJava}"/>
   </target>
-
 
   <!-- oooooooooooooooooooo default web install ooooooooooooooooooooooooooo -->
 
@@ -387,13 +472,14 @@
     <property name="componentDir" value="${projectsDir}/${project}/${component}"/>
 
     <echo message="."/>
-    <echo message="Installing ${project}/${component}"/>
+    <echo message="Installing web ${project}/${component}"/>
 
     <available property="componentAvail" file="${projectsDir}/${project}/${component}"/>
     <fail unless="componentAvail">
        Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
 
+<!-- if the file exists, it does not copy over -->
     <antcall target="webComponentPartCopy">
       <param name="part" value="htdocs"/>
       <param name="to" value="${htdocsTargetDir}"/>
@@ -433,7 +519,81 @@
 
   </target>  
 
+  <!-- ooooooooooooooooooo Maven-related targets ooooooooooooooooooooooo -->
 
+  <target name="mavenCleanInstall">
+    <exec dir="${buildDir}"
+           executable="mvn"
+           failonerror="true"
+           failifexecutionfails="true">
+       <arg line="clean"/>
+       <arg line="install"/>
+       <arg line="--quiet"/>
+       <arg line="-Dmaven.test.skip=true"/>
+       <arg line="-Dmaven.repo.local=${mvnRepo}"/>
+    </exec>
+  </target>
+
+  <target name="checkIfMavenProject">
+    <available property="isMavenProject" file="${projectsDir}/${project}/pom.xml"/>
+  </target>
+
+  <target name="checkIfMavenComponent">
+    <available property="isMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
+  </target>
+  
+  <target name="mavenBuildProject" if="isMavenProject" depends="checkIfMavenProject">
+    <echo>Building Maven Project: ${project}</echo>
+    <!-- build the project with maven -->
+    <ant target="mavenCleanInstall">
+      <property name="buildDir" value="${projectsDir}/${project}"/>
+    </ant>
+  </target>
+
+  <target name="checkAlreadyBuilt" unless="alreadyBuilt">
+    <property name="alreadyBuilt" value="false"/>
+  </target>
+
+  <target name="mavenBuildComponent" if="isMavenComponent" depends="checkIfMavenComponent,checkAlreadyBuilt">
+    <echo>Building Maven Component: ${project}/${component}, Already built? ${alreadyBuilt}</echo>
+    <ant target="conditionalMavenCleanInstall">
+      <property name="buildDir" value="${projectsDir}/${project}/${component}"/>
+    </ant>
+    <!-- deploy artifacts for this component -->
+    <ant target="deployMavenArtifacts">
+      <property name="project" value="${project}"/>
+      <property name="component" value="${component}"/>
+    </ant>
+  </target>
+
+  <target name="conditionalMavenCleanInstall" unless="${alreadyBuilt}">
+    <ant target="mavenCleanInstall"/>
+  </target>
+
+  <target name="deployMavenArtifacts">
+
+    <!-- copy generated build file to gus_home -->
+    <copy todir="${targetDir}/lib/java" flatten="true">
+      <fileset dir="${projectsDir}/${project}/${component}/target" >
+        <include name="*.jar"/>
+        <include name="*.war"/>
+        <include name="*.ear"/>
+      </fileset>
+    </copy>
+    
+    <!-- gather dependencies from this maven project -->
+    <artifact:dependencies filesetId="depsFileset" useScope="runtime">
+      <localRepository path="${mvnRepo}"/>
+      <pom file="${projectsDir}/${project}/${component}/pom.xml"/>
+    </artifact:dependencies>
+
+    <!-- copy dependency jars to gus_home lib -->
+    <copy todir="${targetDir}/lib/java" flatten="true">
+      <fileset refid="depsFileset"/>
+    </copy>
+  
+  </target>
+  
   <!-- oooooooooooooooooooo utility subroutines  ooooooooooooooooooooooo -->
 
   <target name="componentPartCopy">
@@ -485,12 +645,14 @@
 
   <target name="webinstall-postprocess">
 
+    <available file="${cgibinTargetDir}" type="dir" property="cgibinTargetDir.present"/>
+    <available file="${webappTargetDir}" type="dir" property="webappTargetDir.present"/>
     <antcall target="webinstall-cgi-bin" />
     <antcall target="webinstall-webapp" />
 
   </target>
 
-  <target name="webinstall-cgi-bin" if="cgibinTargetDir">
+  <target name="webinstall-cgi-bin" if="cgibinTargetDir.present">
 
     <replace dir="${cgibinTargetDir}" 
              propertyFile="${targetDir}/config/gus.config" > 
@@ -506,7 +668,7 @@
 
   </target>
 
-  <target name="webinstall-webapp" if="webappTargetDir">
+  <target name="webinstall-webapp" if="webappTargetDir.present">
 
     <echo>Copying default and custom tags...</echo>
 
@@ -532,10 +694,34 @@
     </copy>
 
   </target>
+
+  <target name="webinstall-javascript">
+
+    <echo>Concatenating JavaScript...</echo>
+    <concat destfile="${destDir}/${destFilename}">
+      <filelist dir="${srcDir}" files="${initialFiles}"/>
+      <fileset dir="${srcDir}" includes="**/*.js" excludes="${initialFiles}"/>
+    </concat>
+
+    <echo>Minifying JavaScript...</echo>
+    <apply executable="java" failonerror="true">
+      <fileset dir="${destDir}" includes="${destFilename}"/>
+      <arg line="-jar" />
+      <arg path="${targetDir}/lib/java/yuicompressor-2.4.7.jar" />
+      <!-- <arg line="${yuicompressor.options}" /> -->
+      <srcfile />
+      <arg line="-o" />
+      <mapper type="glob" from="*.js" to="${webappTargetDir}/wdk/js/*-min.js"/>
+      <targetfile />
+    </apply>
+
+  </target>
   
   <target name="buildInfo" depends="svnInfo,recordBuildState" />
 
   <target name="recordBuildState">
+    <property name="buildLogDir" value="${targetDir}/.buildlog" />
+    <mkdir dir="${buildLogDir}" />
 
     <condition property="svninfo" value="${svnInfoOut}">
       <isset property="svnInfoOut"/>
@@ -556,7 +742,7 @@
     </tstamp>
   
     <propertyfile comment="Build Information"
-                  file="${targetDir}/config/.build.info">
+                  file="${buildLogDir}/gus-build-state.log">
       <entry key="!Last.build.initialTarget"
              value="${initialTarget}"/>
       <entry key="!Last.build.component"
@@ -679,7 +865,7 @@
   
   <target name="checkoutDependencies" unless="excludeChildren">
     <!-- run dependency check out-->
-    <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-ChildCheckout">
+    <ant target="${project}-ChildCheckout">
       <property name="project" value="${project}"/>
       <property name="version" value="${version}"/>
     </ant>
@@ -698,7 +884,9 @@
     <fail unless="project.present">${proj} hasn't been checked out yet.</fail>
 
     <!-- check out the project from svn -->
-    <exec dir="${projectsDir}/${project}" executable="svn">
+    <exec dir="${projectsDir}/${project}" 
+          executable="svn"
+          failonerror="true">
       <arg line="update"/>
     </exec>
  
@@ -708,7 +896,7 @@
 
   <target name="updateDependencies" unless="excludeChildren">
     <!-- update the dependencies of the project -->
-    <ant antfile="${projectsDir}/${project}/build.xml" target="${project}-ChildUpdate">
+    <ant target="${project}-ChildUpdate">
       <property name="project" value="${project}"/>
     </ant>
    
