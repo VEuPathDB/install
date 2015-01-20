@@ -30,13 +30,9 @@ my ($project, $component, $doWhat, $targetDir, $append, $clean,
 my $mvnRepo = ( "$ENV{M2_REPO}" eq "" ? "$ENV{HOME}/.m2/repository" : "$ENV{M2_REPO}" );
 print STDERR "Maven local repository set to: $mvnRepo\n";
 
-# set NPM_REGISTRY to http://npm.apidb.org unless user already has it set
-my $npmRegistry = ( "$ENV{NPM_REGISTRY}" eq "" ? "http://npm.apidb.org" : "$ENV{NPM_REGISTRY}" );
-print STDERR "npm registry set to: $npmRegistry\n";
-
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=\"$component\" -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome -DmvnRepo=$mvnRepo -DnpmRegistry=$npmRegistry $clean $installDBSchema $append $webPropFile $tag $installConfigFile -logger org.apache.tools.ant.NoBannerLogger ";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=\"$component\" -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome -DmvnRepo=$mvnRepo $clean $installDBSchema $append $webPropFile $tag $installConfigFile -logger org.apache.tools.ant.NoBannerLogger ";
 
 # if not returning error status, then can pretty up output by keeping
 # only lines with bracketed ant target name (ie, ditch its commentary).
