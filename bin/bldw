@@ -1,14 +1,23 @@
 #!/bin/bash
 
+function usage() {
+  echo ""
+  echo "Usage: bldw project webPropFile [-publishDocs]"
+  echo ""
+  echo "Example:  bldw GiardiaDBWebsite project_home/webapp.prop"
+  echo ""
+  echo "  calls 'build GiardiaDBWebsite webinstall -append -webPropFile project_home/webapp.prop'"
+  echo ""
+  echo "The -publishDocs flag, if present, will be passed to build as well"
+  exit 1
+}
+
 if [[ "$#" != "2" ]]; then
-   echo ""
-   echo "Usage: bldw project webPropFile"
-   echo ""
-   echo "Example:  bldw GiardiaDBWebsite project_home/webapp.prop"
-   echo ""
-   echo "  calls 'build GiardiaDBWebsite webinstall -append -webPropFile project_home/webapp.prop'"
-   echo ""
-   exit 1
+  if [[ "$3" != "-publishDocs" ]]; then
+    usage
+  elif [[ "$#" != "3" ]]; then
+    usage
+  fi
 fi
 
-build $1 webinstall -append -webPropFile $2
+build $1 webinstall -append -webPropFile $2 $3

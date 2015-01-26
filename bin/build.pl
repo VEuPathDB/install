@@ -24,7 +24,7 @@ if (!$projectHome) {
 } 
 
 my ($project, $component, $doWhat, $targetDir, $append, $clean, 
-    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus, $installConfigFile) = &parseArgs(@ARGV);
+    $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus, $installConfigFile, $publishDocs) = &parseArgs(@ARGV);
 
 # set local maven repo to user's env var if available, else use $HOME/.m2/repository
 my $mvnRepo = ( "$ENV{M2_REPO}" eq "" ? "$ENV{HOME}/.m2/repository" : "$ENV{M2_REPO}" );
@@ -32,7 +32,7 @@ print STDERR "Maven local repository set to: $mvnRepo\n";
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=\"$component\" -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome -DmvnRepo=$mvnRepo $clean $installDBSchema $append $webPropFile $tag $installConfigFile -logger org.apache.tools.ant.NoBannerLogger ";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=\"$component\" -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome -DmvnRepo=$mvnRepo $clean $installDBSchema $append $webPropFile $tag $installConfigFile $publishDocs -logger org.apache.tools.ant.NoBannerLogger ";
 
 # if not returning error status, then can pretty up output by keeping
 # only lines with bracketed ant target name (ie, ditch its commentary).
@@ -80,7 +80,7 @@ sub parseArgs {
     &usage("targetDir not defined") unless $targetDir;
 
 
-    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $installConfigFile);
+    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $installConfigFile, $publishDocs);
     if ($ARGV[0] eq "-append") {
         shift @ARGV;
         $append = "-Dappend=true";
@@ -122,12 +122,17 @@ sub parseArgs {
         $webPropFile = "-propertyfile $wpFile -DwebPropFile=$wpFile";
     }
 
+    if ($ARGV[0] eq "-publishDocs") {
+        shift @ARGV;
+        $publishDocs = "-DpublishDocs=true";
+    }
+
     if ($doCheckout = $ARGV[0]) {
         &usage("") if ($doCheckout ne "-co");
         $version = $ARGV[1];
     }
 
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus, $installConfigFile);
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus, $installConfigFile, $publishDocs);
 }
 
 sub usage {
@@ -138,7 +143,7 @@ sub usage {
     print 
 "
 usage: 
-  build projectname\[/componentname]  $whats -append [-installConfigFile] [-installDBSchema | -installDBSchemaSkipRoles] [-webPropFile propfile] [-co [version]]
+  build projectname\[/componentname]  $whats -append [-installConfigFile] [-installDBSchema | -installDBSchemaSkipRoles] [-webPropFile propfile] [-publishDocs] [-co [version]]
   build projectname release version
 
 ";
