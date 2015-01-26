@@ -15,6 +15,7 @@
   <!--   webPropFile                                                                -->
   <!--   tag                                                                        -->
   <!--   installConfigFile  optional, installs $GUS_HOME/gus.config from sample     -->
+	<!--   publishDocs        optional, installs documentation pages (webinstall only)-->
   <!--   projectsDir                                                                -->
   <!--   svnurl             must present in dependent checkout targets              -->
   <!--   excludeChildren    optional, only presents in dependent checkout targets   -->
@@ -64,14 +65,12 @@
   </target>
 
 
-  <target name="webinstall" depends="WebInstallInit">    
+  <target name="webinstall" depends="WebInstallInit">
     <property name="initialTarget" value="webinstall"/>
 
     <ant target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
     </ant>
-
-
 
     <antcall target="webinstall-postprocess" />
     
@@ -479,7 +478,7 @@
        Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
 
-<!-- if the file exists, it does not copy over -->
+    <!-- if the file exists, it does not copy over -->
     <antcall target="webComponentPartCopy">
       <param name="part" value="htdocs"/>
       <param name="to" value="${htdocsTargetDir}"/>
@@ -519,10 +518,48 @@
 
   </target>  
 
+  <!-- oooooooooooooooooo Documentation Generation ooooooooooooooooooooo -->
+
+  <!-- For now can only build docs for maven projects -->
+  <target name="generateDocs" if="publishDocs">
+    <echo>Generating Documentation for ${relativeBuildDir}</echo>
+    <exec dir="${projectsDir}/${relativeBuildDir}"
+           executable="mvn"
+           failonerror="true"
+           failifexecutionfails="true">
+       <arg line="javadoc:javadoc"/>
+       <arg line="enunciate:docs"/>
+       <arg line="--quiet"/>
+       <arg line="-Dmaven.repo.local=${mvnRepo}"/>
+    </exec>
+  </target>
+
+  <target name="checkWebInstall">
+    <condition property="isWebInstall">
+      <equals arg1="${initialTarget}" arg2="webinstall"/>
+    </condition>
+  </target>
+
+  <target name="checkWebInstallAndPublish" depends="checkWebInstall">
+    <condition property="isWebInstallAndPublish">
+      <and>
+      	<isset property="isWebInstall"/>
+      	<isset property="publishDocs"/>
+      </and>
+    </condition>
+  </target>
+
+  <target name="publishDocs" depends="checkWebInstallAndPublish" if="isWebInstallAndPublish">
+    <echo>Publishing Documentation for ${relativeBuildDir}</echo>
+    <copy todir="${htdocsTargetDir}/docs/${relativeBuildDir}">
+      <fileset dir="${projectsDir}/${relativeBuildDir}/target/site" includes="**"/>
+    </copy>
+  </target>
+
   <!-- ooooooooooooooooooo Maven-related targets ooooooooooooooooooooooo -->
 
   <target name="mavenCleanInstall">
-    <exec dir="${buildDir}"
+    <exec dir="${projectsDir}/${relativeBuildDir}"
            executable="mvn"
            failonerror="true"
            failifexecutionfails="true">
@@ -541,12 +578,18 @@
   <target name="checkIfMavenComponent">
     <available property="isMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
   </target>
-  
+
   <target name="mavenBuildProject" if="isMavenProject" depends="checkIfMavenProject">
     <echo>Building Maven Project: ${project}</echo>
     <!-- build the project with maven -->
     <ant target="mavenCleanInstall">
-      <property name="buildDir" value="${projectsDir}/${project}"/>
+      <property name="relativeBuildDir" value="${project}"/>
+    </ant>
+    <ant target="generateDocs">
+      <property name="relativeBuildDir" value="${project}"/>
+    </ant>
+    <ant target="publishDocs">
+      <property name="relativeBuildDir" value="${project}"/>
     </ant>
   </target>
 
@@ -556,18 +599,30 @@
 
   <target name="mavenBuildComponent" if="isMavenComponent" depends="checkIfMavenComponent,checkAlreadyBuilt">
     <echo>Building Maven Component: ${project}/${component}, Already built? ${alreadyBuilt}</echo>
+    <!-- build component only if not already built at the project level -->
     <ant target="conditionalMavenCleanInstall">
-      <property name="buildDir" value="${projectsDir}/${project}/${component}"/>
+      <property name="relativeBuildDir" value="${project}/${component}"/>
     </ant>
     <!-- deploy artifacts for this component -->
     <ant target="deployMavenArtifacts">
       <property name="project" value="${project}"/>
       <property name="component" value="${component}"/>
     </ant>
+    <!-- generate documentation for this component -->
+    <ant target="conditionalGenerateDocs">
+      <property name="relativeBuildDir" value="${project}/${component}"/>
+    </ant>
+    <ant target="publishDocs">
+      <property name="relativeBuildDir" value="${project}/${component}"/>
+    </ant>
   </target>
 
   <target name="conditionalMavenCleanInstall" unless="${alreadyBuilt}">
     <ant target="mavenCleanInstall"/>
+  </target>
+
+  <target name="conditionalGenerateDocs" unless="${alreadyBuilt}">
+    <ant target="generateDocs"/>
   </target>
 
   <target name="deployMavenArtifacts">

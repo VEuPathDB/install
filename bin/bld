@@ -1,12 +1,21 @@
 #!/bin/bash
 
-if [ -z "$1" ]; then
-   echo ""
-   echo "Usage: bld project[/component]"
-   echo ""
-   echo "  calls 'build project[/component] install -append'"
-   echo ""
-   exit 1
-fi
-build $1 install -append
+function usage() {
+  echo ""
+  echo "Usage: bld project[/component] [-publishDocs]"
+  echo ""
+  echo "  calls 'build project[/component] install -append'"
+  echo ""
+  echo "The -publishDocs flag, if present, will be passed to build as well"
+  exit 1
+}
 
+if [ -z "$1" ]; then
+  usage
+elif [ -n "$2" ]; then
+  if [ "$2" != "-publishDocs" ]; then
+    usage
+  fi
+fi
+
+build $1 install -append $2
