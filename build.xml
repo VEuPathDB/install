@@ -15,6 +15,7 @@
   <!--   webPropFile                                                                -->
   <!--   tag                                                                        -->
   <!--   installConfigFile  optional, installs $GUS_HOME/gus.config from sample     -->
+	<!--   publishDocs        optional, installs documentation pages (webinstall only)-->
   <!--   projectsDir                                                                -->
   <!--   svnurl             must present in dependent checkout targets              -->
   <!--   excludeChildren    optional, only presents in dependent checkout targets   -->
@@ -64,14 +65,12 @@
   </target>
 
 
-  <target name="webinstall" depends="WebInstallInit">    
+  <target name="webinstall" depends="WebInstallInit">
     <property name="initialTarget" value="webinstall"/>
 
     <ant target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
     </ant>
-
-
 
     <antcall target="webinstall-postprocess" />
     
@@ -193,6 +192,7 @@
     <property name="component" value=""/>
     <antcall target="buildInfo" />
   </target>
+
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -206,10 +206,22 @@
       </fileset>
     </concat>
     
-    <!-- all Maven-based components are built at the project level -->
-    <!-- KLUGE: disable this by default for now, so must call this target explicitly in
-           project build files (probably before installing non-maven components). -->
-    <!-- <antcall target="mavenCleanInstall"/> -->
+    <!-- Note: Maven-based projects should be built at the project level in the  -->
+    <!--       project's build.xml -before- components are built, and should use -->
+    <!--       code similar to that below.  If this is not done, Maven-based     -->
+    <!--       components will still be built at the component level but will    -->
+    <!--       lose any project-level benefits.  Omitting the "alreadyBuilt"     -->
+    <!--       will cause Maven components to be built twice: at the project     -->
+    <!--       and component levels.                                             -->
+    <!--
+      <target name="WDK-MavenInstallation">
+        <ant target="mavenBuildProject">
+          <property name="project" value="WDK"/>
+        </ant>
+        <property name="alreadyBuilt" value="true"/>
+      </target>
+    -->
+
   </target>
 
   <!-- ooooooooooooooooooo default component install oooooooooooooooooooooo -->
@@ -334,7 +346,8 @@
    
    <antcall target="defaultCCompile"/>
    
-   <antcall target="defaultJavaCompile"/>
+   <antcall target="defaultJavaCompile"/>   <!-- will run if non-maven -->
+   <antcall target="mavenBuildComponent"/>  <!-- will run if manen -->
    
    <antcall target="componentPartCopy">
       <param name="part" value="data"/>
@@ -363,12 +376,11 @@
       <srcfile/>
       <fileset dir="${projectsDir}/${project}/${component}/src/c" includes="*.c"/>
       <mapper type="glob" from="*.c" to="*"/>
-
     </apply>  
   </target>
 
   <target name="defaultJavaCompile" if="isNonMavenJava" depends="deleteMyClasses,checkNonMavenJava">
-    <!--  <echo message="Java source found in non-maven project.  Building traditional way..."/> -->
+     <echo message="Java source found in non-maven component.  Building traditional way..."/>
      <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
      <mkdir dir="${targetDir}/lib/java"/>
      <mkdir dir="${targetDir}/lib/java/db_driver"/>
@@ -466,7 +478,7 @@
        Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
 
-<!-- if the file exists, it does not copy over -->
+    <!-- if the file exists, it does not copy over -->
     <antcall target="webComponentPartCopy">
       <param name="part" value="htdocs"/>
       <param name="to" value="${htdocsTargetDir}"/>
@@ -506,20 +518,48 @@
 
   </target>  
 
+  <!-- oooooooooooooooooo Documentation Generation ooooooooooooooooooooo -->
+
+  <!-- For now can only build docs for maven projects -->
+  <target name="generateDocs" if="publishDocs">
+    <echo>Generating Documentation for ${relativeBuildDir}</echo>
+    <exec dir="${projectsDir}/${relativeBuildDir}"
+           executable="mvn"
+           failonerror="true"
+           failifexecutionfails="true">
+       <arg line="javadoc:javadoc"/>
+       <arg line="enunciate:docs"/>
+       <arg line="--quiet"/>
+       <arg line="-Dmaven.repo.local=${mvnRepo}"/>
+    </exec>
+  </target>
+
+  <target name="checkWebInstall">
+    <condition property="isWebInstall">
+      <equals arg1="${initialTarget}" arg2="webinstall"/>
+    </condition>
+  </target>
+
+  <target name="checkWebInstallAndPublish" depends="checkWebInstall">
+    <condition property="isWebInstallAndPublish">
+      <and>
+      	<isset property="isWebInstall"/>
+      	<isset property="publishDocs"/>
+      </and>
+    </condition>
+  </target>
+
+  <target name="publishDocs" depends="checkWebInstallAndPublish" if="isWebInstallAndPublish">
+    <echo>Publishing Documentation for ${relativeBuildDir}</echo>
+    <copy todir="${htdocsTargetDir}/docs/${relativeBuildDir}">
+      <fileset dir="${projectsDir}/${relativeBuildDir}/target/site" includes="**"/>
+    </copy>
+  </target>
+
   <!-- ooooooooooooooooooo Maven-related targets ooooooooooooooooooooooo -->
 
-  <target name="checkIfMavenProject">
-    <available property="isMavenProject" file="${projectsDir}/${project}/pom.xml"/>
-  </target>
-
-  <target name="checkIfMavenComponent">
-    <available property="isMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
-  </target>
-  
-  <target name="mavenCleanInstall" if="isMavenProject" depends="checkIfMavenProject">
-  
-    <!-- build the project with maven -->
-    <exec dir="${projectsDir}/${project}"
+  <target name="mavenCleanInstall">
+    <exec dir="${projectsDir}/${relativeBuildDir}"
            executable="mvn"
            failonerror="true"
            failifexecutionfails="true">
@@ -529,9 +569,62 @@
        <arg line="-Dmaven.test.skip=true"/>
        <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
-    
   </target>
-  
+
+  <target name="checkIfMavenProject">
+    <available property="isMavenProject" file="${projectsDir}/${project}/pom.xml"/>
+  </target>
+
+  <target name="checkIfMavenComponent">
+    <available property="isMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
+  </target>
+
+  <target name="mavenBuildProject" if="isMavenProject" depends="checkIfMavenProject">
+    <echo>Building Maven Project: ${project}</echo>
+    <!-- build the project with maven -->
+    <ant target="mavenCleanInstall">
+      <property name="relativeBuildDir" value="${project}"/>
+    </ant>
+    <ant target="generateDocs">
+      <property name="relativeBuildDir" value="${project}"/>
+    </ant>
+    <ant target="publishDocs">
+      <property name="relativeBuildDir" value="${project}"/>
+    </ant>
+  </target>
+
+  <target name="checkAlreadyBuilt" unless="alreadyBuilt">
+    <property name="alreadyBuilt" value="false"/>
+  </target>
+
+  <target name="mavenBuildComponent" if="isMavenComponent" depends="checkIfMavenComponent,checkAlreadyBuilt">
+    <echo>Building Maven Component: ${project}/${component}, Already built? ${alreadyBuilt}</echo>
+    <!-- build component only if not already built at the project level -->
+    <ant target="conditionalMavenCleanInstall">
+      <property name="relativeBuildDir" value="${project}/${component}"/>
+    </ant>
+    <!-- deploy artifacts for this component -->
+    <ant target="deployMavenArtifacts">
+      <property name="project" value="${project}"/>
+      <property name="component" value="${component}"/>
+    </ant>
+    <!-- generate documentation for this component -->
+    <ant target="conditionalGenerateDocs">
+      <property name="relativeBuildDir" value="${project}/${component}"/>
+    </ant>
+    <ant target="publishDocs">
+      <property name="relativeBuildDir" value="${project}/${component}"/>
+    </ant>
+  </target>
+
+  <target name="conditionalMavenCleanInstall" unless="${alreadyBuilt}">
+    <ant target="mavenCleanInstall"/>
+  </target>
+
+  <target name="conditionalGenerateDocs" unless="${alreadyBuilt}">
+    <ant target="generateDocs"/>
+  </target>
+
   <target name="deployMavenArtifacts">
 
     <!-- copy generated build file to gus_home -->
@@ -545,6 +638,7 @@
     
     <!-- gather dependencies from this maven project -->
     <artifact:dependencies filesetId="depsFileset" useScope="runtime">
+      <localRepository path="${mvnRepo}"/>
       <pom file="${projectsDir}/${project}/${component}/pom.xml"/>
     </artifact:dependencies>
 
@@ -653,28 +747,6 @@
         <include name="*.tag"/>
       </fileset>
     </copy>
-
-  </target>
-
-  <target name="webinstall-javascript">
-
-    <echo>Concatenating JavaScript...</echo>
-    <concat destfile="${destDir}/${destFilename}">
-      <filelist dir="${srcDir}" files="${initialFiles}"/>
-      <fileset dir="${srcDir}" includes="**/*.js" excludes="${initialFiles}"/>
-    </concat>
-
-    <echo>Minifying JavaScript...</echo>
-    <apply executable="java" failonerror="true">
-      <fileset dir="${destDir}" includes="${destFilename}"/>
-      <arg line="-jar" />
-      <arg path="${targetDir}/lib/java/yuicompressor-2.4.7.jar" />
-      <!-- <arg line="${yuicompressor.options}" /> -->
-      <srcfile />
-      <arg line="-o" />
-      <mapper type="glob" from="*.js" to="${webappTargetDir}/wdk/js/*-min.js"/>
-      <targetfile />
-    </apply>
 
   </target>
   
@@ -845,7 +917,9 @@
     <fail unless="project.present">${proj} hasn't been checked out yet.</fail>
 
     <!-- check out the project from svn -->
-    <exec dir="${projectsDir}/${project}" executable="svn">
+    <exec dir="${projectsDir}/${project}" 
+          executable="svn"
+          failonerror="true">
       <arg line="update"/>
     </exec>
  
