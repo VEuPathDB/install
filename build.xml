@@ -802,7 +802,7 @@
            failonerror="false"
            failifexecutionfails="false">
        <arg line="-c"/>
-       <arg line="'svn info ${project} | egrep URL\|Rev\|Date'"/>
+       <arg line="'svn info ${project} | egrep ^URL:\|Rev\|Date'"/>
     </exec>
     <exec dir="${projectsDir}" 
            executable="sh"
