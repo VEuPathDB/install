@@ -32,6 +32,11 @@
 ##        and goes to the site's project_home.  If site_name is omitted, uses
 ##        DEFAULT_SITE.
 ##
+##     goto <project_home>:
+##        looks for valid directory of $PROJECT_HOME/../<project_home>, then
+##        simply <project_home> (i.e. absolute or relative path); if found,
+##        sets as new $PROJECT_HOME and visits the directory
+##
 ##     current:
 ##        displays the current site information
 ##
@@ -245,6 +250,24 @@ function setup() {
         echo "Retaining the following values:"
         echo "  GUS_HOME     = $GUS_HOME"
         echo "  PROJECT_HOME = $PROJECT_HOME"
+    fi
+}
+
+function goto() {
+    local newProjectHome=$1
+    local changed=0
+    if [ -d $PROJECT_HOME/../$newProjectHome ]; then
+        cd $PROJECT_HOME/../$newProjectHome
+        changed=1
+    elif [ -d $newProjectHome ]; then
+        cd $newProjectHome
+        changed=1
+    fi
+    if [ "$changed" == "1" ]; then
+        echo "\$PROJECT_HOME changed from $PROJECT_HOME to $(pwd)"
+        export PROJECT_HOME=$(pwd)
+    else
+        echo "No action taken. Cannot find directory: $newProjectHome"
     fi
 }
 
