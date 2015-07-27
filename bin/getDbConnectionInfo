@@ -1,0 +1,82 @@
+#!/usr/bin/perl
+################################################################################
+###
+###  Connects to EuPathDB server and, given a list of DB instance names,
+###  displays an ssh command to remotely tunnel to the required servers, and a
+###  set of connection URLs pointing to the local addresses once a tunnel is
+###  established.
+###
+################################################################################
+
+use strict;
+
+## first local port to map to Oracle server ports
+##   (subsequent ports increment by 1)
+my $START_PORT = 5030;
+
+sub main {
+  my $login = shift;
+  print "Connecting to $login\n";
+
+  # requested instances
+  my @instances = @_;
+  my @validInstances;
+
+  # maps to store data
+  my %servers;      # map from server -> port
+  my %serviceMap;   # map from instance -> service
+  my %instanceMap;  # map from instance -> server
+
+  my $port = $START_PORT;
+  foreach my $instance (@instances) {
+
+    # find the server and service name for each requested instance
+    my $cmd = "ssh $login apiTnsSummary | grep $instance";
+    my $resultLine = `$cmd`;
+    chomp($resultLine);
+    if ($resultLine eq "") {
+      print "Cannot find instance '$instance'; skipping...\n";
+    }
+    else {
+      push(@validInstances, $instance);
+      my @results = split(/ +/, $resultLine);
+      my $service = $results[0];
+      my $server = $results[1];
+      $serviceMap{$instance} = $service;
+      $instanceMap{$instance} = $server;
+      if (! exists($servers{$server})) {
+        print "Will map $server:1521 -> localhost:$port\n";
+        $servers{$server} = $port;
+        $port++;
+      }
+    }
+  }
+
+  # data collected; print results
+  print "\nUse the following command to create an SSH tunnel to the required servers:\n\n";
+  my $sshCmd = 'ssh -A';
+  foreach my $server (keys(%servers)) {
+    $sshCmd .= " -L $servers{$server}:$server:1521";
+  }
+  $sshCmd .= " $login";
+  print "> $sshCmd\n\n";
+  print "Connection URLs:\n";
+  foreach my $instance (@validInstances) {
+    my $port = $servers{$instanceMap{$instance}};
+    print "  $instance: jdbc:oracle:thin:\@//localhost:$port/$serviceMap{$instance}\n";
+  }
+  print "\n";
+}
+
+sub usage {
+  print STDERR "\nUSAGE: getDbConnectionInfo <user\@eupath.server> <instance1> [<instance2>...]\n";
+  print STDERR "           instanceN: any number of DB instance names (e.g. apicommn)\n\n";
+}
+
+my $size = scalar(@ARGV);
+if ($size < 2) {
+  usage();
+  exit(1);
+}
+
+main(@ARGV);
