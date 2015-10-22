@@ -273,11 +273,14 @@ function goto() {
 
 function current() {
     assignSiteValues
+    echo "Environment:"
+    echo "  GUS_HOME:     $GUS_HOME"
+    echo "  PROJECT_HOME: $PROJECT_HOME"
     echo "Current Site:"
-    echo "  Name:     $CURRENT_SITE"
-    echo "  Type:     $SITE_TYPE"
-    echo "  URL/Dir:  $SITE_DIR"
-    echo "  Instance: $SITE_ID"
+    echo "  Name:         $CURRENT_SITE"
+    echo "  Type:         $SITE_TYPE"
+    echo "  URL/Dir:      $SITE_DIR"
+    echo "  Instance:     $SITE_ID"
 }
 
 # internal function; pass svn operation to be performed on all your projects
