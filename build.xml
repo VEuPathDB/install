@@ -355,6 +355,7 @@
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
 
+
    <antcall target="componentPartCopy">
       <param name="part" value="metadata"/>
       <param name="to" value="metadata"/>
