@@ -15,7 +15,7 @@
   <!--   webPropFile                                                                -->
   <!--   tag                                                                        -->
   <!--   installConfigFile  optional, installs $GUS_HOME/gus.config from sample     -->
-	<!--   publishDocs        optional, installs documentation pages (webinstall only)-->
+  <!--   publishDocs        optional, installs documentation pages (webinstall only)-->
   <!--   projectsDir                                                                -->
   <!--   svnurl             must present in dependent checkout targets              -->
   <!--   excludeChildren    optional, only presents in dependent checkout targets   -->
