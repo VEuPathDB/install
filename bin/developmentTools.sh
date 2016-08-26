@@ -173,7 +173,7 @@
 
 # Constants (should be good for the foreseeable future)
 export SITE_REPO=/var/www
-export DEV_SITE_JAVA_HOME=/usr/java/jdk1.7.0
+export DEV_SITE_JAVA_HOME=/usr/java/default
 export ZIPD_PROJ_TMP_FILE=".tmpProject.zip" # will be written to you home dir
 
 function sites() {
