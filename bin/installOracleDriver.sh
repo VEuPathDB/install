@@ -32,6 +32,9 @@ function getDriver {
   previousVersionPattern=ojdbc*.jar
   oraHomeLib=$ORACLE_HOME/jdbc/lib
 
+  # create db_driver dir if not yet present
+  mkdir -p $gusLibDriverDir
+
   # copy file from server to local temp location
   echo "Transferring file from ${remoteLoc}"
   scp ${remoteLoc} ${localLoc}
