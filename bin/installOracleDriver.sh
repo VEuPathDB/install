@@ -13,10 +13,14 @@
 ## constants related to this script (subject to change)
 ###########################################################################
 
-jarFileName=ojdbc6.jar
-serverOracleHome=/u01/app/oracle/product/11.2.0.3/db_1
+# dependency definition
+groupId=com.oracle
 artifactId=ojdbc6
-version=11.2.0.3
+version=11.2.0.4
+
+# dependency location
+serverOracleHome=/u01/app/oracle/product/$version/db_1
+jarFileName=ojdbc6.jar
 
 ###########################################################################
 
@@ -41,7 +45,7 @@ function getDriver {
 
   # copy into local maven repository
   echo "Installing driver into local maven repository"
-  mvn install:install-file -DgroupId=com.oracle -DartifactId=${artifactId} \
+  mvn install:install-file -DgroupId=${groupId} -DartifactId=${artifactId} \
       -Dversion=${version} -Dpackaging=jar -Dfile=${localLoc} -DgeneratePom=true
 
   # copy into GUS_HOME/lib and remove previous driver versions
