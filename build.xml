@@ -302,6 +302,12 @@
     </antcall>
 
     <antcall target="componentPartCopy">
+      <param name="part" value="lib/python"/>
+      <param name="to" value="lib/python/"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
       <param name="part" value="lib/R"/>
       <param name="to" value="lib/R"/>
       <param name="prefix" value="${component}/"/>
