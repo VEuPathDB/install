@@ -301,11 +301,6 @@
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
 
-    <antcall target="componentPartCopy">
-      <param name="part" value="lib/python"/>
-      <param name="to" value="lib/python/"/>
-      <param name="prefix" value=""/>
-    </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="lib/R"/>
@@ -332,6 +327,8 @@
       <param name="prefix" value=""/>
     </antcall>
 
+    <antcall target="defaultPythonLibrary"/>
+    
     <antcall target="componentPartCopy">
       <param name="part" value="config"/>
       <param name="to" value="config"/>
@@ -378,7 +375,23 @@
     <antcall target="buildInfo" />
 
   </target>
+
   
+  <target name="checkHasPythonLib">
+    <available property="hasPythonLib" file="${projectsDir}/${project}/${component}/lib/python"/>
+  </target>
+  
+  <target name="defaultPythonLibrary" if="hasPythonLib" depends="checkHasPythonLib">
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/python"/>
+      <param name="to" value="lib/python"/>
+      <param name="prefix" value="${project}/${component}/"/>
+    </antcall>
+    <touch file="${targetDir}/lib/python/__init__.py"/>
+    <touch file="${targetDir}/lib/python/${project}/__init__.py"/>
+    <touch file="${targetDir}/lib/python/${project}/${component}/__init__.py"/>
+  </target>
+ 
   <target name="checkHasCCode">
     <available property="hasCCode" file="${projectsDir}/${project}/${component}/src/c"/>
   </target>
