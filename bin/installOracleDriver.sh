@@ -26,15 +26,17 @@ jarFileName=ojdbc6.jar
 
 set -e
 
+# derivative globals
+localLoc=$HOME/$jarFileName
+gusLibDriverDir=$GUS_HOME/lib/java/db_driver
+previousVersionPattern=ojdbc*.jar
+oraHomeLib=$ORACLE_HOME/jdbc/lib
+
 function getDriver {
   
-  # variables created by the constants above (may be subject to change but less likely)  
+  # variables created by the constants above (may be subject to change but less likely)
   remoteLogin=$1
   remoteLoc=${remoteLogin}:$serverOracleHome/jdbc/lib/$jarFileName
-  localLoc=$HOME/$jarFileName
-  gusLibDriverDir=$GUS_HOME/lib/java/db_driver
-  previousVersionPattern=ojdbc*.jar
-  oraHomeLib=$ORACLE_HOME/jdbc/lib
 
   # create db_driver dir if not yet present
   mkdir -p $gusLibDriverDir
@@ -78,4 +80,15 @@ if [ "$#" != "1" ]; then
   exit 0
 fi
 
-getDriver $1
+if [ "$1" == "-m" ]; then
+  echo "Will install driver to GUS_HOME from local Maven repository"
+  if [ "$M2_REPO" == "" ]; then
+    M2_REPO=~/.m2/repository
+  fi
+  mvnJarPath=`echo $groupId/$artifactId | sed 's/\./\//g'`
+  mvnJarPath=$M2_REPO/$mvnJarPath/$version/$artifactId-${version}.jar
+  echo "Copying $mvnJarPath to $gusLibDriverDir/$jarFileName"
+  cp $mvnJarPath $gusLibDriverDir/$jarFileName
+else
+  getDriver $1
+fi
