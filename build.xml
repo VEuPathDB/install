@@ -825,13 +825,16 @@
   <target name="svnInfo" if="can.do.svn" depends="canDoSvn">
     <exec dir="${projectsDir}" 
            executable="sh"
-           output="${buildLogDir}/svn.info.${project}.log"
+           output="${buildLogDir}/svn.info.${project}.ant.log"
            outputproperty="svnInfoOut"
            failonerror="false"
            failifexecutionfails="false">
        <arg line="-c"/>
-       <!-- occasionally `svn info` returns empty for unknown reasons. The `tee` is used for debug logging. -->
-       <arg line="'svn info ${project}'"/>
+       <!-- occasionally `svn info` returns empty for unknown reasons.
+            The `tee` is used for debug logging. 
+            related? https://bz.apache.org/bugzilla/show_bug.cgi?id=53449
+        -->
+       <arg line="'svn info ${project} 2>&amp;1 | tee ${buildLogDir}/svn.info.${project}.tee.log'"/>
     </exec>
     <exec dir="${projectsDir}" 
            executable="sh"
