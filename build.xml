@@ -825,12 +825,13 @@
   <target name="svnInfo" if="can.do.svn" depends="canDoSvn">
     <exec dir="${projectsDir}" 
            executable="sh"
+           output="${buildLogDir}/svn.info.${project}.log"
            outputproperty="svnInfoOut"
            failonerror="false"
            failifexecutionfails="false">
        <arg line="-c"/>
        <!-- occasionally `svn info` returns empty for unknown reasons. The `tee` is used for debug logging. -->
-       <arg line="'svn info ${project} 2>&amp;1 | tee ${buildLogDir}/svn.info.${project}.log'"/>
+       <arg line="'svn info ${project}'"/>
     </exec>
     <exec dir="${projectsDir}" 
            executable="sh"
