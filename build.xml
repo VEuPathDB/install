@@ -556,7 +556,7 @@
            failonerror="true"
            failifexecutionfails="true">
        <arg line="javadoc:javadoc"/>
-       <arg line="enunciate:docs"/>
+       <!--<arg line="enunciate:docs"/>-->
        <arg line="--quiet"/>
        <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
