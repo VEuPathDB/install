@@ -556,7 +556,7 @@
            failonerror="true"
            failifexecutionfails="true">
        <arg line="javadoc:javadoc"/>
-       <!--<arg line="enunciate:docs"/>-->
+       <arg line="enunciate:docs"/>
        <arg line="--quiet"/>
        <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
@@ -571,15 +571,15 @@
   <target name="checkWebInstallAndPublish" depends="checkWebInstall">
     <condition property="isWebInstallAndPublish">
       <and>
-      	<isset property="isWebInstall"/>
-      	<isset property="publishDocs"/>
+        <isset property="isWebInstall"/>
+        <isset property="publishDocs"/>
       </and>
     </condition>
   </target>
 
   <target name="publishDocs" depends="checkWebInstallAndPublish" if="isWebInstallAndPublish">
     <echo>Publishing Documentation for ${relativeBuildDir}</echo>
-    <copy todir="${htdocsTargetDir}/docs/${relativeBuildDir}">
+    <copy todir="${htdocsTargetDir}/docs/${relativeBuildDir}" failonerror="false">
       <fileset dir="${projectsDir}/${relativeBuildDir}/target/site" includes="**"/>
     </copy>
   </target>
