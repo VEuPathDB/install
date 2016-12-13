@@ -776,7 +776,7 @@
   </target>
 
   <target name="copyCustomTags" if="siteDir.present">
-    <copy todir="${webappTargetDir}/WEB-INF/tags/imp" overwrite="true" if="siteDir.present">
+    <copy todir="${webappTargetDir}/WEB-INF/tags/imp" overwrite="true">
       <fileset dir="${webappTargetDir}/WEB-INF/tags/site">
         <include name="*.tag"/>
       </fileset>
