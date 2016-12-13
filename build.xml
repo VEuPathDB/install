@@ -770,14 +770,19 @@
     </copy>
 
     <!-- lastly, copy custom tags from site, and overwrite existing ones -->
-    <copy todir="${webappTargetDir}/WEB-INF/tags/imp" overwrite="true">
+    <available file="${webappTargetDir}/WEB-INF/tags/site" type="dir" property="siteDir.present"/>
+    <antcall target="copyCustomTags"/>
+
+  </target>
+
+  <target name="copyCustomTags" if="siteDir.present">
+    <copy todir="${webappTargetDir}/WEB-INF/tags/imp" overwrite="true" if="siteDir.present">
       <fileset dir="${webappTargetDir}/WEB-INF/tags/site">
         <include name="*.tag"/>
       </fileset>
     </copy>
-
   </target>
-  
+
   <target name="buildInfo" depends="svnInfo,recordBuildState" />
 
   <target name="recordBuildState">
