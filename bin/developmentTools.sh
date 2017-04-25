@@ -343,7 +343,7 @@ function getTopLevelProject() {
     if [[ $numWebsiteProjects -eq 1 ]]; then
         local topLevel=$(\ls $PROJECT_HOME | grep "$topLevelProjectType\$")
         if [[ "$topLevel" == "ApiCommonWebsite" ]]; then
-          topLevel="EuPathPresenters";
+          topLevel="ApiCommonPresenters";
         fi
         echo $topLevel
     else
