@@ -111,8 +111,8 @@ Where:
   version:      the name of the branch to check out (ie, the name after /branches/ in an svn url)
 
 Examples:
-    gussvn PlasmoDBWebsite checkout https://www.cbil.upenn.edu/svn/apidb/PlasmoDBWebsite
-    gussvn PlasmoDBWebsite checkout https://www.cbil.upenn.edu/svn/apidb/PlasmoDBWebsite -branch plasmodb5.0beta
+    gussvn PlasmoDBWebsite checkout https://cbilsvn.pmacs.upenn.edu/svn/apidb/PlasmoDBWebsite
+    gussvn PlasmoDBWebsite checkout https://cbilsvn.pmacs.upenn.edu/svn/apidb/PlasmoDBWebsite -branch plasmodb5.0beta
     gussvn PlasmoDBWebsite update
 
 NOTE: gussvn writes to your \$PROJECT_HOME not your current directory.  To use gussvn checkout:
@@ -120,7 +120,7 @@ NOTE: gussvn writes to your \$PROJECT_HOME not your current directory.  To use g
       check out into
   (2) make sure that \$PROJECT_HOME/install exists.  If not, do this
        % cd \$PROJECT_HOME
-       % svn co https://www.cbil.upenn.edu/svn/gus/install install
+       % svn co https://cbilsvn.pmacs.upenn.edu/svn/gus/install install
 
 ";
     exit 1;
