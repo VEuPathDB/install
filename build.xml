@@ -828,19 +828,23 @@
   </target>  
 
   <target name="svnInfo" if="can.do.svn" depends="canDoSvn">
+    <mkdir dir="${buildLogDir}" />
+    <property name="svninfopropfile" value="${buildLogDir}/svn.info.${project}.properties" />
     <exec dir="${projectsDir}" 
            executable="sh"
-           output="${buildLogDir}/svn.info.${project}.ant.log"
-           outputproperty="svnInfoOut"
            failonerror="false"
            failifexecutionfails="false">
        <arg line="-c"/>
-       <!-- occasionally `svn info` returns empty for unknown reasons.
-            The `tee` is used for debug logging. 
-            related? https://bz.apache.org/bugzilla/show_bug.cgi?id=53449
-        -->
-       <arg line="'svn info ${project} 2>&amp;1 | tee ${buildLogDir}/svn.info.${project}.tee.log'"/>
+       <arg line="'svn info ${project} > ${svninfopropfile}'"/>
     </exec>
+   <!-- exec outputproperty sometimes returns incomplete data so
+        we write to file and load that to an Ant property.
+        Related? https://bz.apache.org/bugzilla/show_bug.cgi?id=53449
+    -->
+    <loadfile property="svnInfoOut" srcFile="${svninfopropfile}"/>
+    <!-- delete file="${svninfopropfile}"/ -->
+    <!-- we care less about losing outputproperty for stats, 
+         more about overhead of file intermediates -->
     <exec dir="${projectsDir}" 
            executable="sh"
            outputproperty="svnStatOut"
