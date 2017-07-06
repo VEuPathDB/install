@@ -340,15 +340,18 @@ function hgup() {
 function getTopLevelProject() {
     local topLevelProjectType=$1
     local numWebsiteProjects=`\ls $PROJECT_HOME | grep "$topLevelProjectType\$" | wc -l`
-    if [[ $numWebsiteProjects -eq 1 ]]; then
-        local topLevel=$(\ls $PROJECT_HOME | grep "$topLevelProjectType\$")
-        if [[ "$topLevel" == "ApiCommonWebsite" ]]; then
-          topLevel="ApiCommonPresenters";
-        fi
-        echo $topLevel
+    local numPresenterProjects=`\ls $PROJECT_HOME | grep "Presenters\$" | wc -l`
+    # favor *Presenters projects over *Website projects
+    if [[ $numPresenterProjects -eq 1 ]]; then
+        local topLevelProject=$(\ls $PROJECT_HOME | grep "Presenters\$")
+        echo $topLevelProject
+    elif [[ $numWebsiteProjects -eq 1 ]]; then
+        local topLevelProject=$(\ls $PROJECT_HOME | grep "$topLevelProjectType\$")
+        echo $topLevelProject
     else
         echo "Zero or more than one $topLevelProjectType project detected in $PROJECT_HOME" 1>&2
         ls $PROJECT_HOME | grep "$topLevelProjectType\$" 1>&2
+        exit 1
     fi
 }
 
