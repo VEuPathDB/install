@@ -302,6 +302,11 @@
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
 
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/gestalt"/>
+      <param name="to" value="lib/gestalt"/>
+      <param name="prefix" value=""/>
+    </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="lib/R"/>
