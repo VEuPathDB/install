@@ -303,8 +303,8 @@
     </antcall>
 
     <antcall target="componentPartCopy">
-      <param name="part" value="lib/gestalt"/>
-      <param name="to" value="lib/gestalt"/>
+      <param name="part" value="lib/conifer"/>
+      <param name="to" value="lib/conifer"/>
       <param name="prefix" value=""/>
     </antcall>
 
