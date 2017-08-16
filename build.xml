@@ -308,6 +308,11 @@
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
 
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/conifer"/>
+      <param name="to" value="lib/conifer"/>
+      <param name="prefix" value=""/>
+    </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="lib/R"/>
