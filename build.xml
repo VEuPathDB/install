@@ -269,6 +269,12 @@
     </antcall>
 
     <antcall target="componentPartCopy">
+      <param name="part" value="ontology"/>
+      <param name="to" value="ontology"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
       <param name="part" value="lib/gbrowse"/>
       <param name="to" value="lib/gbrowse"/>
       <param name="prefix" value=""/>
@@ -302,6 +308,11 @@
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
 
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/conifer"/>
+      <param name="to" value="lib/conifer"/>
+      <param name="prefix" value=""/>
+    </antcall>
 
     <antcall target="componentPartCopy">
       <param name="part" value="lib/R"/>
