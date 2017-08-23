@@ -30,6 +30,19 @@
            uri="antlib:org.apache.maven.artifact.ant"
            classpathref="maven-ant-tasks.classpath"/>
   <property name="buildLogDir" value="${targetDir}/.buildlog" />
+  <property environment="env"/>
+  <!-- optional SVN_USERNAME and/or SVN_PASSWORD shell env variables
+       will be passed as -username and/or -password svn command args. -->
+  <condition property="svn.opt.username"
+             value="--username ${env.SVN_USERNAME}"
+             else="">
+    <isset property="env.SVN_USERNAME" />
+  </condition>
+  <condition property="svn.opt.password"
+             value="--password ${env.SVN_PASSWORD}"
+             else="">
+    <isset property="env.SVN_PASSWORD" />
+  </condition>
  
   <import file="${projectsDir}/${proj}/build.xml" />
 
@@ -941,7 +954,10 @@
     
     <!-- check out the project from svn -->
     <exec dir="${projectsDir}" executable="svn">
-      <arg line="co ${svnurl}/${svnflag} ${project}"/>
+      <arg line="co"/>
+      <arg line="${svn.opt.username}"/>
+      <arg line="${svn.opt.password}"/>
+      <arg line="${svnurl}/${svnflag} ${project}"/>
     </exec>
 
     <!-- try to checkout dependencies -->
@@ -967,14 +983,15 @@
 
     <!-- do not update non-existing project -->
     <fail unless="project.present">${proj} hasn't been checked out yet.</fail>
-
-    <!-- check out the project from svn -->
+    <!-- update the project from svn -->
     <exec dir="${projectsDir}/${project}" 
           executable="svn"
           failonerror="true">
       <arg line="update"/>
+      <arg line="${svn.opt.username}"/>
+      <arg line="${svn.opt.password}"/>
     </exec>
- 
+
     <!-- try to update dependencies -->
     <antcall target="updateDependencies" />
   </target>
