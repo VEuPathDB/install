@@ -507,7 +507,7 @@ function pushHg() {
   local numJava=$(hg status | grep ".java" | wc -l | awk '{ print $1 }');
   local loadCmd
   #if [ "$numJava"=="0" ]; do
-  #  Example: bldw WDK/View <your_webapp.prop>; bldw ApiCommonWebsite/Site <your_webapp.prop>
+  #  Example: bldw WDKWebsite/View <your_webapp.prop>; bldw ApiCommonWebsite/Site <your_webapp.prop>
   #  loadCmd="reload" # <-- FIX ME TO ONLY MOVE FILES, NOT BUILD JAVA!!
   #else
     loadCmd="reload"
