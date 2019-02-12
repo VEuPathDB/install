@@ -580,15 +580,49 @@
 
   <!-- For now can only build docs for maven projects -->
   <target name="generateDocs" if="publishDocs">
-    <echo>Generating Documentation for ${relativeBuildDir}</echo>
+    <echo>Generating Documentation for ${project}</echo>
+    <!--
     <exec dir="${projectsDir}/${relativeBuildDir}"
-           executable="mvn"
-           failonerror="true"
-           failifexecutionfails="true">
-       <arg line="javadoc:javadoc"/>
-       <arg line="enunciate:docs"/>
-       <arg line="--quiet"/>
-       <arg line="-Dmaven.repo.local=${mvnRepo}"/>
+          executable="mvn"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="javadoc:javadoc"/>
+      <arg line="enunciate:docs"/>
+      <arg line="- -quiet"/>
+      <arg line="-Dmaven.repo.local=${mvnRepo}"/>
+    </exec>
+    -->
+    <ant target="runRaml2Html"/>
+  </target>
+
+  <target name="checkIfRamlApiFilePresent">
+    <available property="ramlApiFilePresent" file="${projectsDir}/${project}/Service/doc/raml/api.raml"/>
+  </target>
+
+  <target name="runRaml2Html" depends="checkIfRamlApiFilePresent" if="ramlApiFilePresent">
+    <echo>Installing raml2html...</echo>
+    <exec dir="${projectsDir}/${relativeBuildDir}"
+          executable="yarn"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="global"/>
+      <arg line="add"/>
+      <arg line="raml2html"/>
+      <!-- NOTE: this does not seem to work; installs in a global loc, not GUS_HOME -->
+      <arg line="--prefix"/>
+      <arg line="${targetDir}"/>
+    </exec>
+    <echo>Generating RAML HTML doc</echo>
+    <echo>  Input:  ${projectsDir}/${project}/Service/doc/raml/api.raml</echo>
+    <echo>  Output: ${htdocsTargetDir}/service-api.html</echo>
+    <exec dir="${projectsDir}/${relativeBuildDir}"
+          executable="raml2html"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="-i"/>
+      <arg line="${projectsDir}/${project}/Service/doc/raml/api.raml"/>
+      <arg line="-o"/>
+      <arg line="${htdocsTargetDir}/service-api.html"/>
     </exec>
   </target>
 
