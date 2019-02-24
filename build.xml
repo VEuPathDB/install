@@ -576,6 +576,26 @@
 
   </target>  
 
+  <!-- oooooooooooooooooo Yarn Installation ooooooooooooooooooooo -->
+
+  <target name="installYarnBin" unless="hasYarnBin">
+    <!-- unpack yarn tgz into targetDirectory -->
+    <echo message="Installing yarn binary"/>
+    <mkdir dir="${targetDir}/lib/yarn"/>
+    <mkdir dir="${targetDir}/bin"/>
+    <exec executable="tar"
+      dir="${targetDir}/lib/yarn"
+      failonerror="true"
+      failifexecutionfails="true">
+      <arg line="xzf ${projectsDir}/install/lib/yarn.tar.gz --strip-components 1"/>
+    </exec>
+    <symlink overwrite="true" link="${targetDir}/bin/yarn" resource="${targetDir}/lib/yarn/bin/yarn"/>
+  </target>
+
+  <target name="yarnBinCheck">
+    <available property="hasYarnBin" file="${targetDir}/bin/yarn"/>
+  </target>
+
   <!-- oooooooooooooooooo Documentation Generation ooooooooooooooooooooo -->
 
   <!-- For now can only build docs for maven projects -->
@@ -600,23 +620,19 @@
     <available property="ramlApiFilePresent" file="${projectsDir}/${project}/Service/doc/raml/api.raml"/>
   </target>
 
-  <target name="runRaml2Html" depends="checkIfRamlApiFilePresent" if="ramlApiFilePresent">
+  <target name="runRaml2Html" depends="installYarnBin,checkIfRamlApiFilePresent" if="ramlApiFilePresent">
     <echo>Installing raml2html...</echo>
-    <exec dir="${projectsDir}/${relativeBuildDir}"
+    <exec dir="${projectsDir}/${project}/Service/doc"
           executable="yarn"
           failonerror="true"
           failifexecutionfails="true">
-      <arg line="global"/>
       <arg line="add"/>
       <arg line="raml2html"/>
-      <!-- NOTE: this does not seem to work; installs in a global loc, not GUS_HOME -->
-      <arg line="--prefix"/>
-      <arg line="${targetDir}"/>
     </exec>
     <echo>Generating RAML HTML doc</echo>
     <echo>  Input:  ${projectsDir}/${project}/Service/doc/raml/api.raml</echo>
     <echo>  Output: ${htdocsTargetDir}/service-api.html</echo>
-    <exec dir="${projectsDir}/${relativeBuildDir}"
+    <exec dir="${projectsDir}/${project}/Service/doc/node_modules/raml2html/bin"
           executable="raml2html"
           failonerror="true"
           failifexecutionfails="true">
