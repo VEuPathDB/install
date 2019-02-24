@@ -578,15 +578,15 @@
 
   <!-- oooooooooooooooooo Yarn Installation ooooooooooooooooooooo -->
 
-  <target name="installYarnBin" unless="hasYarnBin">
+  <target name="installYarnBin" depends="yarnBinCheck" unless="hasYarnBin">
     <!-- unpack yarn tgz into targetDirectory -->
     <echo message="Installing yarn binary"/>
     <mkdir dir="${targetDir}/lib/yarn"/>
     <mkdir dir="${targetDir}/bin"/>
     <exec executable="tar"
-      dir="${targetDir}/lib/yarn"
-      failonerror="true"
-      failifexecutionfails="true">
+          dir="${targetDir}/lib/yarn"
+          failonerror="true"
+          failifexecutionfails="true">
       <arg line="xzf ${projectsDir}/install/lib/yarn.tar.gz --strip-components 1"/>
     </exec>
     <symlink overwrite="true" link="${targetDir}/bin/yarn" resource="${targetDir}/lib/yarn/bin/yarn"/>
@@ -594,6 +594,25 @@
 
   <target name="yarnBinCheck">
     <available property="hasYarnBin" file="${targetDir}/bin/yarn"/>
+  </target>
+
+  <!-- oooooooooooooooooo raml2html Installation ooooooooooooooooooooo -->
+
+  <target name="installRaml2Html" depends="raml2HtmlCheck" unless="hasRaml2Html">
+    <echo>Installing raml2html</echo>
+    <mkdir dir="${targetDir}/lib/raml2html"/>
+    <mkdir dir="${targetDir}/bin"/>
+    <exec executable="yarn"
+          dir="${targetDir}/lib/raml2html"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="add raml2html"/>
+    </exec>
+    <symlink overwrite="true" link="${targetDir}/bin/raml2html" resource="${targetDir}/lib/raml2html/node_modules/raml2html/bin/raml2html"/>
+  </target>
+
+  <target name="raml2HtmlCheck">
+    <available property="hasRaml2Html" file="${targetDir}/bin/raml2html"/>
   </target>
 
   <!-- oooooooooooooooooo Documentation Generation ooooooooooooooooooooo -->
@@ -616,30 +635,19 @@
     <ant target="runRaml2Html"/>
   </target>
 
-  <target name="checkIfRamlApiFilePresent">
-    <available property="ramlApiFilePresent" file="${projectsDir}/${project}/Service/doc/raml/api.raml"/>
+  <target name="ramlApiFileCheck">
+    <available property="hasRamlApiFile" file="${projectsDir}/${project}/Service/doc/raml/api.raml"/>
   </target>
 
-  <target name="runRaml2Html" depends="installYarnBin,checkIfRamlApiFilePresent" if="ramlApiFilePresent">
-    <echo>Installing raml2html...</echo>
-    <exec dir="${projectsDir}/${project}/Service/doc"
-          executable="yarn"
-          failonerror="true"
-          failifexecutionfails="true">
-      <arg line="add"/>
-      <arg line="raml2html"/>
-    </exec>
+  <target name="runRaml2Html" depends="installYarnBin,installRaml2Html,ramlApiFileCheck" if="hasRamlApiFile">
     <echo>Generating RAML HTML doc</echo>
     <echo>  Input:  ${projectsDir}/${project}/Service/doc/raml/api.raml</echo>
     <echo>  Output: ${htdocsTargetDir}/service-api.html</echo>
-    <exec dir="${projectsDir}/${project}/Service/doc/node_modules/raml2html/bin"
-          executable="raml2html"
+    <exec executable="raml2html"
           failonerror="true"
           failifexecutionfails="true">
-      <arg line="-i"/>
-      <arg line="${projectsDir}/${project}/Service/doc/raml/api.raml"/>
-      <arg line="-o"/>
-      <arg line="${htdocsTargetDir}/service-api.html"/>
+      <arg line="-i ${projectsDir}/${project}/Service/doc/raml/api.raml"/>
+      <arg line="-o ${htdocsTargetDir}/service-api.html"/>
     </exec>
   </target>
 
