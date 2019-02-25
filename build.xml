@@ -643,6 +643,7 @@
     <echo>Generating RAML HTML doc</echo>
     <echo>  Input:  ${projectsDir}/${project}/Service/doc/raml/api.raml</echo>
     <echo>  Output: ${htdocsTargetDir}/service-api.html</echo>
+    <mkdir dir="${htdocsTargetDir}"/>
     <exec executable="raml2html"
           failonerror="true"
           failifexecutionfails="true">
