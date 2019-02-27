@@ -598,21 +598,13 @@
 
   <!-- oooooooooooooooooo raml2html Installation ooooooooooooooooooooo -->
 
-  <target name="installRaml2Html" depends="raml2HtmlCheck" unless="hasRaml2Html">
-    <echo>Installing raml2html</echo>
-    <mkdir dir="${targetDir}/lib/raml2html"/>
-    <mkdir dir="${targetDir}/bin"/>
+  <target name="installYarnDepsForInstallProject">
+    <echo>Installing yarn deps</echo>
     <exec executable="yarn"
-          dir="${targetDir}/lib/raml2html"
+          dir="${projectsDir}/install"
           failonerror="true"
           failifexecutionfails="true">
-      <arg line="add raml2html"/>
     </exec>
-    <symlink overwrite="true" link="${targetDir}/bin/raml2html" resource="${targetDir}/lib/raml2html/node_modules/raml2html/bin/raml2html"/>
-  </target>
-
-  <target name="raml2HtmlCheck">
-    <available property="hasRaml2Html" file="${targetDir}/bin/raml2html"/>
   </target>
 
   <!-- oooooooooooooooooo Documentation Generation ooooooooooooooooooooo -->
@@ -639,14 +631,17 @@
     <available property="hasRamlApiFile" file="${projectsDir}/${project}/Service/doc/raml/api.raml"/>
   </target>
 
-  <target name="runRaml2Html" depends="installYarnBin,installRaml2Html,ramlApiFileCheck" if="hasRamlApiFile">
+  <!-- raml2html is installed in the install project (see install/package.json). -->
+  <!-- It is then called via yarn (e.g., `yarn raml2html -i ... -o ...`). -->
+  <target name="runRaml2Html" depends="installYarnBin,installYarnDepsForInstallProject,ramlApiFileCheck" if="hasRamlApiFile">
     <echo>Generating RAML HTML doc</echo>
     <echo>  Input:  ${projectsDir}/${project}/Service/doc/raml/api.raml</echo>
     <echo>  Output: ${htdocsTargetDir}/service-api.html</echo>
     <mkdir dir="${htdocsTargetDir}"/>
-    <exec executable="raml2html"
+    <exec executable="yarn"
           failonerror="true"
           failifexecutionfails="true">
+      <arg line="raml2html"/>
       <arg line="-i ${projectsDir}/${project}/Service/doc/raml/api.raml"/>
       <arg line="-o ${htdocsTargetDir}/service-api.html"/>
     </exec>
