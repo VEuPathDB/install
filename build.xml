@@ -642,7 +642,7 @@
           failonerror="true"
           failifexecutionfails="true">
       <arg line="raml2html"/>
-      <arg line="--theme raml2html-slate-theme"/>
+      <arg line="--theme raml2html-plain-theme"/>
       <arg line="-i ${projectsDir}/${project}/Service/doc/raml/api.raml"/>
       <arg line="-o ${htdocsTargetDir}/service-api.html"/>
     </exec>
