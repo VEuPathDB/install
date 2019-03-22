@@ -596,8 +596,6 @@
     <available property="hasYarnBin" file="${targetDir}/bin/yarn"/>
   </target>
 
-  <!-- oooooooooooooooooo raml2html Installation ooooooooooooooooooooo -->
-
   <target name="installYarnDepsForInstallProject">
     <echo>Installing yarn deps</echo>
     <exec executable="yarn"
@@ -624,28 +622,6 @@
       <!--<arg line="- -quiet"/>
       <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>-->
-    <ant target="runRaml2Html"/>
-  </target>
-
-  <target name="ramlApiFileCheck">
-    <available property="hasRamlApiFile" file="${projectsDir}/${project}/Service/doc/raml/api.raml"/>
-  </target>
-
-  <!-- raml2html is installed in the install project (see install/package.json). -->
-  <!-- It is then called via yarn (e.g., `yarn raml2html -i ... -o ...`). -->
-  <target name="runRaml2Html" depends="installYarnBin,installYarnDepsForInstallProject,ramlApiFileCheck" if="hasRamlApiFile">
-    <echo>Generating RAML HTML doc</echo>
-    <echo>  Input:  ${projectsDir}/${project}/Service/doc/raml/api.raml</echo>
-    <echo>  Output: ${htdocsTargetDir}/service-api.html</echo>
-    <mkdir dir="${htdocsTargetDir}"/>
-    <exec executable="yarn"
-          failonerror="true"
-          failifexecutionfails="true">
-      <arg line="raml2html"/>
-      <arg line="--theme raml2html-plain-theme"/>
-      <arg line="-i ${projectsDir}/${project}/Service/doc/raml/api.raml"/>
-      <arg line="-o ${htdocsTargetDir}/service-api.html"/>
-    </exec>
   </target>
 
   <target name="checkWebInstall">
