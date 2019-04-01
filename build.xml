@@ -581,6 +581,7 @@
   <!-- For now can only build docs for maven projects -->
   <target name="generateDocs" if="publishDocs">
     <echo>Generating Documentation for ${relativeBuildDir}</echo>
+    <!-- comment until we figure out how to run javadoc on Java 11
     <exec dir="${projectsDir}/${relativeBuildDir}"
            executable="mvn"
            failonerror="true"
@@ -590,6 +591,7 @@
        <arg line="--quiet"/>
        <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
+    -->
   </target>
 
   <target name="checkWebInstall">
