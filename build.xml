@@ -611,17 +611,17 @@
   <target name="generateDocs" if="publishDocs">
     <echo>Generating Documentation for ${project}</echo>
     <!-- Javadoc is broken in the latest Java 11 we have access to; will wait on
-         greater access to later releases (11.0.2 should do it) to uncomment -->
-    <!--<exec dir="${projectsDir}/${relativeBuildDir}"
+         greater access to later releases (11.0.2 should do it) to uncomment
+    <exec dir="${projectsDir}/${relativeBuildDir}"
           executable="mvn"
           failonerror="true"
           failifexecutionfails="true">
-      <arg line="javadoc:javadoc"/>-->
-      <!-- Broken by Java 11 and replaced by RAML documentation (see below) -->
-      <!--<arg line="enunciate:docs"/>-->
-      <!--<arg line="- -quiet"/>
+      <arg line="javadoc:javadoc"/>
+      <arg line="enunciate:docs"/>
+      <arg line="- -quiet"/>
       <arg line="-Dmaven.repo.local=${mvnRepo}"/>
-    </exec>-->
+    </exec>
+    -->
   </target>
 
   <target name="checkWebInstall">
