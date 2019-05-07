@@ -82,6 +82,8 @@
   <target name="webinstall" depends="WebInstallInit">
     <property name="initialTarget" value="webinstall"/>
 
+    <antcall target="installYarnDepsForInstallProject"/>
+
     <ant target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
     </ant>
@@ -219,6 +221,11 @@
          <include name="version"/>
       </fileset>
     </concat>
+
+    <antcall target="installYarnDependencies">
+      <param name="yarnCwd" value="${projectsDir}/${project}"/>
+    </antcall>
+
     
     <!-- Note: Maven-based projects should be built at the project level in the  -->
     <!--       project's build.xml -before- components are built, and should use -->
@@ -536,6 +543,11 @@
        Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
 
+    <antcall target="bundleWithWebpack">
+      <param name="webpackCwd" value="${projectsDir}/${project}/${component}"/>
+    </antcall>
+
+
     <!-- if the file exists, it does not copy over -->
     <antcall target="webComponentPartCopy">
       <param name="part" value="htdocs"/>
@@ -596,7 +608,7 @@
     <available property="hasYarnBin" file="${targetDir}/bin/yarn"/>
   </target>
 
-  <target name="installYarnDepsForInstallProject">
+  <target name="installYarnDepsForInstallProject" depends="installYarnBin">
     <echo>Installing yarn deps</echo>
     <exec executable="yarn"
           dir="${projectsDir}/install"
@@ -605,7 +617,65 @@
     </exec>
   </target>
 
+  <!-- If package.json, call yarn -->
+  <target name="checkIfYarnComponent">
+    <available property="isYarnComponent" file="${yarnCwd}/package.json"/>
+  </target>
+
+  <target name="installYarnDependencies" if="isYarnComponent" depends="checkIfYarnComponent">
+    <antcall target="installYarnBin"/>
+    <echo message="Installing node dependencies with yarn"/>
+    <exec executable="yarn"
+      dir="${yarnCwd}"
+      failonerror="true"
+      failifexecutionfails="true"/>
+  </target>
+
+  <!-- If webpack.config.js, call webpack -->
+  <target name="checkIfWebpackComponent">
+    <available property="isWebpackComponent" file="${webpackCwd}/webpack.config.js"/>
+  </target>
+
+  <target name="bundleWithWebpack" if="isWebpackComponent" depends="checkIfWebpackComponent">
+    <echo message="Bundling assets with webpack"/>
+    <echo message="cwd: ${webpackCwd}"/>
+
+    <condition property="webpack.env" value="--mode=production" else="--mode=development">
+      <isset property="optimizeWebAssets"/>
+    </condition>
+
+    <exec executable="${projectsDir}/install/node_modules/.bin/webpack"
+      dir="${webpackCwd}"
+      failonerror="true"
+      failifexecutionfails="true">
+      <arg line="${webpack.env}"/>
+      <arg line="--hide-modules"/>
+    </exec>
+
+    <copy todir="${webappTargetDir}">
+      <fileset dir="${webpackCwd}/dist" />
+    </copy>
+
+  </target>
+
   <!-- oooooooooooooooooo Documentation Generation ooooooooooooooooooooo -->
+
+  <!-- raml2html is installed in the install project (see install/package.json). -->
+  <!-- It is then called via yarn (e.g., `yarn raml2html -i ... -o ...`). -->
+  <target name="runRaml2Html" depends="installYarnBin,installYarnDepsForInstallProject">
+    <echo>Generating RAML HTML doc</echo>
+    <echo>  Input:  ${inputFile}</echo>
+    <echo>  Output: ${outputFile}</echo>
+    <mkdir dir="${htdocsTargetDir}"/>
+    <exec executable="yarn"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="raml2html"/>
+      <arg line="--theme raml2html-plain-theme"/>
+      <arg line="-i ${inputFile}"/>
+      <arg line="-o ${outputFile}"/>
+    </exec>
+  </target>
 
   <!-- For now can only build docs for maven projects -->
   <target name="generateDocs" if="publishDocs">
