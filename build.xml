@@ -543,6 +543,11 @@
        Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
 
+    <antcall target="installYarnDependencies">
+      <param name="yarnCwd" value="${projectsDir}/${project}/${component}"/>
+    </antcall>
+
+
     <antcall target="bundleWithWebpack">
       <param name="webpackCwd" value="${projectsDir}/${project}/${component}"/>
     </antcall>
@@ -619,6 +624,7 @@
 
   <!-- If package.json, call yarn -->
   <target name="checkIfYarnComponent">
+    <echo message="yarnCwd: ${yarnCwd}"/>
     <available property="isYarnComponent" file="${yarnCwd}/package.json"/>
   </target>
 
