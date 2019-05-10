@@ -51,7 +51,7 @@ exports.merge = function merge(additionConfig) {
             test: /\.tsx?$/,
             exclude: /node_modules/,
             use: [
-              { loader: 'babel-loader', options: { cacheDirectory: true, configFile: path.join(process.cwd(), '.babelrc') } },
+              { loader: 'babel-loader', options: { configFile: path.join(process.cwd(), '.babelrc') } },
               { loader: 'ts-loader' }
             ]
           },
@@ -61,7 +61,7 @@ exports.merge = function merge(additionConfig) {
             test: /\.jsx?$/,
             exclude: /node_modules/,
             use: [
-              { loader: 'babel-loader', options: { cacheDirectory: true, configFile: path.join(process.cwd(), '.babelrc') } }
+              { loader: 'babel-loader', options: { configFile: path.join(process.cwd(), '.babelrc') } }
             ]
           },
 
