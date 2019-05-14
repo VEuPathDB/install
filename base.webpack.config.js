@@ -96,6 +96,7 @@ exports.merge = function merge(additionConfig) {
       },
       devtool: 'source-map',
       plugins: [
+        new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.LoaderOptionsPlugin({ debug: isDevelopment }),
         new webpack.DefinePlugin({
           __DEV__: JSON.stringify(isDevelopment),
@@ -107,7 +108,11 @@ exports.merge = function merge(additionConfig) {
         new MiniCssExtractPlugin({
           filename: '[name].bundle.css'
         })
-      ]
+      ],
+      stats: {
+        maxModules: Infinity,
+        optimizationBailout: true
+      }
     }].concat(additionConfig));
   }
 }
