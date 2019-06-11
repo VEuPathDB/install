@@ -13,7 +13,7 @@
         ]
       },
       "useBuiltIns": "entry",
-      "debug": true
+      // "debug": true
     }]
   ],
   "plugins": [
