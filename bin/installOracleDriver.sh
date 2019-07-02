@@ -15,12 +15,12 @@
 
 # dependency definition
 groupId=com.oracle
-artifactId=ojdbc6
-version=11.2.0.4
+artifactId=ojdbc8
+version=12.2.0.1
 
 # dependency location
-serverOracleHome=/u01/app/oracle/product/$version/db_1
-jarFileName=ojdbc6.jar
+serverOracleHome=/u01/app/oracle/product/$version/db_12
+jarFileName=ojdbc8.jar
 
 ###########################################################################
 
