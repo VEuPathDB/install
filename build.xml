@@ -341,6 +341,18 @@
     </antcall>
 
     <antcall target="componentPartCopy">
+      <param name="part" value="lib/snakemake/workflows"/>
+      <param name="to" value="lib/snakemake/workflows"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/snakemake/config"/>
+      <param name="to" value="lib/snakemake/config"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
       <param name="part" value="lib/R"/>
       <param name="to" value="lib/R"/>
       <param name="prefix" value="${component}/"/>
