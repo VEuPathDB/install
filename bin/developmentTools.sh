@@ -238,8 +238,9 @@ function setup() {
     assignSiteValues
 
     if [ -d $SITE_REPO/$SITE_DIR ]; then
-        export PROJECT_HOME=$SITE_REPO/$SITE_DIR/project_home
-        export GUS_HOME=$PROJECT_HOME/../gus_home
+        export BASE_GUS=$SITE_REPO/$SITE_DIR
+        export PROJECT_HOME=$BASE_GUS/project_home
+        export GUS_HOME=$BASE_GUS/gus_home
         export PATH=$PRE_GUS_PATH:$PROJECT_HOME/install/bin:$GUS_HOME/bin:$POST_GUS_PATH
         cd $SITE_REPO/$SITE_DIR
         source project_home/install/bin/gusEnv.bash
