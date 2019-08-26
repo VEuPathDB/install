@@ -17,8 +17,6 @@
   <!--   installConfigFile  optional, installs $GUS_HOME/gus.config from sample     -->
   <!--   publishDocs        optional, installs documentation pages (webinstall only)-->
   <!--   projectsDir                                                                -->
-  <!--   excludeChildren    optional, only presents in dependent checkout targets   -->
-  <!--   useBranch          optional, only presents in dependent checkout targets   -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
@@ -90,10 +88,10 @@
   <!-- oooooooooooooooooooooooooo  Initialization ooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-  <target name="InstallInit" depends="validateTargetDir, checkoutProj,
+  <target name="InstallInit" depends="validateTargetDir,
                                      validateClean, hasConfigFile, selfBuildInfo"/>
 
-  <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
+  <target name="WebInstallInit" depends="validateTargetDir,
                                      validateClean, hasConfigFile, selfBuildInfo"/>
 
   <target name="validateTargetDir">
