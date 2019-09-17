@@ -1,6 +1,6 @@
 <project name="MAIN" default="install" basedir="."
   xmlns:artifact="antlib:org.apache.maven.artifact.ant">
- 
+
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- Properties expected:                                                         -->
@@ -17,9 +17,6 @@
   <!--   installConfigFile  optional, installs $GUS_HOME/gus.config from sample     -->
   <!--   publishDocs        optional, installs documentation pages (webinstall only)-->
   <!--   projectsDir                                                                -->
-  <!--   svnurl             must present in dependent checkout targets              -->
-  <!--   excludeChildren    optional, only presents in dependent checkout targets   -->
-  <!--   useBranch          optional, only presents in dependent checkout targets   -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
@@ -31,19 +28,7 @@
            classpathref="maven-ant-tasks.classpath"/>
   <property name="buildLogDir" value="${targetDir}/.buildlog" />
   <property environment="env"/>
-  <!-- optional SVN_USERNAME and/or SVN_PASSWORD shell env variables
-       will be passed as -username and/or -password svn command args. -->
-  <condition property="svn.opt.username"
-             value="--username ${env.SVN_USERNAME}"
-             else="">
-    <isset property="env.SVN_USERNAME" />
-  </condition>
-  <condition property="svn.opt.password"
-             value="--password ${env.SVN_PASSWORD}"
-             else="">
-    <isset property="env.SVN_PASSWORD" />
-  </condition>
- 
+
   <import file="${projectsDir}/${proj}/build.xml" />
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -56,18 +41,18 @@
     <echo> proj=${proj} </echo>
     <echo> comp=${comp} </echo>
     <property name="initialTarget" value="install"/>
-    
+
     <ant target="${proj}${comp}-Installation">
       <property name="project" value="${proj}"/>
       <property name="logger" value="${logger}"/>
     </ant>
 
-    <replace dir="${targetDir}/bin" 
-             propertyFile="${targetDir}/config/gus.config" > 
+    <replace dir="${targetDir}/bin"
+             propertyFile="${targetDir}/config/gus.config" >
       <include name="**/*" />
       <replacefilter token="@perl@" property="perl"/>
       <replacefilter token="@targetDir@" value="${targetDir}" />
-    </replace> 
+    </replace>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
     <chmod perm="a+x">
@@ -89,46 +74,26 @@
     </ant>
 
     <antcall target="webinstall-postprocess" />
-    
+
     <echo message="WebInstallation Complete"/>
 
-  </target>  
+  </target>
 
   <target name="release">
     <ant target="${proj}-Release">
       <property name="project" value="${proj}"/>
     </ant>
-  </target>  
-
-  <target name="checkout">
-    <!-- detect if the project exist -->
-    <available property="project.present" file="${projectsDir}/${proj}" type="dir" />
-    <!-- do not check out existing project -->
-    <fail if="project.present">${proj} has already been checked out.</fail>
-    
-    <!-- otherwise, check out the project -->
-    <ant target="defaultProjectCheckout">
-      <property name="svnurl" value="${topsvnurl}"/>
-      <property name="project" value="${proj}"/>
-      <property name="version" value="${vers}"/>
-    </ant>
-  </target>  
-
-  <target name="update">
-    <!-- update the project itself -->
-    <ant target="defaultProjectUpdate">
-      <property name="project" value="${proj}"/>
-    </ant>
   </target>
+
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  Initialization ooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-  <target name="InstallInit" depends="validateTargetDir, checkoutProj,
+  <target name="InstallInit" depends="validateTargetDir,
                                      validateClean, hasConfigFile, selfBuildInfo"/>
 
-  <target name="WebInstallInit" depends="validateTargetDir, checkoutProj,
+  <target name="WebInstallInit" depends="validateTargetDir,
                                      validateClean, hasConfigFile, selfBuildInfo"/>
 
   <target name="validateTargetDir">
@@ -141,7 +106,7 @@
          <available file="${targetDir}" />
          <isfalse value="${append}" />
        </and>
-    </condition>  
+    </condition>
 
     <fail if="targetDirExists">
       Error: Target directory ${targetDir} already exists and you have not set the 'append' property to true
@@ -183,25 +148,18 @@
        <not>
          <available file="${targetDir}/config/gus.config" />
        </not>
-    </condition>  
+    </condition>
 
     <fail if="noConfigFile">
       Error: No gus.config file. Please run "mkdir -p ${targetDir}/config; cp ${projectsDir}/install/gus.config.sample ${targetDir}/config/gus.config" and edit ${targetDir}/config/gus.config as appropriate for your environment before try again.
     </fail>
 
-  </target>  
+  </target>
 
   <target name="optionInstallConfigFile" if="installConfigFile">
     <mkdir dir="${targetDir}/config"/>
     <copy file="${projectsDir}/install/gus.config.sample" tofile="${targetDir}/config/gus.config" overwrite="false" verbose="true" />
   </target>
-
-  <target name="checkoutProj" if="checkout">
-    <echo>Top level check out</echo>
-    <antcall target="cvsCheckOut">
-      <param name="package" value="${proj}"/>
-    </antcall>
-  </target>  
 
   <target name="selfBuildInfo">
     <property name="project" value="install"/>
@@ -226,7 +184,6 @@
       <param name="yarnCwd" value="${projectsDir}/${project}"/>
     </antcall>
 
-    
     <!-- Note: Maven-based projects should be built at the project level in the  -->
     <!--       project's build.xml -before- components are built, and should use -->
     <!--       code similar to that below.  If this is not done, Maven-based     -->
@@ -257,7 +214,7 @@
     <fail unless="componentAvail">
        Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
-    
+
     <antcall target="componentPartCopy">
       <param name="part" value="bin"/>
       <param name="to" value="bin"/>
@@ -378,7 +335,7 @@
     </antcall>
 
     <antcall target="defaultPythonLibrary"/>
-    
+
     <antcall target="componentPartCopy">
       <param name="part" value="config"/>
       <param name="to" value="config"/>
@@ -396,12 +353,12 @@
       <param name="to" value="test"/>
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
-   
+
    <antcall target="defaultCCompile"/>
-   
+
    <antcall target="defaultJavaCompile"/>   <!-- will run if non-maven -->
    <antcall target="mavenBuildComponent"/>  <!-- will run if manen -->
-   
+
    <antcall target="componentPartCopy">
       <param name="part" value="data"/>
       <param name="to" value="data"/>
@@ -426,11 +383,11 @@
 
   </target>
 
-  
+
   <target name="checkHasPythonLib">
     <available property="hasPythonLib" file="${projectsDir}/${project}/${component}/lib/python"/>
   </target>
-  
+
   <target name="defaultPythonLibrary" if="hasPythonLib" depends="checkHasPythonLib">
     <antcall target="componentPartCopy">
       <param name="part" value="lib/python"/>
@@ -441,7 +398,7 @@
     <touch file="${targetDir}/lib/python/${project}/__init__.py"/>
     <touch file="${targetDir}/lib/python/${project}/${component}/__init__.py"/>
   </target>
- 
+
   <target name="checkHasCCode">
     <available property="hasCCode" file="${projectsDir}/${project}/${component}/src/c"/>
   </target>
@@ -453,7 +410,7 @@
       <srcfile/>
       <fileset dir="${projectsDir}/${project}/${component}/src/c" includes="*.c"/>
       <mapper type="glob" from="*.c" to="*"/>
-    </apply>  
+    </apply>
   </target>
 
   <target name="defaultJavaCompile" if="isNonMavenJava" depends="deleteMyClasses,checkNonMavenJava">
@@ -462,7 +419,7 @@
      <mkdir dir="${targetDir}/lib/java"/>
      <mkdir dir="${targetDir}/lib/java/db_driver"/>
      <mkdir dir="${targetDir}/lib/java/not-deployed"/>
-     <javac srcdir="${projectsDir}/${project}/${component}/src/java" 
+     <javac srcdir="${projectsDir}/${project}/${component}/src/java"
             destdir="${projectsDir}/${project}/${component}/classes"
         includeAntRuntime="false"
         fork="true"
@@ -484,7 +441,7 @@
            </fileset>
         </classpath>
      </javac>
-    
+
      <!-- copy over resource files -->
      <antcall target="compileResources" />
 
@@ -495,9 +452,9 @@
        </fileset>
      </copy>
 
-     <jar basedir="${projectsDir}/${project}/${component}/classes" 
+     <jar basedir="${projectsDir}/${project}/${component}/classes"
           destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
-  </target>   
+  </target>
 
   <target name="compileResources" if="hasResources" depends="checkIfHaveResources">
     <copy todir="${projectsDir}/${project}/${component}/classes/">
@@ -519,7 +476,7 @@
       </and>
     </condition>
   </target>
-  
+
   <target name="checkIfHaveJava">
       <available property="hasJava" file="${projectsDir}/${project}/${component}/src/java"/>
   </target>
@@ -533,7 +490,7 @@
        </condition>
   </target>
 
-  <target name="deleteMyClasses" if="cleanAndHasJava" 
+  <target name="deleteMyClasses" if="cleanAndHasJava"
            depends="checkIfCleanAndHaveJava">
     <delete>
       <fileset dir="${projectsDir}/${project}/${component}/classes"/>
@@ -603,7 +560,7 @@
 
     <antcall target="buildInfo" />
 
-  </target>  
+  </target>
 
   <!-- oooooooooooooooooo Yarn Installation ooooooooooooooooooooo -->
 
@@ -813,7 +770,7 @@
         <include name="*.ear"/>
       </fileset>
     </copy>
-    
+
     <!-- gather dependencies from this maven project -->
     <artifact:dependencies filesetId="depsFileset" useScope="runtime">
       <localRepository path="${mvnRepo}"/>
@@ -824,19 +781,19 @@
     <copy todir="${targetDir}/lib/java" flatten="true">
       <fileset refid="depsFileset"/>
     </copy>
-  
+
   </target>
-  
+
   <!-- oooooooooooooooooooo utility subroutines  ooooooooooooooooooooooo -->
 
   <target name="componentPartCopy">
     <available property="partAvailable" file="${componentDir}/${part}"/>
     <antcall target="componentPartCopySub"/>
-  </target>  
+  </target>
 
   <target name="componentPartCopySub" if="partAvailable">
     <mkdir dir="${targetDir}/${to}/${prefix}"/>
-    
+
     <copy todir="${targetDir}/${to}/${prefix}">
       <fileset dir="${componentDir}/${part}" >
         <include name="**"/>
@@ -844,12 +801,12 @@
         <exclude name="${exclude}/" />
       </fileset>
     </copy>
-  </target>  
+  </target>
 
   <target name="webComponentPartCopy">
     <available property="partAvailable" file="${componentDir}/${part}"/>
     <antcall target="webComponentPartCopySub"/>
-  </target>  
+  </target>
 
   <target name="webComponentPartCopySub" if="partAvailable">
     <mkdir dir="${to}"/>
@@ -861,7 +818,7 @@
         <exclude name="${exclude}/" />
       </fileset>
     </copy>
-  </target>  
+  </target>
 
   <target name="configFile">
     <property name="cFile" value="${cFileSrcDir}/${cFileName}"/>
@@ -872,9 +829,9 @@
     <available file="${cFileTarget}" property="cFileTargetExists"/>
 
     <fail unless="cFileTargetExists">
-      Error: You must configure the file ${cFileTarget}.  To create it, copy ${cFileTarget}.sample to ${cFileTarget} and edit ${cFileTarget}, giving it the proper values for your installation. 
+      Error: You must configure the file ${cFileTarget}.  To create it, copy ${cFileTarget}.sample to ${cFileTarget} and edit ${cFileTarget}, giving it the proper values for your installation.
     </fail>
-  </target>  
+  </target>
 
   <target name="webinstall-postprocess">
 
@@ -887,12 +844,12 @@
 
   <target name="webinstall-cgi-bin" if="cgibinTargetDir.present">
 
-    <replace dir="${cgibinTargetDir}" 
-             propertyFile="${targetDir}/config/gus.config" > 
+    <replace dir="${cgibinTargetDir}"
+             propertyFile="${targetDir}/config/gus.config" >
       <include name="**/*" />
       <replacefilter token="@perl@" property="perl"/>
       <replacefilter token="@targetDir@" value="${targetDir}" />
-    </replace> 
+    </replace>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
     <chmod perm="+x">
@@ -933,29 +890,15 @@
     </copy>
   </target>
 
-  <target name="buildInfo" depends="svnInfo,recordBuildState" />
+  <target name="buildInfo" depends="recordBuildState" />
 
   <target name="recordBuildState">
     <mkdir dir="${buildLogDir}" />
 
-    <condition property="svninfo" value="${svnInfoOut}">
-      <isset property="svnInfoOut"/>
-    </condition>
-    <condition property="svninfo" value="NA">
-      <not><isset property="svnInfoOut"/></not>
-    </condition>
-
-    <condition property="svnstat" value="${svnStatOut}">
-      <isset property="svnStatOut"/>
-    </condition>
-    <condition property="svnstat" value="NA">
-      <not><isset property="svnStatOut"/></not>
-    </condition>
-
     <tstamp>
       <format property="tstamp" pattern="yyyy/MM/dd HH:mm:ss"/>
     </tstamp>
-  
+
     <propertyfile comment="Build Information"
                   file="${buildLogDir}/gus-build-state.log">
       <entry key="!Last.build.initialTarget"
@@ -970,53 +913,7 @@
              type="date"
              pattern="yyyy/MM/dd HH:mm:ss"
              value="now"/>
-      <entry key="${project}.svn.info"
-             value="${svninfo}"/>
-      <entry key="${project}.svn.status"
-             value="${svnstat}"/>
     </propertyfile>
-  </target>  
-
-  <target name="svnInfo" if="can.do.svn" depends="canDoSvn">
-    <mkdir dir="${buildLogDir}" />
-    <property name="svninfopropfile" value="${buildLogDir}/svn.info.${project}.properties" />
-    <exec dir="${projectsDir}" 
-           executable="sh"
-           failonerror="false"
-           failifexecutionfails="false">
-       <arg line="-c"/>
-       <arg line="'svn info ${project} > ${svninfopropfile}'"/>
-    </exec>
-   <!-- exec outputproperty sometimes returns incomplete data so
-        we write to file and load that to an Ant property.
-        Related? https://bz.apache.org/bugzilla/show_bug.cgi?id=53449
-    -->
-    <loadfile property="svnInfoOut" srcFile="${svninfopropfile}"/>
-    <!-- delete file="${svninfopropfile}"/ -->
-    <!-- we care less about losing outputproperty for stats, 
-         more about overhead of file intermediates -->
-    <exec dir="${projectsDir}" 
-           executable="sh"
-           outputproperty="svnStatOut"
-           failonerror="false"
-           failifexecutionfails="false">
-       <arg line="-c"/>
-       <arg line="'svn status ${project}'"/>
-    </exec>
-  </target>
-
-  <target name="canDoSvn">
-      <property environment="env" />
-      <condition property="can.do.svn">
-         <and>
-           <available file="${projectsDir}/${project}/.svn" type="dir" />
-           <available file="svn" type="file">
-             <filepath>
-               <pathelement path="${env.PATH}"/>
-             </filepath>
-           </available>
-         </and>
-      </condition>
   </target>
 
   <!-- oooooooooooooooooooo default project release ooooooooooooooooooooooo -->
@@ -1030,104 +927,21 @@
 
     <cvs  cvsRoot="${cvsroot}" command="rtag -b ${tag} ${project}"/>
 
-    <cvs package="install" cvsRoot="${cvsroot}" 
+    <cvs package="install" cvsRoot="${cvsroot}"
          dest="${projectsDir}/cleanroom" />
-    
-    <cvs package="${project}" tag="${tag}" cvsRoot="${cvsroot}" 
+
+    <cvs package="${project}" tag="${tag}" cvsRoot="${cvsroot}"
          dest="${projectsDir}/cleanroom" />
-    
-    <property name="tarfile" 
+
+    <property name="tarfile"
               value="${projectsDir}/cleanroom/${project}_${tag}.tar"/>
 
-    <tar destfile="${tarfile}" 
+    <tar destfile="${tarfile}"
          basedir="${projectsDir}/cleanroom"
          excludes="**/CVS/**"/>
 
     <gzip zipfile="${tarfile}.gz" src="${tarfile}"/>
 
-  </target>
-
-
-  <!-- oooooooooooooooooooo default project checkout ooooooooooooooooooooooo -->
-
-  <target name="defaultProjectCheckout">
-    
-    <!-- the trunkflag is composed properly in the dependencies -->
-    <condition property="svnflag" value="trunk">
-      <or>
-        <not>
-          <or>
-            <isset property="branch" />
-            <isset property="useBranch" />
-          </or>
-        </not>
-        <equals arg1="${useBranch}" arg2="false"/>
-      </or>
-    </condition>
-    <condition property="svnflag" value="branches/${version}">
-      <and>
-        <or>
-          <isset property="branch" />
-          <isset property="useBranch" />
-        </or>
-        <not>
-          <equals arg1="${useBranch}" arg2="false"/>
-        </not>
-      </and>
-    </condition>
-
-    <echo> Checking out ${project} (${svnflag}) from ${svnurl}/${svnflag}... </echo>
-    
-    <!-- check out the project from svn -->
-    <exec dir="${projectsDir}" executable="svn">
-      <arg line="co"/>
-      <arg line="${svn.opt.username}"/>
-      <arg line="${svn.opt.password}"/>
-      <arg line="${svnurl}/${svnflag} ${project}"/>
-    </exec>
-
-    <!-- try to checkout dependencies -->
-    <antcall target="checkoutDependencies" />
-  </target>
-  
-  <target name="checkoutDependencies" unless="excludeChildren">
-    <!-- run dependency check out-->
-    <ant target="${project}-ChildCheckout">
-      <property name="project" value="${project}"/>
-      <property name="version" value="${version}"/>
-    </ant>
-  </target>
-
-  <!-- oooooooooooooooooooo default project update ooooooooooooooooooooooo -->
-
-  <target name="defaultProjectUpdate">
-  
-    <echo> Update ${projectsDir}/${project}... </echo>
-
-    <!-- detect if the project exist -->
-    <available property="project.present" file="${projectsDir}/${proj}" type="dir" />
-
-    <!-- do not update non-existing project -->
-    <fail unless="project.present">${proj} hasn't been checked out yet.</fail>
-    <!-- update the project from svn -->
-    <exec dir="${projectsDir}/${project}" 
-          executable="svn"
-          failonerror="true">
-      <arg line="update"/>
-      <arg line="${svn.opt.username}"/>
-      <arg line="${svn.opt.password}"/>
-    </exec>
-
-    <!-- try to update dependencies -->
-    <antcall target="updateDependencies" />
-  </target>
-
-  <target name="updateDependencies" unless="excludeChildren">
-    <!-- update the dependencies of the project -->
-    <ant target="${project}-ChildUpdate">
-      <property name="project" value="${project}"/>
-    </ant>
-   
   </target>
 
   <target name="installOracleDriver">
