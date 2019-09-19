@@ -30,3 +30,8 @@ node_modules/
 
 # Other version control
 .svn/
+
+
+# backup files
+*~
+\#*
