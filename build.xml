@@ -55,7 +55,7 @@
     </replace>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
-    <chmod perm="a+x">
+    <chmod perm="a+x" maxparallel="20">
       <fileset dir="${targetDir}/bin"/>
     </chmod>
 
@@ -281,7 +281,7 @@
       <param name="prefix" value=""/>
     </antcall>
 
-    <chmod perm="+x">
+    <chmod perm="+x" maxparallel="20">
       <fileset dir="${targetDir}/bin"/>
     </chmod>
 
@@ -852,7 +852,7 @@
     </replace>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
-    <chmod perm="+x">
+    <chmod perm="+x" maxparallel="20">
       <fileset dir="${cgibinTargetDir}" />
     </chmod>
 
