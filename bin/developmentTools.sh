@@ -6,7 +6,7 @@
 ##  purpose: provide a variety of tools for assisting EuPath developers
 ##
 ##  For a new EuPath front-end developer, there can be a challenge in
-##  efficiently interacting with SVN, deploying your code modifications to the
+##  efficiently interacting with Git, deploying your code modifications to the
 ##  development server (e.g. blender), reloading sites, checking logs, etc.  It
 ##  can be hard to remember which scripts to use and what arguments to pass.
 ##  The goal of this file is to provide the most common actions with minimal
@@ -40,22 +40,11 @@
 ##     current:
 ##        displays the current site information
 ##
-##     svnup:
-##        updates all subversion projects in the current site's project_home
+##     gitup:
+##        updates (pull) all git projects in the current site's project_home
 ##
-##     svnupnohg:
-##        updates all non-mercurial subversion projects in the current site's
-##        project_home
-##
-##     svnst:
-##        displays svn status of all projects in the current site's project_home
-##
-##     hgup:
-##        updates local (client) contents to match that in the hg repo for all
-##        hg projects in the current site's project_home
-##
-##     hgst:
-##       displays hg status of all projects in the current site's project_home
+##     gitst:
+##        displays git status of all projects in the current site's project_home
 ##
 ##     reload:
 ##        builds and (if successful) reloads the website in the current site
@@ -93,11 +82,11 @@
 ##        necessary* (*not yet functional!).
 ##
 ##     pushFiles <proj_1> <proj_2> ...
-##        copies all files that have current SVN changes from a remote machine
+##        copies all files that have current git modifications from a remote machine
 ##        into the current site's project home; then reloads the current site
 ##
 ##     sendFiles <proj_1> <proj_2> ...
-##        copies all files that have current SVN changes from a remote machine
+##        copies all files that have current git modifications from a remote machine
 ##        into the current site's project home
 ##
 ##     deployProject <site_dir> <project_name>
@@ -308,32 +297,12 @@ function projectOperation() {
     cd $currentDir
 }
 
-function svnst() {
-    projectOperation "svn status" .svn
+function gitst() {
+    projectOperation "git status" .git
 }
 
-function svnup() {
-    projectOperation "svn update" .svn
-}
-
-function svnupnohg() {
-    projectOperation "svnupnohg_proj" .svn
-}
-
-function svnupnohg_proj() {
-    if [ ! -e .hg ]; then
-        svn update
-    else
-        echo "Skipping, as this project contains .hg"
-    fi
-}
-
-function hgst() {
-    projectOperation "hg status" .hg
-}
-
-function hgup() {
-    projectOperation "hg pull ssh://$REMOTE_LOGNAME@$DEV_SERVER//home/$REMOTE_LOGNAME/hgrepo/#project# && hg update" .hg
+function gitup() {
+    projectOperation "git pull" .git
 }
 
 # internal function: single argument
@@ -475,7 +444,7 @@ function sendFiles() {
   for projectName in $*; do
     echo "Processing $projectName"
     cd $PROJECT_HOME/$projectName
-    for file in $(svn st | awk '{ if ($1 != "D") { print $NF; } }'); do
+    for file in $(git status | grep modified | awk '{ print $2 }'); do
       cmd="scp $file $REMOTE_LOGNAME@$DEV_SERVER:$SITE_REPO/$SITE_DIR/project_home/$projectName/$file"
       echo "  Running $cmd"
       $cmd
