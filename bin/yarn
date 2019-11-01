@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Wrapper to call yarn where it is installed.
+# The `yarn` executable does not work propertly
+# on Darwin when symlinked to $GUS_HOME/bin
+$GUS_HOME/lib/yarn/bin/yarn
