@@ -88,6 +88,7 @@ if [ "$1" == "-m" ]; then
   mvnJarPath=`echo $groupId/$artifactId | sed 's/\./\//g'`
   mvnJarPath=$M2_REPO/$mvnJarPath/$version/$artifactId-${version}.jar
   echo "Copying $mvnJarPath to $gusLibDriverDir/$jarFileName"
+  mkdir -p $gusLibDriverDir
   cp $mvnJarPath $gusLibDriverDir/$jarFileName
 else
   getDriver $1
