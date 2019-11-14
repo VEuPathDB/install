@@ -16,6 +16,7 @@
 /target/
 /*/target/
 
+
 # Dependencies
 node_modules/
 
@@ -30,3 +31,7 @@ node_modules/
 
 # Other version control
 .svn/
+
+# Backups
+*~
+\#*
