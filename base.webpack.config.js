@@ -52,7 +52,7 @@ exports.merge = function merge(additionConfig) {
             exclude: /node_modules/,
             use: [
               { loader: 'babel-loader', options: { configFile: path.join(process.cwd(), '.babelrc') } },
-              { loader: 'ts-loader' }
+              { loader: 'ts-loader', options: { configFile: path.join(process.cwd(), 'tsconfig.json'), logLevel: 'info' } }
             ]
           },
 
