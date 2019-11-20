@@ -55,7 +55,7 @@
     </replace>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
-    <chmod perm="a+x">
+    <chmod perm="a+x" maxparallel="20">
       <fileset dir="${targetDir}/bin"/>
     </chmod>
 
@@ -66,6 +66,8 @@
 
   <target name="webinstall" depends="WebInstallInit">
     <property name="initialTarget" value="webinstall"/>
+
+    <antcall target="installYarnDepsForInstallProject"/>
 
     <ant target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
@@ -178,6 +180,10 @@
       </fileset>
     </concat>
 
+    <antcall target="installYarnDependencies">
+      <param name="yarnCwd" value="${projectsDir}/${project}"/>
+    </antcall>
+
     <!-- Note: Maven-based projects should be built at the project level in the  -->
     <!--       project's build.xml -before- components are built, and should use -->
     <!--       code similar to that below.  If this is not done, Maven-based     -->
@@ -275,7 +281,7 @@
       <param name="prefix" value=""/>
     </antcall>
 
-    <chmod perm="+x">
+    <chmod perm="+x" maxparallel="20">
       <fileset dir="${targetDir}/bin"/>
     </chmod>
 
@@ -506,6 +512,16 @@
        Component directory ${projectsDir}/${project}/${component} not found.
     </fail>
 
+    <antcall target="installYarnDependencies">
+      <param name="yarnCwd" value="${projectsDir}/${project}/${component}"/>
+    </antcall>
+
+
+    <antcall target="bundleWithWebpack">
+      <param name="webpackCwd" value="${projectsDir}/${project}/${component}"/>
+    </antcall>
+
+
     <!-- if the file exists, it does not copy over -->
     <antcall target="webComponentPartCopy">
       <param name="part" value="htdocs"/>
@@ -546,20 +562,108 @@
 
   </target>
 
+  <!-- oooooooooooooooooo Yarn Installation ooooooooooooooooooooo -->
+
+  <target name="installYarnBin" depends="yarnBinCheck" unless="hasYarnBin">
+    <!-- unpack yarn tgz into targetDirectory -->
+    <echo message="Installing yarn binary"/>
+    <mkdir dir="${targetDir}/lib/yarn"/>
+    <mkdir dir="${targetDir}/bin"/>
+    <exec executable="tar"
+          dir="${targetDir}/lib/yarn"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="xzf ${projectsDir}/install/lib/yarn.tar.gz --strip-components 1"/>
+    </exec>
+  </target>
+
+  <target name="yarnBinCheck">
+    <available property="hasYarnBin" file="${targetDir}/bin/yarn"/>
+  </target>
+
+  <target name="installYarnDepsForInstallProject" depends="installYarnBin">
+    <echo>Installing yarn deps</echo>
+    <exec executable="yarn"
+          dir="${projectsDir}/install"
+          failonerror="true"
+          failifexecutionfails="true">
+    </exec>
+  </target>
+
+  <!-- If package.json, call yarn -->
+  <target name="checkIfYarnComponent">
+    <echo message="yarnCwd: ${yarnCwd}"/>
+    <available property="isYarnComponent" file="${yarnCwd}/package.json"/>
+  </target>
+
+  <target name="installYarnDependencies" if="isYarnComponent" depends="checkIfYarnComponent">
+    <antcall target="installYarnBin"/>
+    <echo message="Installing node dependencies with yarn"/>
+    <exec executable="yarn"
+      dir="${yarnCwd}"
+      failonerror="true"
+      failifexecutionfails="true"/>
+  </target>
+
+  <!-- If webpack.config.js, call webpack -->
+  <target name="checkIfWebpackComponent">
+    <available property="isWebpackComponent" file="${webpackCwd}/webpack.config.js"/>
+  </target>
+
+  <target name="bundleWithWebpack" if="isWebpackComponent" depends="checkIfWebpackComponent">
+    <echo message="Bundling assets with webpack"/>
+    <echo message="cwd: ${webpackCwd}"/>
+
+    <condition property="webpack.env" value="--mode=production" else="--mode=development">
+      <isset property="optimizeWebAssets"/>
+    </condition>
+
+    <exec executable="${projectsDir}/install/node_modules/.bin/webpack"
+      dir="${webpackCwd}"
+      failonerror="true"
+      failifexecutionfails="true">
+      <arg line="${webpack.env}"/>
+      <arg line="--hide-modules"/>
+    </exec>
+
+    <copy todir="${webappTargetDir}">
+      <fileset dir="${webpackCwd}/dist" />
+    </copy>
+
+  </target>
+
   <!-- oooooooooooooooooo Documentation Generation ooooooooooooooooooooo -->
+
+  <!-- raml2html is installed in the install project (see install/package.json). -->
+  <!-- It is then called via yarn (e.g., `yarn raml2html -i ... -o ...`). -->
+  <target name="runRaml2Html" depends="installYarnBin,installYarnDepsForInstallProject">
+    <echo>Generating RAML HTML doc</echo>
+    <echo>  Input:  ${inputFile}</echo>
+    <echo>  Output: ${outputFile}</echo>
+    <mkdir dir="${htdocsTargetDir}"/>
+    <exec executable="yarn"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="raml2html"/>
+      <arg line="--theme raml2html-plain-theme"/>
+      <arg line="-i ${inputFile}"/>
+      <arg line="-o ${outputFile}"/>
+    </exec>
+  </target>
 
   <!-- For now can only build docs for maven projects -->
   <target name="generateDocs" if="publishDocs">
-    <echo>Generating Documentation for ${relativeBuildDir}</echo>
-    <!-- comment until we figure out how to run javadoc on Java 11
+    <echo>Generating Documentation for ${project}</echo>
+    <!-- Javadoc is broken in the latest Java 11 we have access to; will wait on
+         greater access to later releases (11.0.2 should do it) to uncomment
     <exec dir="${projectsDir}/${relativeBuildDir}"
-           executable="mvn"
-           failonerror="true"
-           failifexecutionfails="true">
-       <arg line="javadoc:javadoc"/>
-       <arg line="enunciate:docs"/>
-       <arg line="- -quiet"/>
-       <arg line="-Dmaven.repo.local=${mvnRepo}"/>
+          executable="mvn"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="javadoc:javadoc"/>
+      <arg line="enunciate:docs"/>
+      <arg line="- -quiet"/>
+      <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
     -->
   </target>
@@ -747,7 +851,7 @@
     </replace>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
-    <chmod perm="+x">
+    <chmod perm="+x" maxparallel="20">
       <fileset dir="${cgibinTargetDir}" />
     </chmod>
 
