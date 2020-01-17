@@ -642,6 +642,7 @@
     <echo>  Output: ${outputFile}</echo>
     <mkdir dir="${htdocsTargetDir}"/>
     <exec executable="yarn"
+          dir="${projectsDir}/install"
           failonerror="true"
           failifexecutionfails="true">
       <arg line="raml2html"/>
