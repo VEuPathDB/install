@@ -914,6 +914,14 @@
              pattern="yyyy/MM/dd HH:mm:ss"
              value="now"/>
     </propertyfile>
+
+    <exec dir="${projectsDir}/install/bin"
+          executable="bash"
+          failonerror="false"
+          failifexecutionfails="false">
+      <arg line="logGitStatus"/>
+      <arg line="${projectsDir}/${project}/${component}"/>
+    </exec>
   </target>
 
   <!-- oooooooooooooooooooo default project release ooooooooooooooooooooooo -->
