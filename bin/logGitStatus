@@ -24,7 +24,7 @@ outputFile=$GUS_HOME/.buildlog/git_status
 
 echo >> $outputFile
 echo "Build_Date:  $currentDate" >> $outputFile
-echo "Git_Project: $projectName" >> $outputFile
+echo "Project:     $projectName" >> $outputFile
 echo "Component:   $componentName" >> $outputFile
 echo "On_Branch:   $currentBranch" >> $outputFile
 echo "Last_Commit: $currentCommit" >> $outputFile
