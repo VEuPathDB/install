@@ -17,8 +17,8 @@ echo "Changing to $projectDir"
 cd $projectDir
 
 currentDate=$(date "+%Y-%m-%dT%H:%M:%S")
-currentBranch=$(git status | grep "On branch" | awk '{ print $3 }')
-currentCommit=$(grep "branch '$currentBranch'" .git/FETCH_HEAD | awk '{ print $1 }')
+currentBranch=$(git show -s  --format=format:%D)
+currentCommit=$(git show -s  --format=format:%h)
 
 outputFile=$GUS_HOME/.buildlog/git_status
 
