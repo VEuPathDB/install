@@ -838,7 +838,7 @@
     <available file="${cgibinTargetDir}" type="dir" property="cgibinTargetDir.present"/>
     <available file="${webappTargetDir}" type="dir" property="webappTargetDir.present"/>
     <antcall target="webinstall-cgi-bin" />
-    <antcall target="webinstall-webapp" />
+    <!-- <antcall target="webinstall-webapp" /> -->
 
   </target>
 
