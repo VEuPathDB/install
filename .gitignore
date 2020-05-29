@@ -7,6 +7,7 @@ bin/R
 
 
 # Eclipse Project Junk
+.factorypath
 .settings/
 .project
 .classpath
