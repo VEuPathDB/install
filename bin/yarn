@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Wrapper to call yarn where it is installed.
 # The `yarn` executable does not work propertly
