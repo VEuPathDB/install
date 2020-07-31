@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-function usage() {
+usage() {
   echo ""
   echo "Usage: bldw project webPropFile [-publishDocs]"
   echo ""
@@ -12,10 +12,10 @@ function usage() {
   exit 1
 }
 
-if [[ "$#" != "2" ]]; then
-  if [[ "$3" != "-publishDocs" ]]; then
+if [ "$#" != "2" ]; then
+  if [ "$3" != "-publishDocs" ]; then
     usage
-  elif [[ "$#" != "3" ]]; then
+  elif [ "$#" != "3" ]; then
     usage
   fi
 fi
