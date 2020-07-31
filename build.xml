@@ -916,7 +916,7 @@
     </propertyfile>
 
     <exec dir="${projectsDir}/install/bin"
-          executable="bash"
+          executable="sh"
           failonerror="false"
           failifexecutionfails="false">
       <arg line="logGitStatus"/>
