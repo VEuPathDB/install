@@ -17,6 +17,8 @@
   <!--   installConfigFile  optional, installs $GUS_HOME/gus.config from sample     -->
   <!--   publishDocs        optional, installs documentation pages (webinstall only)-->
   <!--   projectsDir                                                                -->
+  <!--   webAssets.optimize optional, runs web assets through an optimizer          -->
+  <!--   webAssets.legacy   optionsl, generates web assets for legacy browsers      -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
@@ -68,6 +70,7 @@
     <property name="initialTarget" value="webinstall"/>
 
     <antcall target="installYarnDepsForInstallProject"/>
+    <antcall target="makeSupportedBrowsersScript"/>
 
     <ant target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
@@ -587,6 +590,16 @@
           dir="${projectsDir}/install"
           failonerror="true"
           failifexecutionfails="true">
+      <arg line="--ignore-engines"/>
+    </exec>
+  </target>
+
+  <target name="makeSupportedBrowsersScript" depends="installYarnDepsForInstallProject">
+    <exec executable="${projectsDir}/install/bin/makeSupportedBrowsersScript"
+          dir="${projectsDir}/install"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="${targetDir}/bin/getBundlesSubPath"/>
     </exec>
   </target>
 
@@ -602,7 +615,9 @@
     <exec executable="yarn"
       dir="${yarnCwd}"
       failonerror="true"
-      failifexecutionfails="true"/>
+      failifexecutionfails="true">
+      <arg line="--ignore-engines"/>
+    </exec>
   </target>
 
   <!-- If webpack.config.js, call webpack -->
@@ -614,22 +629,46 @@
     <echo message="Bundling assets with webpack"/>
     <echo message="cwd: ${webpackCwd}"/>
 
-    <condition property="webpack.env" value="--mode=production" else="--mode=development">
-      <isset property="optimizeWebAssets"/>
-    </condition>
+    <delete dir="${webpackCwd}/dist"/>
 
+    <antcall target="webpack">
+      <param name="browserslistEnv" value="modern"/>
+    </antcall>
+
+    <antcall target="webpack">
+      <param name="browserslistEnv" value="legacy"/>
+    </antcall>
+
+    <delete dir="${webappTargetDir}/bundles"/>
+
+    <copy todir="${webappTargetDir}/bundles">
+      <fileset dir="${webpackCwd}/dist" />
+    </copy>
+
+  </target>
+
+  <target name="checkWebpackEnv">
+    <condition property="webpack.run" value="true" else="false">
+      <or>
+        <equals arg1="${browserslistEnv}" arg2="modern"/>
+        <istrue value="${webAssets.legacy}"/>
+      </or>
+    </condition>
+  </target>
+
+  <target name="webpack" depends="checkWebpackEnv" if="${webpack.run}">
+    <condition property="webpack.env" value="--mode=production" else="--mode=development">
+      <istrue value="${webAssets.optimize}"/>
+    </condition>
     <exec executable="${projectsDir}/install/node_modules/.bin/webpack"
       dir="${webpackCwd}"
       failonerror="true"
       failifexecutionfails="true">
+      <env key="BROWSERSLIST_ENV" value="${browserslistEnv}"/>
+      <env key="BROWSERSLIST_CONFIG" value="${projectsDir}/install/.browserslistrc"/>
       <arg line="${webpack.env}"/>
       <arg line="--hide-modules"/>
     </exec>
-
-    <copy todir="${webappTargetDir}">
-      <fileset dir="${webpackCwd}/dist" />
-    </copy>
-
   </target>
 
   <!-- oooooooooooooooooo Documentation Generation ooooooooooooooooooooo -->

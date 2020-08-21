@@ -13,6 +13,9 @@ var webpackMerge = require('webpack-merge');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var projectHome = path.resolve(__dirname, '../..');
 var devtoolPathPrefixRe = new RegExp('^' + projectHome + '/');
+var isModern = process.env.BROWSERSLIST_ENV === 'modern';
+var outputSubDir = isModern ? 'modern' : 'legacy';
+console.log('BROWSERSLIST_ENV:', process.env.BROWSERSLIST_ENV)
 
 /**
  * Creates a configuration function that is used by webpack. Takes a
@@ -34,9 +37,9 @@ exports.merge = function merge(additionConfig) {
         modules: [ path.join(process.cwd(), 'node_modules'), path.join(__dirname, 'node_modules') ]
       },
       output: {
-        path: path.join(process.cwd(), 'dist'),
+        path: path.join(process.cwd(), 'dist', outputSubDir),
         filename: '[name].bundle.js',
-        chunkFilename: '[name].bundle-[chunkhash].js',
+        chunkFilename: '[id].bundle-[chunkhash].js',
         devtoolModuleFilenameTemplate: function(info) {
           // strip prefix from absolute path
           return 'webpack:///' + info.absoluteResourcePath.replace(devtoolPathPrefixRe, './');
@@ -100,13 +103,12 @@ exports.merge = function merge(additionConfig) {
         new webpack.LoaderOptionsPlugin({ debug: isDevelopment }),
         new webpack.DefinePlugin({
           __DEV__: JSON.stringify(isDevelopment),
-          // "process.env": {
-          //   NODE_ENV: JSON.stringify(isDevelopment ? "development" : "production")
-          // }
+          __OUTPUT_SUBDIR__: JSON.stringify(outputSubDir + '/'),
+          __IS_LEGACY_BUNDLE__: JSON.stringify(!isModern)
         }),
-        // isDevelopment ? noop : new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
         new MiniCssExtractPlugin({
-          filename: '[name].bundle.css'
+          filename: '[name].bundle.css',
+          chunkFilename: '[id].bundle-[chunkhash].css'
         })
       ],
       stats: {
