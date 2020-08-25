@@ -362,6 +362,10 @@
    <antcall target="defaultJavaCompile"/>   <!-- will run if non-maven -->
    <antcall target="mavenBuildComponent"/>  <!-- will run if manen -->
 
+    <exec executable="chmod" dir="${componentDir}" failonerror="false">
+      <arg line="-R 777 target" />
+    </exec>
+
    <antcall target="componentPartCopy">
       <param name="part" value="data"/>
       <param name="to" value="data"/>
@@ -742,6 +746,9 @@
        <arg line="--quiet"/>
        <arg line="-Dmaven.test.skip=true"/>
        <arg line="-Dmaven.repo.local=${mvnRepo}"/>
+    </exec>
+    <exec executable="chmod" dir="${projectsDir}/${relativeBuildDir}" failonerror="false">
+      <arg line="-R 777 target" />
     </exec>
   </target>
 
