@@ -747,7 +747,7 @@
        <arg line="-Dmaven.test.skip=true"/>
        <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
-    <exec executable="bash" dir="${projectsDir}/${relativeBuildDir}" failonerror="false">
+    <exec executable="sh" dir="${projectsDir}/${relativeBuildDir}" failonerror="false">
       <arg line="-c"/>
       <arg line="&quot;for dir in $(ls */target); do chmod -R 777 $dir ; done&quot;"/>
     </exec>
