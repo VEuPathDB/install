@@ -18,7 +18,7 @@
   <!--   publishDocs        optional, installs documentation pages (webinstall only)-->
   <!--   projectsDir                                                                -->
   <!--   webAssets.optimize optional, runs web assets through an optimizer          -->
-  <!--   webAssets.legacy   optionsl, generates web assets for legacy browsers      -->
+  <!--   webAssets.legacy   optional, generates web assets for legacy browsers      -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
