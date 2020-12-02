@@ -68,11 +68,12 @@ exports.merge = function merge(additionConfig) {
             ]
           },
 
-          {
-            test: /\.js$/,
-            enforce: 'pre',
-            use: ['source-map-loader']
-          },
+          // consumes too much memory
+          // {
+          //   test: /\.js$/,
+          //   enforce: 'pre',
+          //   use: ['source-map-loader']
+          // },
 
           {
             test: /\.scss$/,
