@@ -7,6 +7,8 @@ usage() {
   echo "  calls 'build project[/component] install -append'"
   echo ""
   echo "The -publishDocs flag, if present, will be passed to build as well"
+  echo ""
+  echo "You can specify project+component by a path - arguments beginning with '.' are resolved as paths, and \$PROJECT_HOME or any last / are stripped "
   exit 1
 }
 
@@ -17,5 +19,18 @@ elif [ -n "$2" ]; then
     usage
   fi
 fi
+x="$1"
 
-build $1 install -append $2
+if expr "$1" : "^\\." 1> /dev/null; then
+  x=$(realpath "$1")
+fi
+
+if [ "$PROJECT_HOME" ] && expr "$x" : "/" 1> /dev/null; then
+  x=$(sed "s!^${PROJECT_HOME}/*!!" <<< "$x")
+fi
+
+if expr "$x" : '.*/$' 1> /dev/null; then
+  x=$(sed 's!/$!!' <<< "$x")
+fi
+
+build "$x" install -append "$2"
