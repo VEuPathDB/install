@@ -122,7 +122,7 @@ exports.merge = function merge(additionConfig) {
         maxModules: Infinity,
         optimizationBailout: true
       }
-    }].concat(additionConfig));
+    }].concat(typeof additionConfig === 'function' ? additionConfig(env, argv) : additionConfig));
   }
 }
 
