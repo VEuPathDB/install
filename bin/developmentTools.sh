@@ -46,6 +46,9 @@
 ##     gitst:
 ##        displays git status of all projects in the current site's project_home
 ##
+##     redeploy:
+##        reloads the webapp in the current site
+##
 ##     reload:
 ##        builds and (if successful) reloads the website in the current site
 ##
@@ -230,7 +233,7 @@ function setup() {
         export BASE_GUS=$SITE_REPO/$SITE_DIR
         export PROJECT_HOME=$BASE_GUS/project_home
         export GUS_HOME=$BASE_GUS/gus_home
-        export PATH=$PRE_GUS_PATH:$PROJECT_HOME/install/bin:$GUS_HOME/bin:$POST_GUS_PATH
+        export PATH=$PROJECT_HOME/install/bin:$GUS_HOME/bin:$NON_GUS_PATH
         cd $SITE_REPO/$SITE_DIR
         source project_home/install/bin/gusEnv.bash
         cd project_home
@@ -361,6 +364,11 @@ function restart_force() {
         echo "Waiting for tomcat shutdown..." && \
         sleep 5 && \
         sudo instance_manager start $SITE_TYPE
+}
+
+function redeploy() {
+    assignSiteValues
+    instance_manager manage $SITE_TYPE reload $SITE_ID
 }
 
 function rebuild() {
