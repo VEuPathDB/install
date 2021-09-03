@@ -36,6 +36,9 @@ exports.merge = function merge(additionConfig) {
         extensions: [ ".js", ".jsx", ".ts", ".tsx" ],
         modules: [ path.join(process.cwd(), 'node_modules'), path.join(__dirname, 'node_modules') ]
       },
+      resolveLoader: {
+        modules: [ path.join(process.cwd(), 'node_modules'), path.join(__dirname, 'node_modules') ]
+      },
       output: {
         path: path.join(process.cwd(), 'dist', outputSubDir),
         filename: '[name].bundle.js',
