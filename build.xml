@@ -671,7 +671,6 @@
       <env key="BROWSERSLIST_ENV" value="${browserslistEnv}"/>
       <env key="BROWSERSLIST_CONFIG" value="${projectsDir}/install/.browserslistrc"/>
       <arg line="${webpack.env}"/>
-      <arg line="--hide-modules"/>
     </exec>
   </target>
 
