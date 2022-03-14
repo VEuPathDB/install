@@ -123,7 +123,8 @@ exports.merge = function merge(additionConfig) {
       ],
       stats: {
         maxModules: Infinity,
-        optimizationBailout: true
+        optimizationBailout: true,
+        modules: false
       }
     }].concat(typeof additionConfig === 'function' ? additionConfig(env, argv) : additionConfig));
   }
