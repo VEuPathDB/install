@@ -3,13 +3,14 @@
 ##
 ##  file:    developmentTools.sh
 ##  author:  Ryan Doherty
-##  purpose: provide a variety of tools for assisting EuPath developers
+##  purpose: provide a variety of tools for assisting VEuPathDB developers
 ##
-##  For a new EuPath front-end developer, there can be a challenge in
-##  efficiently interacting with Git, deploying your code modifications to the
-##  development server (e.g. blender), reloading sites, checking logs, etc.  It
-##  can be hard to remember which scripts to use and what arguments to pass.
-##  The goal of this file is to provide the most common actions with minimal
+##  For a VEuPathDB website developer, there can be a challenge to efficiently
+##  interacting with Git, deploying your code modifications to the development
+##  server (e.g. blender), reloading sites, checking logs, etc.  It's also
+##  hard to remember which sites you have to work with, and what values to use
+##  to set a website context and interact with instance_manager.  The goal of
+##  this script's utilities is to provide the most common actions with minimal
 ##  configuration (or things to remember).
 ##
 ################################################################################
@@ -19,41 +20,40 @@
 ##  When you source this file, you will get a set of default functionality.  You
 ##  can add additional functions to your .bashrc using the functions below as a
 ##  model.  Most functions are executed in the context of the "current" site,
-##  which you set with the setup function.  If you don't use setup or don't pass
-##  an argument, your DEFAULT_SITE is used (set configuration below).  The basic
-##  tools are:
+##  which you set with the setup function.  If you don't call 'setup' or don't
+##  pass an argument, your DEFAULT_SITE is used (see Configuration section below).
+##
+##  Commands useful in both client (laptop) and remote (dev server) contexts:
 ##
 ##     sites:
-##        Shows a list of the sites configured in the SITES env variable
+##        Display of the sites configured in the SITES env variable
 ##
 ##     setup [<site_name>]:
 ##        Sets the "current" site, along with GUS_HOME and PROJECT_HOME.  When
 ##        logged in to a dev server, sets up the environment for the passed site
-##        and goes to the site's project_home.  If site_name is omitted, uses
-##        DEFAULT_SITE.
-##
-##     goto <project_home>:
-##        looks for valid directory of $PROJECT_HOME/../<project_home>, then
-##        simply <project_home> (i.e. absolute or relative path); if found,
-##        sets as new $PROJECT_HOME and visits the directory
+##        and goes to the site's project_home.  When on a client machine, sets
+##        the website to be used when client-based commands are called.  If
+##        site_name is omitted, uses DEFAULT_SITE.
 ##
 ##     current:
-##        displays the current site information
-##
-##     gitup:
-##        updates (pull) all git projects in the current site's project_home
+##        displays the current site and environment information
 ##
 ##     gitst:
-##        displays git status of all projects in the current site's project_home
+##        runs git status on each git project in $PROJECT_HOME
 ##
-##     redeploy:
-##        reloads the webapp in the current site
+##     getup:
+##        runs git pull on each git project in $PROJECT_HOME
+##
+##  Commands useful in a remote (dev server) context:
 ##
 ##     reload:
-##        builds and (if successful) reloads the website in the current site
+##        reloads the webapp in the current site
 ##
-##     reloadWS:
-##        builds and (if successful) reloads the web service in the current site
+##     rebuild_lite:
+##        builds and (if successful) reloads the webapp for the current site
+##
+##     rebuild:
+##        calls rebuilder on the current site (undeploy, clean, update, build, configure, redeploy)
 ##
 ##     restart:
 ##        restarts the tomcat instance for the current site (unforced)
@@ -61,51 +61,36 @@
 ##     restart_force:
 ##        forces restart of the tomcat instance for the current site
 ##
-##     rebuild:
-##        calls rebuilder on the current site (which also reloads)
-##
-##     gbrowse_install:
-##        reinstalls gbrowse on the current site
-##
 ##     log:
-##        displays logs for the current site (in tail -f fashion, using cattail)
+##        ongoing display of logs for the current site
+##          (in tail -f fashion, calls cattail)
 ##
-##     pullProject <proj_1> <proj_2> ...
-##        zips projects passed and copies from the current site on the dev
-##        server to the PROJECT_HOME on the client machine
+##     logall:
+##        ongoing display of all logs for the current site
+##          (in tail -f fashion, calls cattail -atc)
 ##
-##     pushProject <proj_1> <proj_2> ...
-##        zips projects passed, copies them to the current site on the dev
-##        server, then executes a reload (i.e. build plus reload) on that site
+##  Commands useful in a client (laptop) context:
 ##
-##     pushHg <proj_1> <proj_2> ...
-##        commits and pushes changes from client hg projects to your hg repo,
-##        then pulls and updates those changes on the current site, and reloads
-##        the current site.  An effort is made to only recompile Java code when
-##        necessary* (*not yet functional!).
-##
-##     pushFiles <proj_1> <proj_2> ...
-##        copies all files that have current git modifications from a remote machine
-##        into the current site's project home; then reloads the current site
+##     goto <project_home>:
+##        looks for valid directory of $PROJECT_HOME/../<project_home>, then
+##        simply <project_home> (i.e. absolute or relative path); if found,
+##        sets as new $PROJECT_HOME and visits the directory
 ##
 ##     sendFiles <proj_1> <proj_2> ...
 ##        copies all files that have current git modifications from a remote machine
 ##        into the current site's project home
 ##
-##     deployProject <site_dir> <project_name>
-##        (not to be called directly!) This utility is called remotely by
-##        pushProject. It unzips a project placed on the server and deploys it
-##        to the appropriate project_home.  It also backs up (up to) the
-##        previous versions of the project with .old and .older suffixes.
+##     sendFilesAndRebuild <proj_1> <proj_2> ...
+##        calls send
 ##
 ################################################################################
 ##
-##  Prerequisites/Setup:
+##  Prerequisites/Configuration:
 ##
 ##  For full functionality, you should do all the following on both your client
 ##  machine, and in your user account on your development server (e.g. blender).
 ##
-##  The develper should already have added custom GUS configuration to their
+##  The developer should already have added custom GUS configuration to their
 ##  .bashrc file for use in sourcing gusEnv.bash.  (At least) the following
 ##  values should already be defined:
 ##
@@ -147,12 +132,6 @@
 ##
 ##     export REMOTE_LOGNAME=rdoherty
 ##
-##  5. (Optional) Define your Mercurial repository if you are using one to
-##  quickent changeset deploytment on your dev server.  The value is an absolute
-##  path or one relative to your home directory on the server.  For example:
-##
-##     export 
-##
 ##  Lastly, you must source this file in your .bashrc.  Again, this must be done
 ##  both on your client machine and on your dev server.
 ##
@@ -165,8 +144,6 @@
 
 # Constants (should be good for the foreseeable future)
 export SITE_REPO=/var/www
-export DEV_SITE_JAVA_HOME=/usr/java/default
-export ZIPD_PROJ_TMP_FILE=".tmpProject.zip" # will be written to you home dir
 
 function sites() {
     echo "Available sites:"
@@ -237,7 +214,7 @@ function setup() {
         cd $SITE_REPO/$SITE_DIR/project_home
     else
         echo "--------------- Warning ---------------"
-        echo "$SITE_REPO/$SITE_DIR does not exist!  Assuming you are on a client machine (not $DEV_SERVER)."
+        echo "$SITE_REPO/$SITE_DIR does not exist.  Assuming you are on a client machine (not $DEV_SERVER)."
         echo "Retaining the following values:"
         echo "  GUS_HOME     = $GUS_HOME"
         echo "  PROJECT_HOME = $PROJECT_HOME"
@@ -274,7 +251,7 @@ function current() {
     echo "  Instance:     $SITE_ID"
 }
 
-# internal function; pass svn operation to be performed on all your projects
+# internal function; pass operation to be performed on all your projects
 function projectOperation() {
     local operation=$1
     local currentDir=`pwd`
@@ -307,7 +284,7 @@ function gitup() {
 }
 
 # internal function: single argument
-#   Arg 1: please pass Website or WebService
+#   Arg 1: pass Website or WebService
 function getTopLevelProject() {
     local topLevelProjectType=$1
     local numWebsiteProjects=`\ls $PROJECT_HOME | grep "$topLevelProjectType\$" | wc -l`
@@ -327,7 +304,7 @@ function getTopLevelProject() {
 }
 
 # internal function: two arguments
-#   Arg 1: please pass Website or WebService
+#   Arg 1: pass Website or WebService
 #   Arg 2: pass config file for the given site type, relative to the site_dir
 function reloadGeneric() {
     local topLevelProjectType=$1
@@ -343,13 +320,15 @@ function reloadGeneric() {
     fi
 }
 
-function reload() {
+# Note implementation of this is somewhat antiquated
+function rebuild_lite() {
     reloadGeneric Website etc/webapp.prop
 }
 
-function reloadWS() {
-    reloadGeneric WebService etc/wsf.prop
-}
+# No longer needed; website and webservice projects are built together
+#function rebuild_lite_WS() {
+#    reloadGeneric WebService etc/wsf.prop
+#}
 
 function restart() {
     assignSiteValues
@@ -364,7 +343,7 @@ function restart_force() {
         sudo instance_manager start $SITE_TYPE
 }
 
-function redeploy() {
+function reload() {
     assignSiteValues
     instance_manager manage $SITE_TYPE reload $SITE_ID
 }
@@ -384,61 +363,10 @@ function logall() {
     cattail -atc $SITE_DIR
 }
 
-function pullProject() {
-    local currentDir=`pwd`
-    cd $PROJECT_HOME
-
-    assignSiteValues
-    
-    local tmpFile=~/$ZIPD_PROJ_TMP_FILE
-    local remoteTmpFile=/home/$LOGNAME/$ZIPD_PROJ_TMP_FILE
-    local remoteProjHome=$SITE_REPO/$SITE_DIR/project_home
-
-    echo "Retrieving project(s) from $CURRENT_SITE"
-
-    for projectName in $*; do
-
-        echo "Processing $projectName"
-        echo "  Zipping up project on $DEV_SERVER"
-        ssh $REMOTE_LOGNAME@$DEV_SERVER "cd $remoteProjHome; zip -q -r $remoteTmpFile $projectName"
-        echo "  Copying zipped project to client..."
-        scp $REMOTE_LOGNAME@$DEV_SERVER:$remoteTmpFile $tmpFile
-        ssh $REMOTE_LOGNAME@$DEV_SERVER "rm -f $remoteTmpFile"
-
-        # check to see if project was successfully transferred
-        if [ -e $tmpFile ]; then
-        
-            # see if local project versions exist and back up if so
-            if [ -d ${projectName}.old ]; then
-                echo "  Moving ${projectName}.old to ${projectName}.older"
-                mv ${projectName}.old ${projectName}.older
-            fi
-            if [ -d $projectName ]; then
-                echo "  Moving $projectName to ${projectName}.old"
-                mv $projectName ${projectName}.old
-            fi
-
-            # move local zip file to project home and unzip
-            echo "  Extracting $projectName from zip file into $(pwd)"
-            unzip -q -d . $tmpFile
-            rm $tmpFile
-        else
-            echo "  Unable to successfully transfer project ${projectName}.  Skipping."
-        fi
-        
-    done
-    cd $currentDir
-}
-
-function gbrowse_install() {
-  assignSiteValues
-  $SITE_REPO/$SITE_DIR/project_home/ApiCommonWebsite/Model/bin/install_gbrowse2 $SITE_REPO/$SITE_DIR/etc/webapp.prop build_install_patch
-}
-
-function pushFiles() {
+function sendFilesAndRebuild() {
   sendFiles $*
   echo -n "Building code..."
-  ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; reload"
+  ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; rebuild_lite"
   echo "done."
 }
 
@@ -450,10 +378,40 @@ function sendFiles() {
   for projectName in $*; do
     echo "Processing $projectName"
     cd $PROJECT_HOME/$projectName
-    for file in $(git status | grep modified | awk '{ print $2 }'); do
-      cmd="scp $file $REMOTE_LOGNAME@$DEV_SERVER:$SITE_REPO/$SITE_DIR/project_home/$projectName/$file"
-      echo "  Running $cmd"
-      $cmd
+    projectDir="$SITE_REPO/$SITE_DIR/project_home/$projectName"
+    remoteProjectDir="$REMOTE_LOGNAME@$DEV_SERVER:$projectDir"
+
+    for fileStatus in $(git status -s | awk '{ print $1 ":" $2 }'); do
+
+      changedFile=( $(echo $fileStatus | sed 's/:/ /g') )
+      flag="${changedFile[0]}"
+      file="${changedFile[1]}"
+
+      cmd=""
+      if [[ "$flag" == "A" || "$flag" == "M" || "$flag" == "??" ]]; then
+        if [ -d $file ]; then
+          # recursively remove existing dir
+          cmd="ssh $REMOTE_LOGNAME@$DEV_SERVER \"\"rm -rf $projectDir/$file\"\""
+          echo "  $cmd"
+          $cmd
+          cmd="scp -r $file $remoteProjectDir/$file"
+        else
+          cmd="scp $file $remoteProjectDir/$file"
+        fi
+      elif [[ "$flag" == "D" ]]; then
+        if [ -d $file ]; then
+          cmd="ssh $REMOTE_LOGNAME@$DEV_SERVER \"\"rm -rf $projectDir/$file\"\""
+        else
+          cmd="ssh $REMOTE_LOGNAME@$DEV_SERVER \"\"rm -f $projectDir/$file\"\""
+        fi
+      fi
+
+      if [[ "$cmd" != "" ]]; then
+        echo "  $cmd"
+        $cmd
+      else
+        echo "  Skipping $file"
+      fi
     done
   done
 
@@ -461,138 +419,4 @@ function sendFiles() {
   echo "File transfers complete."
 }
 
-function pushHg() {
-  local currentDir=`pwd`
-  assignSiteValues
 
-  for projectName in $*; do
-
-    cd $PROJECT_HOME/$projectName
-
-    echo; echo "%%%%% Committing ${projectName}..."
-    hg commit -m "checkpoint commit"
-    echo; echo "%%%%% Pushing ${projectName}..."
-    hg push
-    echo; echo "%%%%% Pulling ${projectName}..."
-    ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; cd $projectName; hg pull"
-    echo; echo "%%%%% Updating ${projectName}..."
-    ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; cd $projectName; hg update"
-
-  done
-  
-  local numJava=$(hg status | grep ".java" | wc -l | awk '{ print $1 }');
-  local loadCmd
-  #if [ "$numJava"=="0" ]; do
-  #  Example: bldw WDKWebsite/View <your_webapp.prop>; bldw ApiCommonWebsite/Site <your_webapp.prop>
-  #  loadCmd="reload" # <-- FIX ME TO ONLY MOVE FILES, NOT BUILD JAVA!!
-  #else
-    loadCmd="reload"
-  #fi
-  
-  echo; echo -n "Building code..."
-  ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE} >& /dev/null; $loadCmd"
-  cd $currentDir
-  echo "done."
-}
-
-function pushProject() {
-    local currentDir=`pwd`
-
-    assignSiteValues
-    local tmpFile=~/$ZIPD_PROJ_TMP_FILE
-    local remoteTmpFile=/home/$LOGNAME/$ZIPD_PROJ_TMP_FILE
-    local projectHome=$PROJECT_HOME
-    local projectDir=
-
-    echo "Deploying project(s) to $CURRENT_SITE"
-
-    local rebuildWebService=false
-    for projectName in $*; do
-
-        echo "Processing $projectName"
-
-        if [[ $projectName =~ .*WebService ]]; then
-            echo "  Turning on Web Service flag"
-            rebuildWebService=true
-        fi
-
-        projectDir=$projectHome/$projectName
-
-        if [ -e $projectDir ]; then
-        
-            # zip project for import
-            rm -f $tmpFile
-            cd $projectDir
-
-            echo "  Cleaning .class files from project"
-            find . -name "*.class" | xargs rm
-            cd ..
-
-            echo "  Zipping $projectName for copy"
-            zip -q -r $tmpFile $projectName
-
-            # copy zip file to server
-            echo "  Transferring file"
-            scp $tmpFile $REMOTE_LOGNAME@$DEV_SERVER:$remoteTmpFile
-
-            # unzip on server and deploy
-            echo "  Deploying project $projectName to $SITE_DIR"
-            ssh $REMOTE_LOGNAME@$DEV_SERVER "deployProject $SITE_DIR $projectName"
-
-        else
-            echo "  ERROR: project $projectName does not exist; skipping...";
-        fi
-
-        rm -f $tmpFile
-    done
-
-    echo "Compiling and deploying web app..."
-    ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE}; reload"
-
-    if [ "$rebuildWebService" == "true" ]; then
-        echo "Compiling and deploying web service..."
-        ssh $REMOTE_LOGNAME@$DEV_SERVER "setup ${CURRENT_SITE}; reloadWS"
-    fi
-
-    cd $currentDir
-}
-
-function deployProject() {
-
-    local tmpFile=~/$ZIPD_PROJ_TMP_FILE
-    local projectHome=$SITE_REPO/$1/project_home
-    local projectDir=$projectHome/$2
-
-    # set java home and confirm version
-    export JAVA_HOME=$DEV_SITE_JAVA_HOME
-    echo "  Java Version: $($JAVA_HOME/bin/java -version 2>&1 | grep version | sed 's/.*\"\(.*\)\"/\1/g')"
-
-    if [ $# != 2 ]; then
-        echo "USAGE: deployProject <site_dir> <project_name>";
-        exit 1;
-    elif [ -d $projectDir ]; then
-        if [ -e $tmpFile ]; then
-            # move old versions
-            if [ -e ${projectDir}.older ]; then
-                echo "  Removing ${projectDir}.older";
-                rm -rf ${projectDir}.older
-            fi
-            if [ -e ${projectDir}.old ]; then
-                echo "  Moving ${projectDir}.old to ${projectDir}.older";
-                mv ${projectDir}.old ${projectDir}.older
-            fi
-            echo "  Moving $projectDir to ${projectDir}.old";
-            mv $projectDir ${projectDir}.old
-
-            # extract project
-            echo "  Extracting project to $projectDir";
-            unzip -q $tmpFile -d $projectHome
-        else
-            echo "ERROR: No files have been sent (looking for $tmpFile)";
-            exit 3;
-        fi
-    else
-        echo "ERROR: $1 is not a project";
-        exit 2;
-    fi
-}
