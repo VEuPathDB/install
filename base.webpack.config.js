@@ -34,7 +34,6 @@ exports.merge = function merge(additionConfig) {
       context: process.cwd(),
       resolve: {
         extensions: [ ".js", ".jsx", ".ts", ".tsx" ],
-        modules: [ path.join(process.cwd(), 'node_modules'), path.join(__dirname, 'node_modules') ]
       },
       resolveLoader: {
         modules: [ path.join(process.cwd(), 'node_modules'), path.join(__dirname, 'node_modules') ]
