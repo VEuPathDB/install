@@ -1,5 +1,4 @@
-<project name="MAIN" default="install" basedir="."
-  xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="MAIN" default="install" basedir=".">
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
@@ -22,16 +21,14 @@
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
+
   <!-- oooooooooooooooooooo Define additional resources oooooooooooooooooooo -->
 
-  <path id="maven-ant-tasks.classpath" path="lib/maven-ant-tasks-2.1.3.jar" />
-  <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
-           uri="antlib:org.apache.maven.artifact.ant"
-           classpathref="maven-ant-tasks.classpath"/>
   <property name="buildLogDir" value="${targetDir}/.buildlog" />
   <property environment="env"/>
 
   <import file="${projectsDir}/${proj}/build.xml" />
+
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  Main Targets ooooooooooooooooooooooooooo -->
@@ -39,14 +36,12 @@
 
   <target name="install" depends="InstallInit">
 
-    <!-- TEST -->
     <echo> proj=${proj} </echo>
     <echo> comp=${comp} </echo>
     <property name="initialTarget" value="install"/>
 
     <ant target="${proj}${comp}-Installation">
       <property name="project" value="${proj}"/>
-      <property name="logger" value="${logger}"/>
     </ant>
 
     <replace dir="${targetDir}/bin"
@@ -82,12 +77,6 @@
 
   </target>
 
-  <target name="release">
-    <ant target="${proj}-Release">
-      <property name="project" value="${proj}"/>
-    </ant>
-  </target>
-
 
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  Initialization ooooooooooooooooooooooooo -->
@@ -116,12 +105,12 @@
     </fail>
   </target>
 
-   <target name="validateClean" if="clean" depends="checkEmptyComponent">
-      <fail if="notEmptyComponent">
+  <target name="validateClean" if="clean" depends="checkEmptyComponent">
+     <fail if="notEmptyComponent">
          Build Error:  Cannot use -clean when building a specific component.  Either build the entire ${proj} project or build ${proj}${comp} without using "clean"
      </fail>
-   <echo message="inside validateClean, comp is ${comp} and clean is ${clean}"/>
-   </target>
+     <echo message="inside validateClean, comp is ${comp} and clean is ${clean}"/>
+  </target>
 
    <target name="checkEmptyComponent">
      <condition property="notEmptyComponent">
@@ -174,9 +163,11 @@
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
+
   <!-- oooooooooooooooooooo default project install ooooooooooooooooooooooo -->
 
   <target name="defaultProjectInstall">
+
     <concat destfile="${targetDir}/versions" append="yes">
       <fileset dir="${projectsDir}/${project}" >
          <include name="version"/>
@@ -187,23 +178,10 @@
       <param name="yarnCwd" value="${projectsDir}/${project}"/>
     </antcall>
 
-    <!-- Note: Maven-based projects should be built at the project level in the  -->
-    <!--       project's build.xml -before- components are built, and should use -->
-    <!--       code similar to that below.  If this is not done, Maven-based     -->
-    <!--       components will still be built at the component level but will    -->
-    <!--       lose any project-level benefits.  Omitting the "alreadyBuilt"     -->
-    <!--       will cause Maven components to be built twice: at the project     -->
-    <!--       and component levels.                                             -->
-    <!--
-      <target name="WDK-MavenInstallation">
-        <ant target="mavenBuildProject">
-          <property name="project" value="WDK"/>
-        </ant>
-        <property name="alreadyBuilt" value="true"/>
-      </target>
-    -->
+    <antcall target="mavenBuildProject"/>
 
   </target>
+
 
   <!-- ooooooooooooooooooo default component install oooooooooooooooooooooo -->
 
@@ -319,12 +297,6 @@
     </antcall>
 
     <antcall target="componentPartCopy">
-      <param name="part" value="lib/java"/>
-      <param name="to" value="lib/java"/>
-      <param name="prefix" value=""/>
-    </antcall>
-
-    <antcall target="componentPartCopy">
       <param name="part" value="plugin/perl"/>
       <param name="to" value="lib/perl"/>
       <param name="prefix" value="${project}/${component}/Plugin/"/>
@@ -359,12 +331,7 @@
 
    <antcall target="defaultCCompile"/>
 
-   <antcall target="defaultJavaCompile"/>   <!-- will run if non-maven -->
-   <antcall target="mavenBuildComponent"/>  <!-- will run if manen -->
-
-    <exec executable="chmod" dir="${componentDir}" failonerror="false">
-      <arg line="-R 777 target" />
-    </exec>
+   <antcall target="mavenBuildComponent"/>
 
    <antcall target="componentPartCopy">
       <param name="part" value="data"/>
@@ -372,13 +339,11 @@
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
 
-
    <antcall target="componentPartCopy">
       <param name="part" value="metadata"/>
       <param name="to" value="metadata"/>
       <param name="prefix" value="${project}/${component}/"/>
     </antcall>
-
 
    <antcall target="componentPartCopy">
       <param name="part" value="lib/pipelines"/>
@@ -420,91 +385,6 @@
     </apply>
   </target>
 
-  <target name="defaultJavaCompile" if="isNonMavenJava" depends="deleteMyClasses,checkNonMavenJava">
-     <echo message="Java source found in non-maven component.  Building traditional way..."/>
-     <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
-     <mkdir dir="${targetDir}/lib/java"/>
-     <mkdir dir="${targetDir}/lib/java/db_driver"/>
-     <mkdir dir="${targetDir}/lib/java/not-deployed"/>
-     <javac srcdir="${projectsDir}/${project}/${component}/src/java"
-            destdir="${projectsDir}/${project}/${component}/classes"
-        includeAntRuntime="false"
-        fork="true"
-        debug="on"
-        tempdir="${projectsDir}/${project}/${component}/classes"
-        memoryMaximumSize="256m">
-        <classpath>
-           <fileset dir="${targetDir}/lib/java/">
-              <include name="*.jar"/>
-           </fileset>
-           <fileset dir="${targetDir}/lib/java/db_driver">
-              <include name="*.jar"/>
-           </fileset>
-           <fileset dir="${targetDir}/lib/java/db_driver">
-              <include name="*.zip"/>
-           </fileset>
-           <fileset dir="${targetDir}/lib/java/not-deployed">
-              <include name="*.jar"/>
-           </fileset>
-        </classpath>
-     </javac>
-
-     <!-- copy over resource files -->
-     <antcall target="compileResources" />
-
-     <copy todir="${projectsDir}/${project}/${component}/classes/META-INF">
-       <fileset dir="${componentDir}" >
-         <include name="META-INF/**"/>
-         <exclude name="**/CVS/*" />
-       </fileset>
-     </copy>
-
-     <jar basedir="${projectsDir}/${project}/${component}/classes"
-          destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
-  </target>
-
-  <target name="compileResources" if="hasResources" depends="checkIfHaveResources">
-    <copy todir="${projectsDir}/${project}/${component}/classes/">
-      <fileset dir="${projectsDir}/${project}/${component}/src/resources" />
-    </copy>
-  </target>
-
-  <target name="checkIfHaveResources">
-    <available property="hasResources" file="${projectsDir}/${project}/${component}/src/resources"/>
-  </target>
-
-  <target name="checkNonMavenJava" depends="checkIfMavenComponent,checkIfHaveJava">
-    <condition property="isNonMavenJava">
-      <and>
-        <not>
-          <isset property="isMavenComponent"/>
-        </not>
-        <isset property="hasJava"/>
-      </and>
-    </condition>
-  </target>
-
-  <target name="checkIfHaveJava">
-      <available property="hasJava" file="${projectsDir}/${project}/${component}/src/java"/>
-  </target>
-
-  <target name="checkIfCleanAndHaveJava" depends="checkIfHaveJava">
-       <condition property="cleanAndHasJava">
-          <and>
-             <isset property="hasJava"/>
-             <isset property="clean"/>
-          </and>
-       </condition>
-  </target>
-
-  <target name="deleteMyClasses" if="cleanAndHasJava"
-           depends="checkIfCleanAndHaveJava">
-    <delete>
-      <fileset dir="${projectsDir}/${project}/${component}/classes"/>
-    </delete>
-    <delete file="${targetDir}/lib/java/${project}-${component}.jar"/>
-    <echo message="deleted all old classes, clean is ${clean} and has java is ${hasJava}"/>
-  </target>
 
   <!-- oooooooooooooooooooo default web install ooooooooooooooooooooooooooo -->
 
@@ -523,11 +403,9 @@
       <param name="yarnCwd" value="${projectsDir}/${project}/${component}"/>
     </antcall>
 
-
     <antcall target="bundleWithWebpack">
       <param name="webpackCwd" value="${projectsDir}/${project}/${component}"/>
     </antcall>
-
 
     <!-- if the file exists, it does not copy over -->
     <antcall target="webComponentPartCopy">
@@ -697,14 +575,12 @@
   <!-- For now can only build docs for maven projects -->
   <target name="generateDocs" if="publishDocs">
     <echo>Generating Documentation for ${project}</echo>
-    <!-- Javadoc is broken in the latest Java 11 we have access to; will wait on
-         greater access to later releases (11.0.2 should do it) to uncomment
+    <!-- Javadoc is currently unavailable on VEuPathDB servers; uncomment when available
     <exec dir="${projectsDir}/${relativeBuildDir}"
           executable="mvn"
           failonerror="true"
           failifexecutionfails="true">
       <arg line="javadoc:javadoc"/>
-      <arg line="enunciate:docs"/>
       <arg line="- -quiet"/>
       <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
@@ -742,23 +618,19 @@
            failifexecutionfails="true">
        <arg line="clean"/>
        <arg line="install"/>
-       <arg line="--quiet"/>
+       <!--<arg line="-quiet"/>-->
        <arg line="-Dmaven.test.skip=true"/>
        <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
-    <!-- attempt to open target dirs so test jars could be built after a regular build; does not work
-    <exec executable="sh" dir="${projectsDir}/${relativeBuildDir}" failonerror="false">
-      <arg line="-c"/>
-      <arg line="&quot;for dir in $(ls */target); do chmod -R 777 $dir ; done&quot;"/>
-    </exec>-->
   </target>
 
   <target name="checkIfMavenProject">
     <available property="isMavenProject" file="${projectsDir}/${project}/pom.xml"/>
   </target>
 
-  <target name="checkIfMavenComponent">
-    <available property="isMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
+  <!-- Will set buildMavenComponent if both is-maven and is-component-build -->
+  <target name="checkIfBuildMavenComponent" if="notEmptyComponent">
+    <available property="buildMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
   </target>
 
   <target name="mavenBuildProject" if="isMavenProject" depends="checkIfMavenProject">
@@ -773,62 +645,49 @@
     <ant target="publishDocs">
       <property name="relativeBuildDir" value="${project}"/>
     </ant>
+    <!-- deploy generated artifacts -->
+    <mkdir dir="${targetDir}/lib/java"/>
+    <exec dir="${projectsDir}/${project}"
+          executable="bash"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="-c"/>
+      <arg line="'cp */target/*.jar ${targetDir}/lib/java'"/>
+    </exec>
+    <!-- deploy dependencies -->
+    <ant target="deployMavenDependencies">
+      <property name="relativeBuildDir" value="${project}"/>
+    </ant>
   </target>
 
-  <target name="checkAlreadyBuilt" unless="alreadyBuilt">
-    <property name="alreadyBuilt" value="false"/>
-  </target>
-
-  <target name="mavenBuildComponent" if="isMavenComponent" depends="checkIfMavenComponent,checkAlreadyBuilt">
-    <echo>Building Maven Component: ${project}/${component}, Already built? ${alreadyBuilt}</echo>
-    <!-- build component only if not already built at the project level -->
-    <ant target="conditionalMavenCleanInstall">
+  <target name="mavenBuildComponent" if="buildMavenComponent" depends="checkIfBuildMavenComponent">
+    <echo>Building Maven Component: ${project}/${component}</echo>
+    <!-- should only build component specifically requested (components are build automatically at the project level) -->
+    <ant target="mavenCleanInstall">
       <property name="relativeBuildDir" value="${project}/${component}"/>
     </ant>
-    <!-- deploy artifacts for this component -->
-    <ant target="deployMavenArtifacts">
-      <property name="project" value="${project}"/>
-      <property name="component" value="${component}"/>
-    </ant>
-    <!-- generate documentation for this component -->
-    <ant target="conditionalGenerateDocs">
-      <property name="relativeBuildDir" value="${project}/${component}"/>
-    </ant>
-    <ant target="publishDocs">
-      <property name="relativeBuildDir" value="${project}/${component}"/>
-    </ant>
-  </target>
-
-  <target name="conditionalMavenCleanInstall" unless="${alreadyBuilt}">
-    <ant target="mavenCleanInstall"/>
-  </target>
-
-  <target name="conditionalGenerateDocs" unless="${alreadyBuilt}">
-    <ant target="generateDocs"/>
-  </target>
-
-  <target name="deployMavenArtifacts">
-
-    <!-- copy generated build file to gus_home -->
+    <!-- deploy generated artifacts -->
+    <mkdir dir="${targetDir}/lib/java"/>
     <copy todir="${targetDir}/lib/java" flatten="true">
       <fileset dir="${projectsDir}/${project}/${component}/target" >
         <include name="*.jar"/>
-        <include name="*.war"/>
-        <include name="*.ear"/>
       </fileset>
     </copy>
+    <!-- deploy dependencies -->
+    <ant target="deployMavenDependencies">
+      <property name="relativeBuildDir" value="${project}/${component}"/>
+    </ant>
+  </target>
 
-    <!-- gather dependencies from this maven project -->
-    <artifact:dependencies filesetId="depsFileset" useScope="runtime">
-      <localRepository path="${mvnRepo}"/>
-      <pom file="${projectsDir}/${project}/${component}/pom.xml"/>
-    </artifact:dependencies>
-
-    <!-- copy dependency jars to gus_home lib -->
-    <copy todir="${targetDir}/lib/java" flatten="true">
-      <fileset refid="depsFileset"/>
-    </copy>
-
+  <target name="deployMavenDependencies">
+    <exec dir="${projectsDir}/${relativeBuildDir}"
+           executable="mvn"
+           failonerror="true"
+           failifexecutionfails="true">
+       <arg line="dependency:copy-dependencies"/>
+       <arg line="-DoutputDirectory=${targetDir}/lib/java"/>
+       <!--<arg line="-quiet"/>-->
+    </exec>
   </target>
 
   <!-- oooooooooooooooooooo utility subroutines  ooooooooooooooooooooooo -->
