@@ -616,6 +616,8 @@
            executable="mvn"
            failonerror="true"
            failifexecutionfails="true">
+       <arg line="--settings"/>
+       <arg line="${projectsDir}/install/settings.xml"/>
        <arg line="clean"/>
        <arg line="install"/>
        <!--<arg line="-quiet"/>-->
