@@ -7,7 +7,7 @@
   <name>Shared GUS Build Project POM</name>
   <url>http://gusdb.org</url>
 
-  <artifactId>shared-project-pom</artifactId>
+  <artifactId>gus-project-pom</artifactId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
 
