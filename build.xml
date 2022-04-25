@@ -664,7 +664,7 @@
     <condition property="webpack.env" value="--mode=production" else="--mode=development">
       <istrue value="${webAssets.optimize}"/>
     </condition>
-    <exec executable="${projectsDir}/install/node_modules/.bin/webpack"
+    <exec executable="${webpackCwd}/node_modules/.bin/webpack"
       dir="${webpackCwd}"
       failonerror="true"
       failifexecutionfails="true">
