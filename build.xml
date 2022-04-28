@@ -82,11 +82,13 @@
   <!-- oooooooooooooooooooooooooo  Initialization ooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-  <target name="InstallInit" depends="validateTargetDir,
-                                     validateClean, hasConfigFile, selfBuildInfo"/>
+  <target
+    name="InstallInit"
+    depends="validateTargetDir,validateClean, hasConfigFile, selfBuildInfo, installGusProjectPom, installConifer"/>
 
-  <target name="WebInstallInit" depends="validateTargetDir,
-                                     validateClean, hasConfigFile, selfBuildInfo"/>
+  <target
+    name="WebInstallInit"
+    depends="validateTargetDir,validateClean, hasConfigFile, selfBuildInfo, installGusProjectPom, installConifer"/>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
@@ -159,7 +161,23 @@
     <antcall target="buildInfo" />
   </target>
 
-  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <target name="installGusProjectPom">
+    <ant target="mavenCleanInstall">
+      <property name="relativeBuildDir" value="install"/>
+    </ant>
+  </target>
+
+  <target name="installConifer">
+    <exec dir="${projectsDir}/install/bin"
+          executable="installConifer.sh"
+          failonerror="true"
+          failifexecutionfails="true">
+      <arg line="${targetDir}"/>
+      <arg line="${projectsDir}"/>
+    </exec>
+  </target>
+
+	<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
