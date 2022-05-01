@@ -169,9 +169,10 @@
 
   <target name="installConifer">
     <exec dir="${projectsDir}/install/bin"
-          executable="installConifer.sh"
+          executable="bash"
           failonerror="true"
           failifexecutionfails="true">
+      <arg line="installConifer.sh"/>
       <arg line="${targetDir}"/>
       <arg line="${projectsDir}"/>
     </exec>
