@@ -669,7 +669,7 @@
     <mkdir dir="${targetDir}/lib/java"/>
     <exec dir="${projectsDir}/${project}"
           executable="bash"
-          failonerror="true"
+          failonerror="false"
           failifexecutionfails="true">
       <arg line="-c"/>
       <arg line="'cp */target/*.jar ${targetDir}/lib/java'"/>

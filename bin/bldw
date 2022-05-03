@@ -20,4 +20,19 @@ if [ "$#" != "2" ]; then
   fi
 fi
 
-build $1 webinstall -append -webPropFile $2 $3
+webPropFile=$2
+if [ "$2" = "-default" ]; then
+  # ensure output webPropFile has a place to live
+  gusHomeParent="$GUS_HOME/.."
+  mkdir -p $gusHomeParent/etc
+
+  # define locations
+  webPropTemplate=$(dirname "$0")/../config/webapp.prop.tmpl
+  webPropFile=$gusHomeParent/etc/webapp.prop.generated
+
+  # make default webPropFile from the template
+  sed "s|<siteDir>|$gusHomeParent|g" $webPropTemplate > $webPropFile
+  echo "Will use generated webPropFile: $webPropFile"
+fi
+
+build $1 webinstall -append -webPropFile $webPropFile $3
