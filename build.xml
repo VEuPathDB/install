@@ -427,6 +427,7 @@
     </antcall>
 
     <!-- if the file exists, it does not copy over -->
+    <mkdir dir="${htdocsTargetDir}"/>
     <antcall target="webComponentPartCopy">
       <param name="part" value="htdocs"/>
       <param name="to" value="${htdocsTargetDir}"/>
@@ -437,29 +438,28 @@
       <param name="to" value="${htdocsTargetDir}"/>
     </antcall>
 
+    <mkdir dir="${cgibinTargetDir}"/>
     <antcall target="webComponentPartCopy">
       <param name="part" value="cgi-bin"/>
       <param name="to" value="${cgibinTargetDir}"/>
     </antcall>
 
+    <mkdir dir="${cgilibTargetDir}"/>
     <antcall target="webComponentPartCopy">
       <param name="part" value="cgi-lib"/>
       <param name="to" value="${cgilibTargetDir}"/>
     </antcall>
 
+    <mkdir dir="${confTargetDir}"/>
     <antcall target="webComponentPartCopy">
       <param name="part" value="conf"/>
       <param name="to" value="${confTargetDir}"/>
     </antcall>
 
+    <mkdir dir="${webappTargetDir}"/>
     <antcall target="webComponentPartCopy">
       <param name="part" value="webapp"/>
       <param name="to" value="${webappTargetDir}"/>
-    </antcall>
-
-    <antcall target="webComponentPartCopy">
-      <param name="part" value="servlets"/>
-      <param name="to" value="${servletsTargetDir}"/>
     </antcall>
 
     <antcall target="buildInfo" />
