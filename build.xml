@@ -712,6 +712,15 @@
 
   <!-- oooooooooooooooooooo utility subroutines  ooooooooooooooooooooooo -->
 
+  <target name="symlink">
+    <echo message="Creating symbolic link in ${dir}, named ${linkName}, pointing to ${linkTarget}"/>
+    <exec dir="${dir}"
+          executable="bash">
+      <arg line="-c"/>
+      <arg line="cd ${dir} &amp;&amp; if ! [ -L '${linkName}' ]; then ln -s ${linkTarget} ${linkName}; fi"/>
+    </exec>
+  </target>
+
   <target name="componentPartCopy">
     <available property="partAvailable" file="${componentDir}/${part}"/>
     <antcall target="componentPartCopySub"/>
@@ -850,33 +859,8 @@
     </exec>
   </target>
 
-  <!-- oooooooooooooooooooo default project release ooooooooooooooooooooooo -->
 
-  <target name="defaultProjectRelease">
-
-    <delete quiet="true">
-        <fileset dir="${projectsDir}/cleanroom"/>
-    </delete>
-    <mkdir dir="${projectsDir}/cleanroom"/>
-
-    <cvs  cvsRoot="${cvsroot}" command="rtag -b ${tag} ${project}"/>
-
-    <cvs package="install" cvsRoot="${cvsroot}"
-         dest="${projectsDir}/cleanroom" />
-
-    <cvs package="${project}" tag="${tag}" cvsRoot="${cvsroot}"
-         dest="${projectsDir}/cleanroom" />
-
-    <property name="tarfile"
-              value="${projectsDir}/cleanroom/${project}_${tag}.tar"/>
-
-    <tar destfile="${tarfile}"
-         basedir="${projectsDir}/cleanroom"
-         excludes="**/CVS/**"/>
-
-    <gzip zipfile="${tarfile}.gz" src="${tarfile}"/>
-
-  </target>
+  <!-- oooooooooooooooooooo Oracle-related subroutines  ooooooooooooooooooooooo -->
 
   <target name="installOracleDriver">
     <!-- set values for supported Oracle driver -->
