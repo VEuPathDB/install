@@ -145,14 +145,14 @@
     </condition>
 
     <fail if="noConfigFile">
-      Error: No gus.config file. Please run "mkdir -p ${targetDir}/config; cp ${projectsDir}/install/gus.config.sample ${targetDir}/config/gus.config" and edit ${targetDir}/config/gus.config as appropriate for your environment before try again.
+      Error: No gus.config file. Please run "mkdir -p ${targetDir}/config; cp ${projectsDir}/install/config/gus.config.sample ${targetDir}/config/gus.config" and edit ${targetDir}/config/gus.config as appropriate for your environment before try again.
     </fail>
 
   </target>
 
   <target name="optionInstallConfigFile" if="installConfigFile">
     <mkdir dir="${targetDir}/config"/>
-    <copy file="${projectsDir}/install/gus.config.sample" tofile="${targetDir}/config/gus.config" overwrite="false" verbose="true" />
+    <copy file="${projectsDir}/install/config/gus.config.sample" tofile="${targetDir}/config/gus.config" overwrite="false" verbose="true" />
   </target>
 
   <target name="selfBuildInfo">
