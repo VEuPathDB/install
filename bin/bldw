@@ -35,4 +35,4 @@ if [ "$2" = "-default" ]; then
   echo "Will use generated webPropFile: $webPropFile"
 fi
 
-build $1 webinstall -append -webPropFile $webPropFile $3
+build $1 webinstall -installConfigFile -append -webPropFile $webPropFile $3
