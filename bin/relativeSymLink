@@ -13,11 +13,6 @@ if [ "$linkTarget" == "$link" ]; then
   exit 0
 fi
 
-if ! [ -e $linkTarget ]; then
-  >&2 echo "ERROR: link target does not exist [$linkTarget]"
-  exit 2
-fi
-
 if [ -L $link ]; then
   >&2 echo "ERROR: link already exists at $link"
   exit 3
