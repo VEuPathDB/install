@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if [ "$#" != "2" ]; then
+  >&2 echo "USAGE: relativeSymLink <link_target> <link>"
+  exit 1
+fi
+
+linkTarget=$(realpath $1)
+link=$(realpath $2)
+
+if [ "$linkTarget" == "$link" ]; then
+  >&2 echo "INFO: input paths already match"
+  exit 0
+fi
+
+if ! [ -e $linkTarget ]; then
+  >&2 echo "ERROR: link target does not exist [$linkTarget]"
+  exit 2
+fi
+
+if [ -L $link ]; then
+  >&2 echo "ERROR: link already exists at $link"
+  exit 3
+elif [ -e $link ]; then
+  >&2 echo "ERROR: file exists at $link"
+  exit 4
+fi
+
+linkDir=$(dirname $link)
+linkName=$(basename $link)
+
+if ! [ -d $linkDir ]; then
+  >&2 echo "ERROR: no such directory: $linkDir"
+  exit 5
+fi
+
+cd $linkDir
+#echo "Will create relative link to $(realpath --relative-to=. $linkTarget)"
+ln -s $(realpath --relative-to=. $linkTarget) $linkName
+cd -

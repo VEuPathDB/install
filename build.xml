@@ -713,11 +713,10 @@
   <!-- oooooooooooooooooooo utility subroutines  ooooooooooooooooooooooo -->
 
   <target name="symlink">
-    <echo message="Creating symbolic link in ${dir}, named ${linkName}, pointing to ${linkTarget}"/>
-    <exec dir="${dir}"
-          executable="bash">
-      <arg line="-c"/>
-      <arg line="cd ${dir} &amp;&amp; if ! [ -L '${linkName}' ]; then ln -s ${linkTarget} ${linkName}; fi"/>
+    <echo message="Creating symbolic link to ${resource} at ${link}"/>
+    <exec executable="relativeSymLink">
+      <arg line="${resource}"/>
+    	<arg line="${link}"/>
     </exec>
   </target>
 
