@@ -782,7 +782,9 @@
              propertyFile="${targetDir}/config/gus.config" >
       <include name="**/*" />
       <replacefilter token="@perl@" property="perl"/>
+      <!-- won't know what this is until deployment time
       <replacefilter token="@targetDir@" value="${targetDir}" />
+      -->
     </replace>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
