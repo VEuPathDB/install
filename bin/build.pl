@@ -8,6 +8,8 @@
 
 
 use strict;
+use File::Basename 'dirname';
+use File::Path 'make_path';
 use Cwd 'realpath'; 
 
 my @whats = ("install", "webinstall");
@@ -119,7 +121,25 @@ sub parseArgs {
             print "Error: webPropFile not found\n"; 
             exit 1; 
         }
-        $webPropFile = "-propertyfile $wpFile -DwebPropFile=$wpFile";
+
+        # ensure generated webPropFile has a place to live
+        my $gusHomeParent = dirname($ENV{GUS_HOME});
+        make_path($gusHomeParent . "/etc/build");
+
+        # define locations
+        my $webPropTemplate = dirname($0) . "/../config/webapp.prop.tmpl";
+        my $generatedPropFile = $gusHomeParent . "/etc/build/webapp.prop.generated";
+
+        # make default webPropFile from the template
+        system("bash -c \"sed 's|<siteDir>|$gusHomeParent|g' $webPropTemplate > $generatedPropFile\"");
+
+        print("Created webPropFile from template: $generatedPropFile\n");
+
+        # clean input file and cat it onto the end of the generated file
+        print("Adding site-specific web props to generated webPropFile: $generatedPropFile\n");
+        system("grep -v 'TargetDir=' $wpFile >> $generatedPropFile");
+
+        $webPropFile = "-propertyfile $generatedPropFile -DwebPropFile=$generatedPropFile";
     }
 
     if ($ARGV[0] eq "-publishDocs") {
