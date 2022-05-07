@@ -211,7 +211,7 @@ function setup() {
         export PROJECT_HOME=$BASE_GUS/project_home
         export GUS_HOME=$BASE_GUS/gus_home
         export PATH=$PROJECT_HOME/install/bin:$GUS_HOME/bin:$NON_GUS_PATH
-        cd $SITE_REPO/$SITE_DIR/project_home
+        cd $SITE_REPO/$SITE_DIR
     else
         echo "--------------- Warning ---------------"
         echo "$SITE_REPO/$SITE_DIR does not exist.  Assuming you are on a client machine (not $DEV_SERVER)."
