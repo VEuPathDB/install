@@ -772,7 +772,6 @@
     <available file="${cgibinTargetDir}" type="dir" property="cgibinTargetDir.present"/>
     <available file="${webappTargetDir}" type="dir" property="webappTargetDir.present"/>
     <antcall target="webinstall-cgi-bin" />
-    <!-- <antcall target="webinstall-webapp" /> -->
 
   </target>
 
@@ -782,10 +781,9 @@
              propertyFile="${targetDir}/config/gus.config" >
       <include name="**/*" />
       <replacefilter token="@perl@" property="perl"/>
-      <!-- won't know what this is until deployment time
-      <replacefilter token="@targetDir@" value="${targetDir}" />
-      -->
     </replace>
+
+    <antcall target="webinstall-cgi-bin-location-refs"/>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
     <chmod perm="+x" maxparallel="20">
@@ -794,36 +792,13 @@
 
   </target>
 
-  <target name="webinstall-webapp" if="webappTargetDir.present">
-
-    <echo>Copying default and custom tags...</echo>
-
-    <mkdir dir="${webappTargetDir}/WEB-INF/tags/imp"/>
-
-    <!--  remove all tags first -->
-    <delete>
-      <fileset dir="${webappTargetDir}/WEB-INF/tags/imp" includes="*.tag"/>
-    </delete>
-
-    <!-- need to copy the default tags from WDK first -->
-    <copy todir="${webappTargetDir}/WEB-INF/tags/imp">
-      <fileset dir="${webappTargetDir}/WEB-INF/tags/wdk">
-        <include name="*.tag"/>
-      </fileset>
-    </copy>
-
-    <!-- lastly, copy custom tags from site, and overwrite existing ones -->
-    <available file="${webappTargetDir}/WEB-INF/tags/site" type="dir" property="siteDir.present"/>
-    <antcall target="copyCustomTags"/>
-
-  </target>
-
-  <target name="copyCustomTags" if="siteDir.present">
-    <copy todir="${webappTargetDir}/WEB-INF/tags/imp" overwrite="true">
-      <fileset dir="${webappTargetDir}/WEB-INF/tags/site">
-        <include name="*.tag"/>
-      </fileset>
-    </copy>
+  <!-- might not know the values for these until deployment time, so conditionally fill -->
+  <target name="webinstall-cgi-bin-location-refs" unless="skipCgiBinLocationMacros">
+    <replace dir="${cgibinTargetDir}">
+      <include name="**/*" />
+      <replacefilter token="@targetDir@" value="${targetDir}" />
+      <replacefilter token="@cgilibTargetDir@" value="${cgilibTargetDir}" />
+    </replace>
   </target>
 
   <target name="buildInfo" depends="recordBuildState" />

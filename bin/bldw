@@ -12,13 +12,9 @@ usage() {
   exit 1
 }
 
-if [ "$#" != "2" ]; then
-  if [ "$3" != "-publishDocs" ]; then
-    usage
-  elif [ "$#" != "3" ]; then
-    usage
-  fi
+if [ "$#" -lt "2" ] || [ "$#" -gt "4" ]; then
+  usage
 fi
 
 # build with the resulting file
-build $1 webinstall -append -installConfigFile -webPropFile $2 $3
+build $1 webinstall -append -installConfigFile -webPropFile $2 $3 $4
