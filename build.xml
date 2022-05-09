@@ -38,23 +38,14 @@
 
     <echo> proj=${proj} </echo>
     <echo> comp=${comp} </echo>
+
     <property name="initialTarget" value="install"/>
 
     <ant target="${proj}${comp}-Installation">
       <property name="project" value="${proj}"/>
     </ant>
 
-    <replace dir="${targetDir}/bin"
-             propertyFile="${targetDir}/config/gus.config" >
-      <include name="**/*" />
-      <replacefilter token="@perl@" property="perl"/>
-      <replacefilter token="@targetDir@" value="${targetDir}" />
-    </replace>
-
-    <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
-    <chmod perm="a+x" maxparallel="20">
-      <fileset dir="${targetDir}/bin"/>
-    </chmod>
+    <antcall target="install-postprocess" />
 
     <echo message="Installation Complete"/>
 
@@ -62,6 +53,7 @@
 
 
   <target name="webinstall" depends="WebInstallInit">
+
     <property name="initialTarget" value="webinstall"/>
 
     <antcall target="installYarnDepsForInstallProject"/>
@@ -767,39 +759,56 @@
     </fail>
   </target>
 
-  <target name="webinstall-postprocess">
 
-    <available file="${cgibinTargetDir}" type="dir" property="cgibinTargetDir.present"/>
-    <available file="${webappTargetDir}" type="dir" property="webappTargetDir.present"/>
-    <antcall target="webinstall-cgi-bin" />
+  <!-- oooooooooooooooooooo Main Target Post-Processing  ooooooooooooooooooooooo -->
 
+  <target name="install-postprocess">
+    <antcall target="replaceLocationRefs">
+      <property name="binLocation" value="${targetDir}/bin"/>
+    </antcall>
   </target>
 
-  <target name="webinstall-cgi-bin" if="cgibinTargetDir.present">
+  <target name="webinstall-postprocess">
+    <!-- check existence of cgi-bin and populate macros in files there if present -->
+    <available file="${cgibinTargetDir}" type="dir" property="cgibinTargetDir.present"/>
+    <antcall target="webinstall-cgi-bin-postprocess" />
+  </target>
 
-    <replace dir="${cgibinTargetDir}"
+  <target name="webinstall-cgi-bin-postprocess" if="cgibinTargetDir.present">
+    <antcall target="replaceLocationRefs">
+      <property name="binLocation" value="${cgibinTargetDir}"/>
+    </antcall>
+  </target>
+
+  <target name="replaceLocationRefs">
+
+    <replace dir="${binLocation}"
              propertyFile="${targetDir}/config/gus.config" >
       <include name="**/*" />
       <replacefilter token="@perl@" property="perl"/>
     </replace>
 
-    <antcall target="webinstall-cgi-bin-location-refs"/>
+    <antcall target="install-bin-location-refs">
+      <property name="binLocation" value="${binLocation}"/>
+    </antcall>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
-    <chmod perm="+x" maxparallel="20">
-      <fileset dir="${cgibinTargetDir}" />
+    <chmod perm="a+x" maxparallel="20">
+      <fileset dir="${binLocation}"/>
     </chmod>
-
   </target>
 
   <!-- might not know the values for these until deployment time, so conditionally fill -->
-  <target name="webinstall-cgi-bin-location-refs" unless="skipCgiBinLocationMacros">
-    <replace dir="${cgibinTargetDir}">
+  <target name="install-bin-location-refs" unless="skipBinFileLocationMacros">
+    <replace dir="${binLocation}">
       <include name="**/*" />
       <replacefilter token="@targetDir@" value="${targetDir}" />
       <replacefilter token="@cgilibTargetDir@" value="${cgilibTargetDir}" />
     </replace>
   </target>
+
+
+  <!-- oooooooooooooooooooo Build Logging Subroutines  ooooooooooooooooooooooo -->
 
   <target name="buildInfo" depends="recordBuildState" />
 
@@ -836,7 +845,7 @@
   </target>
 
 
-  <!-- oooooooooooooooooooo Oracle-related subroutines  ooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooo Oracle-related Subroutines  ooooooooooooooooooooooo -->
 
   <target name="installOracleDriver">
     <!-- set values for supported Oracle driver -->

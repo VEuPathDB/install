@@ -27,7 +27,7 @@ if (!$projectHome) {
 
 my ($project, $component, $doWhat, $targetDir, $append, $clean,
     $installDBSchema, $doCheckout, $tag, $webPropFile, $returnErrStatus,
-    $installConfigFile, $publishDocs, $skipCgiBinLocationMacros) = &parseArgs(@ARGV);
+    $installConfigFile, $publishDocs, $skipBinFileLocationMacros) = &parseArgs(@ARGV);
 
 # set local maven repo to user's env var if available, else use $HOME/.m2/repository
 my $mvnRepo = ( "$ENV{M2_REPO}" eq "" ? "$ENV{HOME}/.m2/repository" : "$ENV{M2_REPO}" );
@@ -35,7 +35,7 @@ print STDERR "Maven local repository set to: $mvnRepo\n";
 
 $| = 1;
 
-my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=\"$component\" -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome -DmvnRepo=$mvnRepo $clean $installDBSchema $append $webPropFile $tag $installConfigFile $publishDocs $skipCgiBinLocationMacros -logger org.apache.tools.ant.NoBannerLogger ";
+my $cmd = "ant -f $projectHome/install/build.xml $doWhat -lib $projectHome/install/config -Dproj=$project -DtargetDir=$targetDir -Dcomp=\"$component\" -DgusConfigFile=$gusConfigFile -DprojectsDir=$projectHome -DmvnRepo=$mvnRepo $clean $installDBSchema $append $webPropFile $tag $installConfigFile $publishDocs $skipBinFileLocationMacros -logger org.apache.tools.ant.NoBannerLogger ";
 
 # if not returning error status, then can pretty up output by keeping
 # only lines with bracketed ant target name (ie, ditch its commentary).
@@ -83,7 +83,7 @@ sub parseArgs {
     &usage("targetDir not defined") unless $targetDir;
 
 
-    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $installConfigFile, $publishDocs, $skipCgiBinLocationMacros);
+    my ($append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $installConfigFile, $publishDocs, $skipBinFileLocationMacros);
 
     if ($ARGV[0] eq "-append") {
         shift @ARGV;
@@ -156,12 +156,12 @@ sub parseArgs {
         shift @ARGV;
     }
 
-    if ($skipCgiBinLocationMacros = $ARGV[0]) {
-        &usage("") if ($skipCgiBinLocationMacros ne "-skipCgiBinLocationMacros");
-        $skipCgiBinLocationMacros = "-DskipCgiBinLocationMacros=true";
+    if ($skipBinFileLocationMacros = $ARGV[0]) {
+        &usage("") if ($skipBinFileLocationMacros ne "-skipBinFileLocationMacros");
+        $skipBinFileLocationMacros = "-DskipBinFileLocationMacros=true";
     }
 
-    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus, $installConfigFile, $publishDocs, $skipCgiBinLocationMacros);
+    return ($project, $component, $doWhat, $targetDir, $append, $clean, $installDBSchema, $doCheckout, $version, $webPropFile, $returnErrStatus, $installConfigFile, $publishDocs, $skipBinFileLocationMacros);
 }
 
 sub usage {
