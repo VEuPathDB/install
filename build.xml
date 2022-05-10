@@ -788,9 +788,9 @@
       <replacefilter token="@perl@" property="perl"/>
     </replace>
 
-    <antcall target="install-bin-location-refs">
+    <ant target="install-bin-location-refs">
       <property name="binLocation" value="${binLocation}"/>
-    </antcall>
+    </ant>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
     <chmod perm="a+x" maxparallel="20">
