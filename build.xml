@@ -763,9 +763,9 @@
   <!-- oooooooooooooooooooo Main Target Post-Processing  ooooooooooooooooooooooo -->
 
   <target name="install-postprocess">
-    <antcall target="replaceLocationRefs">
+    <ant target="replaceLocationRefs">
       <property name="binLocation" value="${targetDir}/bin"/>
-    </antcall>
+    </ant>
   </target>
 
   <target name="webinstall-postprocess">
@@ -775,9 +775,9 @@
   </target>
 
   <target name="webinstall-cgi-bin-postprocess" if="cgibinTargetDir.present">
-    <antcall target="replaceLocationRefs">
+    <ant target="replaceLocationRefs">
       <property name="binLocation" value="${cgibinTargetDir}"/>
-    </antcall>
+    </ant>
   </target>
 
   <target name="replaceLocationRefs">
