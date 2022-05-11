@@ -796,10 +796,12 @@
     <chmod perm="a+x" maxparallel="20">
       <fileset dir="${binLocation}"/>
     </chmod>
+
   </target>
 
   <!-- might not know the values for these until deployment time, so conditionally fill -->
   <target name="install-bin-location-refs" unless="skipBinFileLocationMacros">
+    <echo message="Filling macros in files in ${binLocation}"/>
     <replace dir="${binLocation}">
       <include name="**/*" />
       <replacefilter token="@targetDir@" value="${targetDir}" />
