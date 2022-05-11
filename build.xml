@@ -63,6 +63,7 @@
       <property name="project" value="${proj}"/>
     </ant>
 
+    <antcall target="install-postprocess" />
     <antcall target="webinstall-postprocess" />
 
     <echo message="WebInstallation Complete"/>
