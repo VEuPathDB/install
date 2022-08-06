@@ -947,13 +947,14 @@
           failonerror="true"
           failifexecutionfails="true">
       <arg line="install:install-file"/>
-      <arg line="--quiet"/>
+      <arg line="-Dmaven.repo.local=${mvnRepo}"/>
       <arg line="-DgroupId=com.oracle"/>
       <arg line="-DartifactId=${oracle.driver.name}"/>
       <arg line="-Dversion=${oracle.version}"/>
       <arg line="-Dpackaging=jar"/>
       <arg line="-Dfile=${env.ORACLE_HOME}/jdbc/lib/${oracle.driver.name}.jar"/>
       <arg line="-DgeneratePom=true"/>
+      <arg line="--quiet"/>
     </exec>
   </target>
 
