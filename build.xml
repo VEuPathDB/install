@@ -36,6 +36,7 @@
 
   <target name="install" depends="InstallInit">
 
+    <echo> Install </echo>
     <echo> proj=${proj} </echo>
     <echo> comp=${comp} </echo>
 
@@ -53,6 +54,10 @@
 
 
   <target name="webinstall" depends="WebInstallInit">
+
+    <echo> Web Install </echo>
+    <echo> proj=${proj} </echo>
+    <echo> comp=${comp} </echo>
 
     <property name="initialTarget" value="webinstall"/>
 
@@ -155,6 +160,7 @@
   </target>
 
   <target name="installGusProjectPom">
+    <echo message="Installing GUS project pom to local maven repository"/>
     <ant target="mavenCleanInstall">
       <property name="relativeBuildDir" value="install"/>
     </ant>
