@@ -160,7 +160,10 @@
   </target>
 
   <target name="installGusProjectPom">
-    <echo message="Installing GUS project pom to local maven repository"/>
+    <echo message="Installing fresh GUS project pom to local maven repository"/>
+    <exec executable="bash">
+      <arg line="rm -rf ${mvnRepo}/org/gusdb/gus-project-pom"/>
+    </exec>
     <ant target="mavenCleanInstall">
       <property name="relativeBuildDir" value="install"/>
     </ant>
