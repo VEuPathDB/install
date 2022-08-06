@@ -17,19 +17,9 @@
     <version>2.10</version>
   </parent>
 
-  <repositories>
-    <repository>
-      <id>veupathdb</id>
-      <url>https://maven.pkg.github.com/VEuPathDB/maven-packages</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <fgputil.version>2.7.1</fgputil.version>
+    <fgputil.version>2.7.2</fgputil.version>
   </properties>
 
   <dependencyManagement>
@@ -107,5 +97,15 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>veupathdb</id>
+      <url>https://maven.pkg.github.com/VEuPathDB/maven-packages</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
 </project>
