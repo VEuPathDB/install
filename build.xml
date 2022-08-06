@@ -708,6 +708,7 @@
            failonerror="true"
            failifexecutionfails="true">
        <arg line="dependency:copy-dependencies"/>
+       <arg line="-Dmaven.repo.local=${mvnRepo}"/>
        <arg line="-DoutputDirectory=${targetDir}/lib/java"/>
        <arg line="--quiet"/>
     </exec>
