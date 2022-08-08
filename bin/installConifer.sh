@@ -55,6 +55,7 @@ done
 
 if [ "$cohort" == "" ]; then
   >&2 echo "WARN: Skipping conifer installation.  No cohort root project found."
+  exit 0
 fi
 
 echo "Found ${cohort} cohort"
