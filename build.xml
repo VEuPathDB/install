@@ -178,6 +178,7 @@
       <arg line="installConifer.sh"/>
       <arg line="${targetDir}"/>
       <arg line="${projectsDir}"/>
+      <arg line="${proj}"/>
     </exec>
   </target>
 
