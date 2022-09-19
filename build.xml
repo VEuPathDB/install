@@ -182,7 +182,7 @@
     </exec>
   </target>
 
-	<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+  <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooo  SUBROUTINES  ooooooooooooooooooooooooooo -->
   <!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
@@ -248,6 +248,14 @@
       <param name="to" value="lib/dst"/>
       <param name="prefix" value=""/>
     </antcall>
+
+    <!-- TODO: remove once GUS project is moved to Maven -->
+    <antcall target="componentPartCopy">
+      <param name="part" value="lib/java"/>
+      <param name="to" value="lib/java"/>
+      <param name="prefix" value=""/>
+    </antcall>
+    <!-- End remove TODO -->
 
     <antcall target="componentPartCopy">
       <param name="part" value="ontology"/>
@@ -354,7 +362,9 @@
 
    <antcall target="defaultCCompile"/>
 
-   <antcall target="mavenBuildComponent"/>
+   <!-- TODO: remove defaultJavaCompile once GUS project is moved to Maven -->
+   <antcall target="defaultJavaCompile"/>   <!-- will run if non-maven -->
+   <antcall target="mavenBuildComponent"/>  <!-- will run if manen -->
 
    <antcall target="componentPartCopy">
       <param name="part" value="data"/>
@@ -631,7 +641,7 @@
     </copy>
   </target>
 
-  <!-- ooooooooooooooooooo Maven-related targets ooooooooooooooooooooooo -->
+  <!-- ooooooooooooooooooo Java build targets ooooooooooooooooooooooo -->
 
   <target name="mavenCleanInstall">
     <exec dir="${projectsDir}/${relativeBuildDir}"
@@ -652,9 +662,8 @@
     <available property="isMavenProject" file="${projectsDir}/${project}/pom.xml"/>
   </target>
 
-  <!-- Will set buildMavenComponent if both is-maven and is-component-build -->
-  <target name="checkIfBuildMavenComponent" if="notEmptyComponent">
-    <available property="buildMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
+  <target name="checkIfMavenComponent">
+    <available property="isMavenComponent" file="${projectsDir}/${project}/${component}/pom.xml"/>
   </target>
 
   <target name="mavenBuildProject" if="isMavenProject" depends="checkIfMavenProject">
@@ -684,7 +693,11 @@
     </ant>
   </target>
 
-  <target name="mavenBuildComponent" if="buildMavenComponent" depends="checkIfBuildMavenComponent">
+  <target name="mavenBuildComponent" if="isMavenComponent" depends="checkIfMavenComponent">
+    <ant target="subMavenBuildComponent"/>
+  </target>
+
+  <target name="subMavenBuildComponent" if="notEmptyComponent">
     <echo>Building Maven Component: ${project}/${component}</echo>
     <!-- should only build component specifically requested (components are build automatically at the project level) -->
     <ant target="mavenCleanInstall">
@@ -714,6 +727,94 @@
        <arg line="--quiet"/>
     </exec>
   </target>
+
+  <!-- TODO: Remove all the following targets once GUS project is moved to Maven;
+       They are all to support non-Maven Java compilation and deployment to gus_home -->
+  <target name="defaultJavaCompile" if="isNonMavenJava" depends="deleteMyClasses,checkNonMavenJava">
+     <echo message="Java source found in non-maven component.  Building traditional way..."/>
+     <mkdir dir="${projectsDir}/${project}/${component}/classes"/>
+     <mkdir dir="${targetDir}/lib/java"/>
+     <mkdir dir="${targetDir}/lib/java/db_driver"/>
+     <mkdir dir="${targetDir}/lib/java/not-deployed"/>
+     <javac srcdir="${projectsDir}/${project}/${component}/src/java"
+            destdir="${projectsDir}/${project}/${component}/classes"
+        includeAntRuntime="false"
+        fork="true"
+        debug="on"
+        tempdir="${projectsDir}/${project}/${component}/classes"
+        memoryMaximumSize="256m">
+        <classpath>
+           <fileset dir="${targetDir}/lib/java/">
+              <include name="*.jar"/>
+           </fileset>
+           <fileset dir="${targetDir}/lib/java/db_driver">
+              <include name="*.jar"/>
+           </fileset>
+           <fileset dir="${targetDir}/lib/java/db_driver">
+              <include name="*.zip"/>
+           </fileset>
+           <fileset dir="${targetDir}/lib/java/not-deployed">
+              <include name="*.jar"/>
+           </fileset>
+        </classpath>
+     </javac>
+
+     <!-- copy over resource files -->
+     <antcall target="compileResources" />
+
+     <copy todir="${projectsDir}/${project}/${component}/classes/META-INF">
+       <fileset dir="${componentDir}" >
+         <include name="META-INF/**"/>
+       </fileset>
+     </copy>
+
+     <jar basedir="${projectsDir}/${project}/${component}/classes"
+          destfile="${targetDir}/lib/java/${project}-${component}.jar"/>
+  </target>
+
+  <target name="compileResources" if="hasResources" depends="checkIfHaveResources">
+    <copy todir="${projectsDir}/${project}/${component}/classes/">
+      <fileset dir="${projectsDir}/${project}/${component}/src/resources" />
+    </copy>
+  </target>
+
+  <target name="checkIfHaveResources">
+    <available property="hasResources" file="${projectsDir}/${project}/${component}/src/resources"/>
+  </target>
+
+  <target name="checkNonMavenJava" depends="checkIfMavenComponent,checkIfHaveJava">
+    <condition property="isNonMavenJava">
+      <and>
+        <not>
+          <isset property="isMavenComponent"/>
+        </not>
+        <isset property="hasJava"/>
+      </and>
+    </condition>
+  </target>
+
+  <target name="checkIfHaveJava">
+    <available property="hasJava" file="${projectsDir}/${project}/${component}/src/java"/>
+  </target>
+
+  <target name="checkIfCleanAndHaveJava" depends="checkIfHaveJava">
+    <condition property="cleanAndHasJava">
+      <and>
+        <isset property="hasJava"/>
+        <isset property="clean"/>
+      </and>
+    </condition>
+  </target>
+
+  <target name="deleteMyClasses" if="cleanAndHasJava"
+          depends="checkIfCleanAndHaveJava">
+    <delete>
+      <fileset dir="${projectsDir}/${project}/${component}/classes"/>
+    </delete>
+    <delete file="${targetDir}/lib/java/${project}-${component}.jar"/>
+    <echo message="deleted all old classes, clean is ${clean} and has java is ${hasJava}"/>
+  </target>
+  <!-- End Remove TODO -->
 
   <!-- oooooooooooooooooooo utility subroutines  ooooooooooooooooooooooo -->
 
