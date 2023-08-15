@@ -19,7 +19,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <fgputil.version>2.12.9</fgputil.version>
+    <fgputil.version>2.12.10</fgputil.version>
   </properties>
 
   <dependencyManagement>
