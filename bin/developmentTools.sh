@@ -394,9 +394,9 @@ function sendFiles() {
           cmd="ssh $REMOTE_LOGNAME@$DEV_SERVER \"\"rm -rf $projectDir/$file\"\""
           echo "  $cmd"
           $cmd
-          cmd="scp -r $file $remoteProjectDir/$file"
+          cmd="rsync -r $file $remoteProjectDir/$file"
         else
-          cmd="scp $file $remoteProjectDir/$file"
+          cmd="rsync $file $remoteProjectDir/$file"
         fi
       elif [[ "$flag" == "D" ]]; then
         if [ -d $file ]; then
