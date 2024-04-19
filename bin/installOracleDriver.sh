@@ -43,7 +43,7 @@ function getDriver {
 
   # copy file from server to local temp location
   echo "Transferring file from ${remoteLoc}"
-  scp ${remoteLoc} ${localLoc}
+  rsync ${remoteLoc} ${localLoc}
 
   # copy into local maven repository
   echo "Installing driver into local maven repository"
