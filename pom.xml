@@ -14,12 +14,12 @@
   <parent>
     <groupId>org.gusdb</groupId>
     <artifactId>base-pom</artifactId>
-    <version>2.20</version>
+    <version>2.21-j21tc9</version>
   </parent>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <fgputil.version>2.13.1</fgputil.version>
+    <fgputil.version>2.13.2-j21tc9</fgputil.version>
     <oauth.client.version>1.1.6</oauth.client.version>
   </properties>
 
