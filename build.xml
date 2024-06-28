@@ -82,11 +82,11 @@
 
   <target
     name="InstallInit"
-    depends="validateTargetDir,validateClean, hasConfigFile, selfBuildInfo, installGusProjectPom, installConifer"/>
+    depends="validateTargetDir,validateClean, hasConfigFile, selfBuildInfo, installGusProjectPom"/>
 
   <target
     name="WebInstallInit"
-    depends="validateTargetDir,validateClean, hasConfigFile, selfBuildInfo, installGusProjectPom, installConifer"/>
+    depends="validateTargetDir,validateClean, hasConfigFile, selfBuildInfo, installGusProjectPom"/>
 
   <target name="validateTargetDir">
     <fail unless="targetDir">
