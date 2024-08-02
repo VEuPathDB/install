@@ -62,7 +62,6 @@
     <property name="initialTarget" value="webinstall"/>
 
     <antcall target="installYarnDepsForInstallProject"/>
-    <antcall target="makeSupportedBrowsersScript"/>
 
     <ant target="${proj}${comp}-WebInstallation">
       <property name="project" value="${proj}"/>
@@ -506,15 +505,6 @@
           failonerror="true"
           failifexecutionfails="true">
       <arg line="--ignore-engines"/>
-    </exec>
-  </target>
-
-  <target name="makeSupportedBrowsersScript" depends="installYarnDepsForInstallProject">
-    <exec executable="${projectsDir}/install/bin/makeSupportedBrowsersScript"
-          dir="${projectsDir}/install"
-          failonerror="true"
-          failifexecutionfails="true">
-      <arg line="${targetDir}/bin/getBundlesSubPath"/>
     </exec>
   </target>
 
