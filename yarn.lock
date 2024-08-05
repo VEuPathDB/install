@@ -42,11 +42,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.18.63.tgz#1788fa8da838dbb5f9ea994b834278205db6ca2b"
   integrity sha512-fAtCfv4jJg+ExtXhvCkCqUKZ+4ok/JQk01qDKhL5BDDoS3AxKXhV5/MAVUZyQnSEd2GT92fkgZl0pz0Q0AzcIQ==
 
-"@veupathdb/browserslist-config@^1.1.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@veupathdb/browserslist-config/-/browserslist-config-1.2.0.tgz#b98e5d1cd6d8812f596340e47072597d5a559bf3"
-  integrity sha512-JXhEstrXcseAVGu2qSTjGkl11G4W/7NqPJ/Q2UHRMSQgw8rwCQ7ql+7JYwcfhXwmSSEFphU4gdV4x/NhTRBBKw==
-
 a-sync-waterfall@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/a-sync-waterfall/-/a-sync-waterfall-1.0.1.tgz#75b6b6aa72598b497a125e7a2770f14f4c8a1fa7"
