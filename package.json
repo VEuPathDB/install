@@ -1,14 +1,8 @@
 {
-  "browserslist": [
-    "extends @veupathdb/browserslist-config"
-  ],
   "dependencies": {
     "browserslist-useragent-regexp": "^2.1.0",
     "raml2html": "^7.2.2",
     "raml2html-plain-theme": "^0.1.6"
   },
-  "version": "0.0.1",
-  "devDependencies": {
-    "@veupathdb/browserslist-config": "^1.1.0"
-  }
+  "version": "0.0.1"
 }
