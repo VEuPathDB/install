@@ -642,7 +642,7 @@
        <arg line="${projectsDir}/install/settings.xml"/>
        <arg line="clean"/>
        <arg line="install"/>
-       <arg line="--quiet"/>
+       <!--<arg line="-quiet"/>-->
        <arg line="-Dmaven.test.skip=true"/>
        <arg line="-Dmaven.repo.local=${mvnRepo}"/>
     </exec>
