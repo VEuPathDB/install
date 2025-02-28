@@ -321,6 +321,29 @@
     </antcall>
 
     <antcall target="componentPartCopy">
+      <param name="part" value="nextflow/conf"/>
+      <param name="to" value="nextflow/conf"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="nextflow/modules"/>
+      <param name="to" value="nextflow/modules"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
+      <param name="part" value="nextflow/workflows"/>
+      <param name="to" value="nextflow/workflows"/>
+      <param name="prefix" value=""/>
+    </antcall>
+    <antcall target="componentPartCopy">
+      <param name="part" value="nextflow/subworkflows"/>
+      <param name="to" value="nextflow/subworkflows"/>
+      <param name="prefix" value=""/>
+    </antcall>
+
+    <antcall target="componentPartCopy">
       <param name="part" value="lib/R"/>
       <param name="to" value="lib/R"/>
       <param name="prefix" value="${component}/"/>
