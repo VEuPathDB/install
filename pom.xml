@@ -29,11 +29,6 @@
       <!-- Declare dependencies on the declared FgpUtil version -->
       <dependency>
         <groupId>org.gusdb</groupId>
-        <artifactId>fgputil-accountdb</artifactId>
-        <version>${fgputil.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.gusdb</groupId>
         <artifactId>fgputil-cache</artifactId>
         <version>${fgputil.version}</version>
       </dependency>
