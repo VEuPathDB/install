@@ -19,8 +19,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <fgputil.version>2.15.2</fgputil.version>
-    <oauth.client.version>3.1.2</oauth.client.version>
+    <fgputil.version>2.16.0</fgputil.version>
+    <oauth.client.version>3.2.1</oauth.client.version>
   </properties>
 
   <dependencyManagement>
