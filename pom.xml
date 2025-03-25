@@ -14,24 +14,19 @@
   <parent>
     <groupId>org.gusdb</groupId>
     <artifactId>base-pom</artifactId>
-    <version>2.24</version>
+    <version>2.26</version>
   </parent>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <fgputil.version>2.15.2</fgputil.version>
-    <oauth.client.version>3.1.2</oauth.client.version>
+    <fgputil.version>2.16.1</fgputil.version>
+    <oauth.client.version>3.2.1</oauth.client.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
 
       <!-- Declare dependencies on the declared FgpUtil version -->
-      <dependency>
-        <groupId>org.gusdb</groupId>
-        <artifactId>fgputil-accountdb</artifactId>
-        <version>${fgputil.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.gusdb</groupId>
         <artifactId>fgputil-cache</artifactId>
