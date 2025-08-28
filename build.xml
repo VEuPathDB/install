@@ -899,7 +899,7 @@
     </ant>
 
     <!-- because the replace task clobbers permissions.  see ant bug #5661 -->
-    <chmod perm="a+x" maxparallel="20">
+    <chmod perm="755" maxparallel="20">
       <fileset dir="${binLocation}"/>
     </chmod>
 
