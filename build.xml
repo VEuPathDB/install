@@ -511,6 +511,7 @@
           failonerror="true"
           failifexecutionfails="true">
       <arg line="--ignore-engines"/>
+      <arg line="--frozen-lockfile"/>
     </exec>
   </target>
 
@@ -528,6 +529,7 @@
       failonerror="true"
       failifexecutionfails="true">
       <arg line="--ignore-engines"/>
+      <arg line="--frozen-lockfile"/>
     </exec>
   </target>
 
