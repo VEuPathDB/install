@@ -19,7 +19,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <fgputil.version>3.2.2</fgputil.version>
+    <fgputil.version>3.2.3</fgputil.version>
     <oauth.client.version>4.2.0-j21tc9</oauth.client.version>
   </properties>
 
