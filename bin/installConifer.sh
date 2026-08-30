@@ -49,7 +49,7 @@ fi
 # Note 1: the top-level build projects must match the cohort mapping in rebuilder
 # Note 2: the cohort names and roots must match the cohort mapping in the conifer script
 #
-cohorts=( "ApiCommonPresenters:ApiCommon:ApiCommonWebsite"
+cohorts=( "VEuPathDatasets:ApiCommon:ApiCommonWebsite"
           "OrthoMCLWebsite:OrthoMCL:OrthoMCLWebsite"
           "ClinEpiPresenters:ClinEpi:ClinEpiWebsite"
           "MicrobiomePresenters:Microbiome:MicrobiomeWebsite"
