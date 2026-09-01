@@ -50,6 +50,7 @@ fi
 # Note 2: the cohort names and roots must match the cohort mapping in the conifer script
 #
 cohorts=( "VEuPathDatasets:ApiCommon:ApiCommonWebsite"
+          "ApiCommonPresenters:ApiCommon:ApiCommonWebsite"
           "OrthoMCLWebsite:OrthoMCL:OrthoMCLWebsite"
           "ClinEpiPresenters:ClinEpi:ClinEpiWebsite"
           "MicrobiomePresenters:Microbiome:MicrobiomeWebsite"
