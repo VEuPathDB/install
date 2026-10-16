@@ -21,6 +21,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <fgputil.version>3.2.11</fgputil.version>
     <oauth.client.version>5.0.1</oauth.client.version>
+    <usercomments.version>1.0</usercomments.version>
   </properties>
 
   <dependencyManagement>
@@ -96,6 +97,11 @@
         <groupId>org.gusdb</groupId>
         <artifactId>oauth2-client</artifactId>
         <version>${oauth.client.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>org.veupathdb</groupId>
+	<artifactId>sitesearch-usercomments</artifactId>
+	<version>${usercomments.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
