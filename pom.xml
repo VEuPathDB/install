@@ -99,9 +99,9 @@
         <version>${oauth.client.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.veupathdb</groupId>
-	<artifactId>sitesearch-usercomments</artifactId>
-	<version>${ss-usercomments.version}</version>
+        <groupId>org.veupathdb</groupId>
+        <artifactId>sitesearch-usercomments</artifactId>
+        <version>${ss-usercomments.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
