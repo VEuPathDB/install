@@ -3,4 +3,57 @@
 # Wrapper to call yarn where it is installed.
 # The `yarn` executable does not work propertly
 # on Darwin when symlinked to $GUS_HOME/bin
-$GUS_HOME/lib/yarn/bin/yarn $@
+#
+# Two Yarn versions are bundled and, like corepack, the project decides
+# which one runs: the nearest package.json (from the current directory
+# upward) with a "packageManager" field wins.
+#
+#   "packageManager": "yarn@4.x"      -> Yarn 4 ($GUS_HOME/lib/yarn4/)
+#   "yarn@1.x" or no such field       -> Yarn 1 ($GUS_HOME/lib/yarn/)
+#
+# Yarn 1 projects (v1 lockfile, e.g. install, JBrowse) therefore keep
+# working unchanged; web-monorepo pins Yarn 4 and gets it.
+#
+# Keep YARN4_VERSION in step with lib/yarn-<version>.cjs and with the
+# packageManager pin in web-monorepo (see installYarnBin in build.xml).
+
+YARN4_VERSION=4.12.0
+
+pm=
+dir=$PWD
+while :; do
+  if [ -f "$dir/package.json" ]; then
+    pm=$(sed -n 's/.*"packageManager"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$dir/package.json" | head -n 1)
+    [ -n "$pm" ] && break
+  fi
+  [ "$dir" = / ] && break
+  dir=$(dirname "$dir")
+done
+
+# "yarn@4.12.0+sha224.abc..." -> "4.12.0"
+pm_version=${pm#yarn@}
+pm_version=${pm_version%%+*}
+
+case "$pm" in
+  yarn@1.*|"")
+    exec "$GUS_HOME/lib/yarn/bin/yarn" "$@"
+    ;;
+  yarn@*)
+    if [ "$pm_version" != "$YARN4_VERSION" ]; then
+      echo "yarn wrapper: $dir/package.json pins yarn@$pm_version but bundled Yarn is $YARN4_VERSION; using bundled" >&2
+      # Yarn refuses to run when its version differs from the pin unless told otherwise.
+      SKIP_YARN_COREPACK_CHECK=1
+      export SKIP_YARN_COREPACK_CHECK
+    fi
+    yarn4="$GUS_HOME/lib/yarn4/yarn-$YARN4_VERSION.cjs"
+    if [ ! -f "$yarn4" ]; then
+      echo "yarn wrapper: $yarn4 not found; it is installed by the install build (rebuilder, or: bld install)" >&2
+      exit 1
+    fi
+    exec node "$yarn4" "$@"
+    ;;
+  *)
+    echo "yarn wrapper: unsupported packageManager '$pm' in $dir/package.json" >&2
+    exit 1
+    ;;
+esac
