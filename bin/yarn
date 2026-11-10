@@ -45,7 +45,12 @@ case "$pm" in
       SKIP_YARN_COREPACK_CHECK=1
       export SKIP_YARN_COREPACK_CHECK
     fi
-    exec node "$GUS_HOME/lib/yarn4/yarn-$YARN4_VERSION.cjs" "$@"
+    yarn4="$GUS_HOME/lib/yarn4/yarn-$YARN4_VERSION.cjs"
+    if [ ! -f "$yarn4" ]; then
+      echo "yarn wrapper: $yarn4 not found; it is installed by the install build (rebuilder, or: bld install)" >&2
+      exit 1
+    fi
+    exec node "$yarn4" "$@"
     ;;
   *)
     echo "yarn wrapper: unsupported packageManager '$pm' in $dir/package.json" >&2
