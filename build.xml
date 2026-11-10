@@ -488,8 +488,8 @@
   <!-- oooooooooooooooooo Yarn Installation ooooooooooooooooooooo -->
 
   <target name="installYarnBin" depends="yarnBinCheck" unless="hasYarnBin">
-    <!-- unpack yarn tgz into targetDirectory -->
-    <echo message="Installing yarn binary"/>
+    <!-- Yarn 1: unpack yarn tgz into targetDirectory -->
+    <echo message="Installing yarn binaries"/>
     <mkdir dir="${targetDir}/lib/yarn"/>
     <mkdir dir="${targetDir}/bin"/>
     <exec executable="tar"
@@ -498,10 +498,18 @@
           failifexecutionfails="true">
       <arg line="xzf ${projectsDir}/install/lib/yarn.tar.gz --strip-components 1"/>
     </exec>
+    <!-- Yarn 4: a single self-contained script. bin/yarn picks 1 or 4
+         from the project's packageManager field.
+         Keep the version in step with YARN4_VERSION in bin/yarn. -->
+    <mkdir dir="${targetDir}/lib/yarn4"/>
+    <copy file="${projectsDir}/install/lib/yarn-4.12.0.cjs"
+          todir="${targetDir}/lib/yarn4" overwrite="true"/>
   </target>
 
   <target name="yarnBinCheck">
-    <available property="hasYarnBin" file="${targetDir}/bin/yarn"/>
+    <!-- Checks the newest bundled file, not bin/yarn: bin/yarn already exists
+         in every GUS_HOME, so checking it would never install Yarn 4. -->
+    <available property="hasYarnBin" file="${targetDir}/lib/yarn4/yarn-4.12.0.cjs"/>
   </target>
 
   <target name="installYarnDepsForInstallProject" depends="installYarnBin">
