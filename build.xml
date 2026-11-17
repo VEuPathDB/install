@@ -643,7 +643,7 @@
 
   <target name="mavenCleanInstall">
     <exec dir="${projectsDir}/${relativeBuildDir}"
-          executable="java">
+          executable="mvn">
       <arg line="--version"/>
     </exec>
     <exec dir="${projectsDir}/${relativeBuildDir}"
